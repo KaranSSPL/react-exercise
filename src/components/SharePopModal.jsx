@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { MovieContext } from '../MovieContext.jsx';
+import '../css/sharePopUpModal.css';
 
 const SharePopModal = () => {
     const { sharePop, setSharePop } = useContext(MovieContext);
@@ -15,20 +16,17 @@ const SharePopModal = () => {
 
     const shareOnFacebook = () => {
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,
-            'fbshare',
-            'width=600,height=400')
+            '_blank')
     };
 
     const shareOnTwitter = () => {
         window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}`,
-            'twittershare',
-            'width=600,height=400')
+            '_blank')
     };
 
     const shareOnWhatsapp = () => {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(window.location.href)}`,
-            'whatsappshare',
-            'width=600,height=400')
+            '_blank')
     };
 
     return (
