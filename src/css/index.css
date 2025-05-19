@@ -109,6 +109,40 @@ header h1 {
     font-weight: bold;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #e50914;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #b0060f;
+}
+
+.pagination span {
+  font-size: 16px;
+  color: #fff;
+}
+
 /* 💻 Laptops and Desktops (1025px and above) */
 @media (min-width: 1025px) {
     .movie-grid {

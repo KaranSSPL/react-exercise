@@ -4,8 +4,8 @@ import './css/index.css';
 import './css/movieDetail.css';
 import App from './app.jsx';
 
-const body = ReactDOM.createRoot(document.getElementById('body'));
-body.render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

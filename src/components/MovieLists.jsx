@@ -1,10 +1,13 @@
+import { useContext } from 'react';
 import { config } from '../global/globalVariables.js';
 import axios from 'axios';
+import { MovieContext } from '../MovieContext.jsx';
 
-const MovieLists = ({ movies, setSelectedMovie, setShowModal }) => {
+const MovieLists = () => {
+    const { movies, setSelectedMovie, setShowModal } = useContext(MovieContext);
+
     const movieDetail = async (e, id) => {
         e.preventDefault();
-        console.log("Clicked movie ID:", id);
 
         try {
             const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}?language=en-US`, config);
@@ -15,6 +18,7 @@ const MovieLists = ({ movies, setSelectedMovie, setShowModal }) => {
             console.error('Error while searching movie:', error);
         }
     };
+
     return (
         <>
             <div className="movie-grid">

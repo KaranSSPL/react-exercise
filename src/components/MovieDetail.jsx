@@ -1,4 +1,10 @@
-function MovieDetail({ movie, setShowModal,showModal }) {
+import { useContext } from 'react';
+import { MovieContext } from '../MovieContext.jsx';
+
+function MovieDetail() {
+    const { selectedMovie, setShowModal, showModal } = useContext(MovieContext);
+    const movie = selectedMovie;
+
     if (!movie) return null;
 
     const closeModal = () => {
