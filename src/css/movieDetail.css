@@ -1,183 +1,137 @@
-/* Base Modal Styles */
-.modal {
-    position: fixed;
+.movie-page-container {
+    font-family: Arial, sans-serif;
+    color: #fff;
+    background-color: #111;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.movie-banner {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    overflow: hidden;
+}
+
+.movie-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(60%);
+}
+
+.overlay {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
+    background: linear-gradient(to bottom, rgba(17, 17, 17, 0.6), #111);
 }
 
-.modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    max-width: 600px;
-    width: 90%;
-}
-
-.modal-close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-
-.modal-poster img {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-}
-
-.modal-details {
+.movie-content {
     display: flex;
     flex-wrap: wrap;
-    padding: 20px;
     gap: 20px;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
 }
 
-.modal-details img {
-    width: 150px;
+.movie-poster-detail-page {
+    width: 250px;
+    height: auto;
     border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-.modal-info {
+.movie-info-detail-page {
     flex: 1;
-    color: #000;
+    min-width: 300px;
 }
 
-.modal-info h2 {
-    margin-bottom: 10px;
-    font-size: 24px;
+.movie-title-detail-page {
+    font-size: 2.5rem;
+    margin: 0;
+    color: #f5f5f5;
 }
 
-.modal-info p {
-    margin-bottom: 10px;
-    font-size: 16px;
-    line-height: 1.4;
+.movie-release,
+.movie-rating-detail-page {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #bbb;
 }
 
-.modal-info div {
-    margin-bottom: 10px;
-    font-size: 16px;
-    line-height: 1.4;
+.movie-genres {
+    margin: 1rem 0;
 }
 
-.genres-lists {
-    list-style: none;
+.genres-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     padding: 0;
-    margin: 5px 0;
-}
-
-.list-of-genre {
-    display: inline;
-    margin-right: 10px;
+    margin: 0.5rem 0;
+    list-style: none;
 }
 
 .genre-badge {
-    background-color: #eee;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-}
-
-.close {
+    background: #ff3c3c;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
     color: #fff;
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 28px;
-    cursor: pointer;
 }
 
-.modal-actions {
-    text-align: right;
-    margin-top: 15px;
+.movie-description-detail-page {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #ddd;
+    margin-top: 1rem;
+}
+
+.movie-actions {
+    margin-top: 1.5rem;
 }
 
 .share-button {
-    padding: 8px 12px;
-    background-color: #007bff;
+    background-color: #ff3c3c;
     color: white;
+    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 25px;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background 0.3s ease;
 }
 
 .share-button:hover {
-    background-color: #0056b3;
+    background-color: #e22d2d;
 }
 
-
-/* 🧾 Tablets / iPads (768px - 1024px) */
-@media (max-width: 1024px) {
-    .modal-details {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .movie-content {
         flex-direction: column;
         align-items: center;
+    }
+
+    .movie-poster-detail-page {
+        width: 60%;
+    }
+
+    .movie-info-detail-page {
         text-align: center;
     }
-
-    .modal-details img {
-        width: 180px;
-    }
-
-    .modal-info h2 {
-        font-size: 22px;
-    }
-
-    .modal-info p {
-        font-size: 15px;
-    }
 }
 
-/* 📱 Mobile phones (up to 767px) */
-@media (max-width: 767px) {
-    .modal-content {
-        width: 95%;
+@media (max-width: 480px) {
+    .movie-title-detail-page {
+        font-size: 1.8rem;
     }
 
-    .modal-details {
-        padding: 15px;
-    }
-
-    .modal-details img {
-        width: 160px;
-    }
-
-    .modal-info h2 {
-        font-size: 20px;
-    }
-
-    .modal-info p {
-        font-size: 14px;
-    }
-
-    .close {
-        font-size: 24px;
-        top: 15px;
-        right: 20px;
-    }
-}
-
-/* 📱 Very small screens (below 500px) */
-@media (max-width: 500px) {
-    .modal-details img {
-        width: 130px;
-    }
-
-    .modal-info h2 {
-        font-size: 18px;
-    }
-
-    .modal-info p {
-        font-size: 13px;
+    .movie-description-detail-page {
+        font-size: 0.95rem;
     }
 }

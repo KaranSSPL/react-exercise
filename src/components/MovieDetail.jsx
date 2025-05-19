@@ -1,63 +1,71 @@
-import { useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { MovieContext } from '../MovieContext.jsx';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { config } from '../global/globalVariables.js'
 
-function MovieDetail() {
-    const { selectedMovie, setShowModal, showModal } = useContext(MovieContext);
+const MovieDetail = () => {
+    const { id } = useParams();
+    const { selectedMovie, setSelectedMovie } = useContext(MovieContext);
     const movie = selectedMovie;
 
-    if (!movie) return null;
+    useEffect(() => {
+        const fetchMovieDetail = async () => {
+            try {
+                const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?language=en-US`, config);
+                setSelectedMovie(res.data);
+            } catch (err) {
+                console.error("Failed to fetch movie:", err);
+            }
+        };
 
-    const closeModal = () => {
-        setShowModal(false);
-    }
+        fetchMovieDetail();
+    }, [id, setSelectedMovie]);
 
     const handleShare = (e, detail) => {
         e.preventDefault();
         console.log(detail);
         return;
-    }
+    };
+
+    if (!movie) return <div>Loading...</div>;
 
     return (
-        <>
-            <div id="movieModal" className="modal" style={!showModal ? { display: 'none' } : {}}>
-                {/* Movie Detail Modal */}
-                <div className="modal-content">
-                    <span className="modal-close" onClick={closeModal}>&times;</span>
-                    <div className="modal-poster">
-                        <img id="modalBackground" src={`https://image.tmdb.org/t/p/w200${movie.backdrop_path}`} alt="Background Poster" />
-                    </div>
-                    <div className="modal-details">
-                        <img id="modalPoster" src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt="Movie Poster" />
-                        <div className="modal-info">
-                            <h2 id="modalTitle">{movie.original_title}</h2>
-                            <p id="modalRelease">{movie.release_date}</p>
-                            <p id="modalRating">⭐ {movie.vote_average}</p>
+        <div className="movie-page-container">
+            <div className="movie-banner">
+                <img src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
+                <div className="overlay"></div>
+            </div>
 
-                            {/* Genres */}
-                            <div id="modalGenres">
-                                <strong>Genres</strong>
-                                <ul className="genres-lists">
-                                    {movie.genres.map(item => (
-                                        <li className="list-of-genre" key={item.id}>
-                                            <span className="genre-badge">{item.name}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+            <div className="movie-content">
+                <img src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
+                <div className="movie-info-detail-page">
+                    <h2 className="movie-title-detail-page">{movie.original_title}</h2>
+                    <p className="movie-release">Release: {movie.release_date}</p>
+                    <p className="movie-rating-detail-page">⭐ {movie.vote_average}</p>
 
-                            <p id="modalDescription">{movie.overview}</p>
-                        </div>
+                    {/* Genres */}
+                    <div className="movie-genres">
+                        <strong>Genres</strong>
+                        <ul className="genres-list">
+                            {movie.genres.map(item => (
+                                <li key={item.id}>
+                                    <span className="genre-badge">{item.name}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
 
-                    {/* ✅ Share Button */}
-                    <div className="modal-actions">
+                    <p className="movie-description-detail-page">{movie.overview}</p>
+
+                    <div className="movie-actions">
                         <button onClick={(e) => handleShare(e, movie)} className="share-button">
                             Share
                         </button>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

@@ -7,7 +7,6 @@ export const MovieContext = createContext();
 export const MovieProvider = ({ children }) => {
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
-    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         fetchMovies();
@@ -26,7 +25,7 @@ export const MovieProvider = ({ children }) => {
     };
 
     return (
-        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, showModal, setShowModal, fetchMovies }}>
+        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies }}>
             {children}
         </MovieContext.Provider>
     )
