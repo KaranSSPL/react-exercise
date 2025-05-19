@@ -110,37 +110,37 @@ header h1 {
 }
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
-  gap: 15px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .pagination button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #e50914;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .pagination button:disabled {
-  background-color: #888;
-  cursor: not-allowed;
+    background-color: #888;
+    cursor: not-allowed;
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #b0060f;
+    background-color: #b0060f;
 }
 
 .pagination span {
-  font-size: 16px;
-  color: #fff;
+    font-size: 16px;
+    color: #fff;
 }
 
 /* 💻 Laptops and Desktops (1025px and above) */
@@ -195,5 +195,14 @@ header h1 {
 
     .movie-description {
         -webkit-line-clamp: 3;
+    }
+
+    .pagination button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .pagination span {
+        font-size: 14px;
     }
 }
