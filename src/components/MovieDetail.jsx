@@ -6,7 +6,7 @@ import { config } from '../global/globalVariables.js'
 
 const MovieDetail = () => {
     const { id } = useParams();
-    const { selectedMovie, setSelectedMovie } = useContext(MovieContext);
+    const { selectedMovie, setSelectedMovie, setSharePop } = useContext(MovieContext);
     const movie = selectedMovie;
 
     useEffect(() => {
@@ -22,9 +22,9 @@ const MovieDetail = () => {
         fetchMovieDetail();
     }, [id, setSelectedMovie]);
 
-    const handleShare = (e, detail) => {
+    const handleShare = (e) => {
         e.preventDefault();
-        console.log(detail);
+        setSharePop(true);
         return;
     };
 
@@ -59,7 +59,7 @@ const MovieDetail = () => {
                     <p className="movie-description-detail-page">{movie.overview}</p>
 
                     <div className="movie-actions">
-                        <button onClick={(e) => handleShare(e, movie)} className="share-button">
+                        <button onClick={(e) => handleShare(e)} className="share-button">
                             Share
                         </button>
                     </div>

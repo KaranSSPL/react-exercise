@@ -1,0 +1,140 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+/* Modal Box */
+.modal-content {
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Close Button */
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Modal Title */
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Share Link Input */
+.share-link-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    user-select: all;
+}
+
+/* Copy Button */
+.copy-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+.copy-btn:hover {
+    background-color: #0056b3;
+}
+
+.social-share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.social-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    min-width: 100px;
+}
+
+.social-btn.facebook {
+    background-color: #3b5998;
+}
+
+.social-btn.facebook:hover {
+    background-color: #2d4373;
+}
+
+.social-btn.twitter {
+    background-color: #1da1f2;
+}
+
+.social-btn.twitter:hover {
+    background-color: #0d95e8;
+}
+
+.social-btn.whatsapp {
+    background-color: #25d366;
+}
+
+.social-btn.whatsapp:hover {
+    background-color: #1ebe57;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 20px 20px;
+    }
+
+    .copy-btn {
+        width: 100%;
+    }
+
+    .social-share-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .social-btn {
+        width: 100%;
+        min-width: unset;
+    }
+}

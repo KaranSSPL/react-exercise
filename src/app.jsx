@@ -4,10 +4,10 @@ import Header from "./components/Header.jsx";
 import MovieLists from './components/MovieLists.jsx';
 import Pagination from './components/Pagination.jsx';
 import MovieDetail from './components/MovieDetail.jsx';
+import SharePopModal from "./components/SharePopModal.jsx";
 
 const App = () => {
     return (
-
         <MovieProvider>
             <BrowserRouter>
                 <Routes>
@@ -22,6 +22,7 @@ const App = () => {
                     <Route path="/movie-detail/:id" element={<MovieDetail />} />
                 </Routes>
             </BrowserRouter>
+            <SharePopModal />
         </MovieProvider>
     )
 }

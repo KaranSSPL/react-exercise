@@ -7,6 +7,7 @@ export const MovieContext = createContext();
 export const MovieProvider = ({ children }) => {
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
+    const [sharePop, setSharePop] = useState(false);
 
     useEffect(() => {
         fetchMovies();
@@ -17,7 +18,7 @@ export const MovieProvider = ({ children }) => {
             const response = await axios.get(
                 `https://api.themoviedb.org/3/discover/movie?language=en-US&page=${pageNumber}&api_key=${apiKey}`,
                 config
-            );
+            );            
             setMovies(response.data.results);
         } catch (error) {
             console.error('Error fetching movies:', error);
@@ -25,7 +26,7 @@ export const MovieProvider = ({ children }) => {
     };
 
     return (
-        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies }}>
+        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, sharePop, setSharePop, fetchMovies }}>
             {children}
         </MovieContext.Provider>
     )
