@@ -5,6 +5,8 @@ import { MovieContext } from '../MovieContext.jsx';
 const MovieLists = () => {
     const { movies } = useContext(MovieContext);
 
+    if (movies.length <= 0) return <div>Loading...</div>;
+
     return (
         <>
             <div className="movie-grid">
