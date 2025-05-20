@@ -1,15 +1,19 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { MovieContext } from '../MovieContext.jsx';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { config } from '../global/globalVariables.js'
 import '../css/movieDetail.css';
+import AddReviewModal from './AddReviewModal.jsx';
 import SharePopModal from "./SharePopModal.jsx";
 
 const MovieDetail = () => {
     const { id } = useParams();
-    const { selectedMovie, setSelectedMovie, setSharePop } = useContext(MovieContext);
+    const { selectedMovie, setSelectedMovie, reviews, fetchReview } = useContext(MovieContext);
     const movie = selectedMovie;
+
+    const [sharePop, setSharePop] = useState(false);
+    const [showReviewModal, setShowReviewModal] = useState(false);
 
     useEffect(() => {
         const fetchMovieDetail = async () => {
@@ -20,12 +24,20 @@ const MovieDetail = () => {
                 console.error("Failed to fetch movie:", err);
             }
         };
+
         fetchMovieDetail();
+        fetchReview(id);
     }, [id, setSelectedMovie]);
 
     const handleShare = (e) => {
         e.preventDefault();
         setSharePop(true);
+        return;
+    };
+
+    const addReview = (e) => {
+        e.preventDefault();
+        setShowReviewModal(true);
         return;
     };
 
@@ -67,9 +79,32 @@ const MovieDetail = () => {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <SharePopModal />
+                <div className="review-section">
+                    <div className="review-header-top">
+                        <h3>User Reviews</h3>
+                        <button onClick={addReview} className="add-review-button">+ Add Review</button>
+                    </div>
+
+                    {reviews.length > 0 ? (
+                        reviews.map((item, index) => (
+                            <div key={index} className="review-card">
+                                <div className="review-header">
+                                    <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
+                                    <span className="review-date">{new Date(item.createdDate).toLocaleDateString()}</span>
+                                </div>
+                                <div className="review-content">
+                                    <p>{item.comment}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="no-reviews">No reviews yet. Be the first to add one!</p>
+                    )}
+                </div>
+            </div>
+            <AddReviewModal showReviewModal={showReviewModal} setShowReviewModal={setShowReviewModal} id={id} />
+            <SharePopModal sharePop={sharePop} setSharePop={setSharePop} />
         </>
     )
 }

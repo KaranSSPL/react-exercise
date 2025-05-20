@@ -1,9 +1,6 @@
-import { useContext } from 'react';
-import { MovieContext } from '../MovieContext.jsx';
 import '../css/sharePopUpModal.css';
 
-const SharePopModal = () => {
-    const { sharePop, setSharePop } = useContext(MovieContext);
+const SharePopModal = ({ sharePop, setSharePop }) => {
 
     const closeModal = () => {
         setSharePop(false);
@@ -29,8 +26,10 @@ const SharePopModal = () => {
             '_blank')
     };
 
+    if (!sharePop) return null;
+
     return (
-        <div className="modal-overlay" style={!sharePop ? { position: "static", display: "none" } : {}}>
+        <div className="modal-overlay">
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="modal-close-btn" onClick={closeModal}>&times;</button>
                 <h3>Share this movie</h3>
