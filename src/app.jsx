@@ -11,11 +11,11 @@ const App = () => {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={
-                        <>
+                        <div className="wrapper">
                             <Header />
                             <MovieLists />
                             <Pagination />
-                        </>
+                        </div>
                     }>
                     </Route>
                     <Route path="/movie-detail/:id" element={<MovieDetail />} />
