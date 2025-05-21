@@ -12,9 +12,11 @@ export const MovieProvider = ({ children }) => {
     const [search, setSearch] = useState("");
     const [foundSearchResult, setFoundSearchResult] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [pageNumber, setPageNumber] = useState(0);
 
     useEffect(() => {
         fetchMovies();
+        setSearch("");
     }, []);
 
     const fetchMovies = async (pageNumber = 1) => {
@@ -25,6 +27,7 @@ export const MovieProvider = ({ children }) => {
                 config
             );
             setFoundSearchResult(false);
+            setPageNumber(response.data.page);
             setMovies(response.data.results);
             setPage(response.data.total_pages);
         } catch (error) {
@@ -36,8 +39,10 @@ export const MovieProvider = ({ children }) => {
 
     const searchMovies = async (pageNumber = 1) => {
         setLoader(true);
+        setPage(0);
         try {
             const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`, config);
+            setPageNumber(response.data.page);
             setPage(response.data.total_pages);
             if (response.data.results <= 0) {
                 setFoundSearchResult(true);
@@ -70,7 +75,7 @@ export const MovieProvider = ({ children }) => {
     };
 
     return (
-        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies, reviews, fetchReview, page, searchMovies, search, setSearch, foundSearchResult, loader, setLoader }}>
+        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies, reviews, fetchReview, page, searchMovies, search, setSearch, foundSearchResult, loader, setLoader, pageNumber, setPageNumber }}>
             {children}
         </MovieContext.Provider>
     )

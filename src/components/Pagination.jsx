@@ -1,9 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { MovieContext } from "../context/MovieContext";
 
 const Pagination = () => {
-    const { fetchMovies, page, search, searchMovies } = useContext(MovieContext);
-    const [pageNumber, setPageNumber] = useState(1);
+    const { fetchMovies, page, search, searchMovies, pageNumber, setPageNumber } = useContext(MovieContext);
 
     const goToFirstPage = () => {
         setPageNumber(1);

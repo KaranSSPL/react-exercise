@@ -6,10 +6,11 @@ import { config } from '../global/globalVariables.js'
 import '../css/movieDetail.css';
 import AddReviewModal from './AddReviewModal.jsx';
 import SharePopModal from "./SharePopModal.jsx";
+import Loader from './Loader.jsx';
 
 const MovieDetail = () => {
     const { id } = useParams();
-    const { selectedMovie, setSelectedMovie, reviews, fetchReview } = useContext(MovieContext);
+    const { selectedMovie, setSelectedMovie, reviews, fetchReview, loader, setLoader } = useContext(MovieContext);
 
     const [sharePop, setSharePop] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
@@ -20,11 +21,15 @@ const MovieDetail = () => {
     }, []);
 
     const fetchMovieDetail = async () => {
+        setLoader(true);
         try {
             const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
+            console.log(res.data)
             setSelectedMovie(res.data);
         } catch (err) {
             console.error("Failed to fetch movie:", err);
+        } finally{
+            setLoader(false);
         }
     };
 
@@ -38,7 +43,7 @@ const MovieDetail = () => {
         setShowReviewModal(true);
     };
 
-    if (!selectedMovie) return <div>Loading...</div>;
+    if (loader || !selectedMovie) return <Loader />;
 
     return (
         <>
