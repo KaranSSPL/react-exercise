@@ -6,6 +6,7 @@ import '../css/movieDetail.css';
 import AddReviewModal from './AddReviewModal.jsx';
 import SharePopModal from "./SharePopModal.jsx";
 import Loader from './Loader.jsx';
+import { createPortal } from 'react-dom';
 
 const MovieDetail = () => {
     const { id } = useParams();
@@ -20,14 +21,20 @@ const MovieDetail = () => {
         fetchReview(id);
     }, [id]);
 
+    const config = {
+        headers: {
+            Authorization: process.env.REACT_APP_MOVIE_TOKEN
+        }
+    };
+
     const fetchMovieDetail = async () => {
         setLoader(true);
         try {
-            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`);
+            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
             setSelectedMovie(res.data);
         } catch (err) {
             console.error("Failed to fetch movie:", err);
-        } finally{
+        } finally {
             setLoader(false);
         }
     };
@@ -78,6 +85,10 @@ const MovieDetail = () => {
                                 <button onClick={(e) => handleShare(e)} className="share-button">
                                     Share
                                 </button>
+                                {sharePop && createPortal(
+                                    <SharePopModal onClose={() => setSharePop(false)} />,
+                                    document.getElementById('modal-root')
+                                )}
                             </div>
                         </div>
                     </div>
@@ -85,7 +96,13 @@ const MovieDetail = () => {
                     <div className="review-section">
                         <div className="review-header-top">
                             <h3>User Reviews</h3>
-                            <button onClick={addReview} className="add-review-button">+ Add Review</button>
+                            <button onClick={addReview} className="add-review-button">
+                                + Add Review
+                            </button>
+                            {showReviewModal && createPortal(
+                                <AddReviewModal onClose={() => setShowReviewModal(false)} id={id} />,
+                                document.getElementById('modal-root')
+                            )}
                         </div>
 
                         {reviews.length > 0 ? (
@@ -107,8 +124,8 @@ const MovieDetail = () => {
                 </div>
             </div>
 
-            <AddReviewModal showReviewModal={showReviewModal} setShowReviewModal={setShowReviewModal} id={id} />
-            <SharePopModal sharePop={sharePop} setSharePop={setSharePop} />
+            {/* <AddReviewModal showReviewModal={showReviewModal} setShowReviewModal={setShowReviewModal} id={id} /> */}
+            <div id="modal-root"></div>
         </>
     )
 }

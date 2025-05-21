@@ -18,12 +18,16 @@ export const MovieProvider = ({ children }) => {
         setSearch("");
     }, []);
 
+    const config = {
+        headers: {
+            Authorization: process.env.REACT_APP_MOVIE_TOKEN
+        }
+    };
+
     const fetchMovies = async (pageNumber = 1) => {
         setLoader(true);
         try {
-            const response = await axios.get(
-                `${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`
-            );
+            const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`, config);
             setFoundSearchResult(false);
             setPageNumber(response.data.page);
             setMovies(response.data.results);
@@ -39,7 +43,7 @@ export const MovieProvider = ({ children }) => {
         setLoader(true);
         setPage(0);
         try {
-            const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`);
+            const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`, config);
             setPageNumber(response.data.page);
             setPage(response.data.total_pages);
             if (response.data.results <= 0) {
