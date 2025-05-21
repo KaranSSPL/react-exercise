@@ -106,17 +106,19 @@ const MovieDetail = () => {
                         </div>
 
                         {reviews.length > 0 ? (
-                            reviews.map((item, index) => (
-                                <div key={index} className="review-card">
-                                    <div className="review-header">
-                                        <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
-                                        <span className="review-date">{new Date(item.createdDate).toLocaleDateString()}</span>
+                            <div className="detail-wrapper">
+                                {reviews.map((item, index) => (
+                                    <div key={index} className="review-card">
+                                        <div className="review-header">
+                                            <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
+                                            <span className="review-date">{new Date(item.createdDate).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="review-content">
+                                            <p>{item.comment}</p>
+                                        </div>
                                     </div>
-                                    <div className="review-content">
-                                        <p>{item.comment}</p>
-                                    </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         ) : (
                             <p className="no-reviews">No reviews yet. Be the first to add one!</p>
                         )}
@@ -124,7 +126,6 @@ const MovieDetail = () => {
                 </div>
             </div>
 
-            {/* <AddReviewModal showReviewModal={showReviewModal} setShowReviewModal={setShowReviewModal} id={id} /> */}
             <div id="modal-root"></div>
         </>
     )
