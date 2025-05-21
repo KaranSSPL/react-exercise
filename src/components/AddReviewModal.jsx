@@ -32,7 +32,7 @@ const AddReviewModal = ({ showReviewModal, setShowReviewModal, id }) => {
                 'comment': formData.comment
             };
 
-            const res = await axios.post("https://localhost:7051/api/ReviewMovie/save-review", data);
+            const res = await axios.post(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/ReviewMovie/save-review`, data);
             if (res.data?.isSuccess) {
                 fetchReview(id);
                 setFormData({ firstName: '', lastName: '', comment: '' });

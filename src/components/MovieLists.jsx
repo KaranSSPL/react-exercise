@@ -14,7 +14,7 @@ const MovieLists = () => {
                 movies.map(item => (
                     <Link to={`/movies/${item.id}`} className="movie-link" key={item.id} >
                         <div className="movie-card">
-                            <img src={`https://image.tmdb.org/t/p/w200${item.poster_path}`} className="movie-poster" alt="Movie Poster" />
+                            <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${item.poster_path}`} className="movie-poster" alt="Movie Poster" />
                             <div className="movie-info">
                                 <div className="movie-title">{item.title}</div>
                                 <div className="movie-release-date">{item.release_date}</div>

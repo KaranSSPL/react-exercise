@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from "react";
 import axios from 'axios';
-import { config } from '../global/globalVariables.js';
 
 export const MovieContext = createContext();
 
@@ -23,8 +22,7 @@ export const MovieProvider = ({ children }) => {
         setLoader(true);
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`,
-                config
+                `${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`
             );
             setFoundSearchResult(false);
             setPageNumber(response.data.page);
@@ -41,7 +39,7 @@ export const MovieProvider = ({ children }) => {
         setLoader(true);
         setPage(0);
         try {
-            const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`, config);
+            const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`);
             setPageNumber(response.data.page);
             setPage(response.data.total_pages);
             if (response.data.results <= 0) {
@@ -59,7 +57,7 @@ export const MovieProvider = ({ children }) => {
 
     const fetchReview = async (id) => {
         try {
-            const res = await axios.get(`https://localhost:7051/api/ReviewMovie/get-movie-review?movieId=${id}`);
+            const res = await axios.get(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/ReviewMovie/get-movie-review?movieId=${id}`);
             if (res.data && res.data.isSuccess && res.data.data) {
                 setReviews(res.data.data);
             } else {

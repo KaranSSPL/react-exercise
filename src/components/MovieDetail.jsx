@@ -2,7 +2,6 @@ import { useEffect, useContext, useState } from 'react';
 import { MovieContext } from '../context/MovieContext.jsx';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { config } from '../global/globalVariables.js'
 import '../css/movieDetail.css';
 import AddReviewModal from './AddReviewModal.jsx';
 import SharePopModal from "./SharePopModal.jsx";
@@ -16,15 +15,15 @@ const MovieDetail = () => {
     const [showReviewModal, setShowReviewModal] = useState(false);
 
     useEffect(() => {
+        setSelectedMovie(null);
         fetchMovieDetail();
         fetchReview(id);
-    }, []);
+    }, [id]);
 
     const fetchMovieDetail = async () => {
         setLoader(true);
         try {
-            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
-            console.log(res.data)
+            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`);
             setSelectedMovie(res.data);
         } catch (err) {
             console.error("Failed to fetch movie:", err);
@@ -49,13 +48,13 @@ const MovieDetail = () => {
         <>
             <div className="movie-page-container">
                 <div className="movie-banner">
-                    <img src={`https://image.tmdb.org/t/p/w1280${selectedMovie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
+                    <img src={`${process.env.REACT_APP_IMAGE_URL}/w1280${selectedMovie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
                     <div className="overlay"></div>
                 </div>
 
                 <div className="description">
                     <div className="movie-content">
-                        <img src={`https://image.tmdb.org/t/p/w300${selectedMovie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
+                        <img src={`${process.env.REACT_APP_IMAGE_URL}/w300${selectedMovie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
                         <div className="movie-info-detail-page">
                             <h2 className="movie-title-detail-page">{selectedMovie.original_title}</h2>
                             <p className="movie-release">Release: {selectedMovie.release_date}</p>
