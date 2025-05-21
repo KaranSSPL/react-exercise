@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { MovieContext } from '../context/MovieContext.jsx';
+import Loader from './Loader.jsx';
 
 const MovieLists = () => {
-    const { movies } = useContext(MovieContext);
+    const { movies, loader } = useContext(MovieContext);
 
-    if (movies.length <= 0) return <div>Loading...</div>;
+    if (loader) return <Loader />;
 
     return (
         <div className="movie-grid">

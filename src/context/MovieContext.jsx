@@ -11,12 +11,14 @@ export const MovieProvider = ({ children }) => {
     const [page, setPage] = useState(0);
     const [search, setSearch] = useState("");
     const [foundSearchResult, setFoundSearchResult] = useState(false);
+    const [loader, setLoader] = useState(false);
 
     useEffect(() => {
         fetchMovies();
     }, []);
 
     const fetchMovies = async (pageNumber = 1) => {
+        setLoader(true);
         try {
             const response = await axios.get(
                 `${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}&api_key=${process.env.REACT_APP_MOVIE_API_KEY}`,
@@ -27,22 +29,26 @@ export const MovieProvider = ({ children }) => {
             setPage(response.data.total_pages);
         } catch (error) {
             console.error('Error fetching movies:', error);
+        } finally {
+            setLoader(false);
         }
     };
 
     const searchMovies = async (pageNumber = 1) => {
+        setLoader(true);
         try {
             const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/search/movie?query=${search}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`, config);
-            console.log(response.data);
+            setPage(response.data.total_pages);
             if (response.data.results <= 0) {
                 setFoundSearchResult(true);
             } else {
                 setFoundSearchResult(false);
                 setMovies(response.data.results);
             }
-            setPage(response.data.total_pages);
         } catch (error) {
             console.error('Error while searching movie:', error);
+        } finally {
+            setLoader(false);
         }
     }
 
@@ -64,7 +70,7 @@ export const MovieProvider = ({ children }) => {
     };
 
     return (
-        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies, reviews, fetchReview, page, searchMovies, search, setSearch, foundSearchResult }}>
+        <MovieContext.Provider value={{ movies, setMovies, selectedMovie, setSelectedMovie, fetchMovies, reviews, fetchReview, page, searchMovies, search, setSearch, foundSearchResult, loader, setLoader }}>
             {children}
         </MovieContext.Provider>
     )

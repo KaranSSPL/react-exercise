@@ -1,0 +1,40 @@
+.no-data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.no-data-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.no-data-container p {
+  font-size: 1rem;
+  color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .no-data-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .no-data-container p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .no-data-container h2 {
+    font-size: 1.3rem;
+  }
+
+  .no-data-container p {
+    font-size: 0.9rem;
+  }
+}
