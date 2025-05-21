@@ -1,27 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { MovieProvider } from './MovieContext.jsx';
-import Header from "./components/Header.jsx";
-import MovieLists from './components/MovieLists.jsx';
-import Pagination from './components/Pagination.jsx';
+import { MovieProvider as MovieContextProvider } from './context/MovieContext.jsx';
+import Layout from "./components/Layout.jsx";
 import MovieDetail from './components/MovieDetail.jsx';
 
 const App = () => {
     return (
-        <MovieProvider>
+        <MovieContextProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={
-                        <div className="wrapper">
-                            <Header />
-                            <MovieLists />
-                            <Pagination />
-                        </div>
-                    }>
-                    </Route>
-                    <Route path="/movie-detail/:id" element={<MovieDetail />} />
+                    <Route path="/" element={<Layout />} />
+                    <Route path="/movies/:id" element={<MovieDetail />} />
                 </Routes>
             </BrowserRouter>
-        </MovieProvider>
+        </MovieContextProvider>
     )
 }
 

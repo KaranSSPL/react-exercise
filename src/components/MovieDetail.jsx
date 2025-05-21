@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState } from 'react';
-import { MovieContext } from '../MovieContext.jsx';
+import { MovieContext } from '../context/MovieContext.jsx';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { config } from '../global/globalVariables.js'
@@ -10,60 +10,57 @@ import SharePopModal from "./SharePopModal.jsx";
 const MovieDetail = () => {
     const { id } = useParams();
     const { selectedMovie, setSelectedMovie, reviews, fetchReview } = useContext(MovieContext);
-    const movie = selectedMovie;
 
     const [sharePop, setSharePop] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
 
     useEffect(() => {
-        const fetchMovieDetail = async () => {
-            try {
-                const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?language=en-US`, config);
-                setSelectedMovie(res.data);
-            } catch (err) {
-                console.error("Failed to fetch movie:", err);
-            }
-        };
-
         fetchMovieDetail();
         fetchReview(id);
-    }, [id, setSelectedMovie]);
+    }, []);
+
+    const fetchMovieDetail = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
+            setSelectedMovie(res.data);
+        } catch (err) {
+            console.error("Failed to fetch movie:", err);
+        }
+    };
 
     const handleShare = (e) => {
         e.preventDefault();
         setSharePop(true);
-        return;
     };
 
     const addReview = (e) => {
         e.preventDefault();
         setShowReviewModal(true);
-        return;
     };
 
-    if (!movie) return <div>Loading...</div>;
+    if (!selectedMovie) return <div>Loading...</div>;
 
     return (
         <>
             <div className="movie-page-container">
                 <div className="movie-banner">
-                    <img src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
+                    <img src={`https://image.tmdb.org/t/p/w1280${selectedMovie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
                     <div className="overlay"></div>
                 </div>
 
                 <div className="description">
                     <div className="movie-content">
-                        <img src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
+                        <img src={`https://image.tmdb.org/t/p/w300${selectedMovie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
                         <div className="movie-info-detail-page">
-                            <h2 className="movie-title-detail-page">{movie.original_title}</h2>
-                            <p className="movie-release">Release: {movie.release_date}</p>
-                            <p className="movie-rating-detail-page">⭐ {movie.vote_average}</p>
+                            <h2 className="movie-title-detail-page">{selectedMovie.original_title}</h2>
+                            <p className="movie-release">Release: {selectedMovie.release_date}</p>
+                            <p className="movie-rating-detail-page">⭐ {selectedMovie.vote_average}</p>
 
                             {/* Genres */}
                             <div className="movie-genres">
                                 <strong>Genres</strong>
                                 <ul className="genres-list">
-                                    {movie.genres.map(item => (
+                                    {selectedMovie.genres.map(item => (
                                         <li key={item.id}>
                                             <span className="genre-badge">{item.name}</span>
                                         </li>
@@ -71,7 +68,7 @@ const MovieDetail = () => {
                                 </ul>
                             </div>
 
-                            <p className="movie-description-detail-page">{movie.overview}</p>
+                            <p className="movie-description-detail-page">{selectedMovie.overview}</p>
 
                             <div className="movie-actions">
                                 <button onClick={(e) => handleShare(e)} className="share-button">
@@ -105,6 +102,7 @@ const MovieDetail = () => {
                     </div>
                 </div>
             </div>
+
             <AddReviewModal showReviewModal={showReviewModal} setShowReviewModal={setShowReviewModal} id={id} />
             <SharePopModal sharePop={sharePop} setSharePop={setSharePop} />
         </>

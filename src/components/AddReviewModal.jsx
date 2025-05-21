@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import axios from 'axios';
 import '../css/addReviewModal.css'
-import { MovieContext } from '../MovieContext';
+import { MovieContext } from '../context/MovieContext';
 
 const AddReviewModal = ({ showReviewModal, setShowReviewModal, id }) => {
     const { fetchReview } = useContext(MovieContext);
@@ -45,24 +45,20 @@ const AddReviewModal = ({ showReviewModal, setShowReviewModal, id }) => {
         }
     };
 
-    if (!showReviewModal) return null;
-
-    return (
-        <div className="modal-overlay-review">
-            <div className="modal-content-review">
-                <h2>Add a Review</h2>
-                <form onSubmit={handleSubmit} className="review-form">
-                    <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required />
-                    <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
-                    <textarea name="comment" placeholder="Your Review" value={formData.comment} onChange={handleChange} required />
-                    <div className="modal-actions">
-                        <button type="submit" className="submit-button">Submit</button>
-                        <button type="button" className="cancel-button" onClick={closeModal}>Cancel</button>
-                    </div>
-                </form>
-            </div>
+    return showReviewModal && (<div className="modal-overlay-review">
+        <div className="modal-content-review">
+            <h2>Add a Review</h2>
+            <form onSubmit={handleSubmit} className="review-form">
+                <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required />
+                <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
+                <textarea name="comment" placeholder="Your Review" value={formData.comment} onChange={handleChange} required />
+                <div className="modal-actions">
+                    <button type="submit" className="submit-button">Submit</button>
+                    <button type="button" className="cancel-button" onClick={closeModal}>Cancel</button>
+                </div>
+            </form>
         </div>
-    )
+    </div>)
 }
 
 export default AddReviewModal;
