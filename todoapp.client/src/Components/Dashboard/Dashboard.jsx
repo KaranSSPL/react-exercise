@@ -38,7 +38,6 @@ const Dashboard = () => {
     const [openCompletedGroupId, setOpenCompletedGroupId] = useState(null);
 
     const showModelForRenameGroup = (groupId) => {
-        console.log(groupId);
         setOpenGroupRenameModel(true);
         setRenameGroupid(groupId);
     }

@@ -50,14 +50,11 @@ export default function Sidebar() {
     const hendleCheckGroup = async (groupId) => {
         const existed = taskGroups.find(item => item.listId == groupId);
         if (existed && existed.listName?.trim()) {
-            console.log(existed);
             const itemsToUpdate = { ...existed, isEnableShow: !existed.isEnableShow };
-            console.log(itemsToUpdate);
             const result = await SaveGroup(itemsToUpdate);
 
             if (result.isSuccess) {
 
-                console.log(itemsToUpdate);
                 const updatedTaskGroups = taskGroups.map(item =>
                     item.listId === groupId ? itemsToUpdate : item
                 );
@@ -74,7 +71,6 @@ export default function Sidebar() {
         }
 
     }
-    console.log("hideSidebar --76", hideSidebar)
     return (
         <div className={`sidebar ${hideSidebar ? "hide" : ""}`}>
             <ul>

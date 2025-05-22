@@ -34,12 +34,6 @@ export function useTaskEvents() {
     const [taskIdToMoveNewGroup, setTaskIdToMoveNewGroup] = useState(0);
     const [taskIdForEdit, setTaskIdForEdit] = useState(0);
     const [gorupIdForAddTask, setGorupIdForAddTask] = useState(0);
- 
-
- /*   const setToggleHideSlider = (isHide) => {
-        console.log(isHide);
-        setHideSlidebar(isHide)
-    }*/
 
     // Set task id for edit and show model
     const hendleEditTask = (taskId) => {
@@ -134,9 +128,7 @@ export function useTaskEvents() {
 
     // handle move task to anothe created group
     const handleMoveTask = async (taskId, groupId) => {
-        console.log(taskId, groupId);
         const task = await GetTaskById(taskId);
-        console.log(task);
 
         if (!task.isSuccess) {
             console.log("error while getting task for move to another group ", res);
@@ -159,7 +151,6 @@ export function useTaskEvents() {
 
     // move task to a new list handler 
     const handleMoveTaskToNewList = async (taskId, groupItem) => {
-        console.log(taskId, groupItem);
         if (taskId === 0) {
             console.error("taskId is 0, can't move task");
             return;

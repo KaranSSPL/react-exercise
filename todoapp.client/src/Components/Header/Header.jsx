@@ -3,7 +3,6 @@ import { useTaskEvents } from '../../Hooks/TaskEvents';
 
 const Header = () => {
     const { hideSidebar, setHideSidebar } = useTaskEvents();
-    console.log(hideSidebar);
     return (
         <div className="header">
             <div className="row d-flex justify-content-center text-left" >
@@ -17,4 +16,5 @@ const Header = () => {
         </div>
     )
 }
+
 export default Header;
