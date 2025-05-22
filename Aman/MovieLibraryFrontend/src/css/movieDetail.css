@@ -35,6 +35,28 @@
     width: 100%;
 }
 
+.back-button-container{
+max-width: 1200px;
+padding: 2rem 2rem 0;
+margin: auto;
+}
+
+.back-button {
+    background-color: #e50914;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.back-button:hover {
+    background-color: #b0060f;
+}
+
 .movie-content {
     display: flex;
     flex-wrap: wrap;
