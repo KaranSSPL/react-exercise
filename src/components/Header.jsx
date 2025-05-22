@@ -1,26 +1,26 @@
-import React, { useContext } from 'react'
-import { MovieContext } from '../context/MovieContext.jsx';
+import { useState, useEffect } from 'react'
 
-const Header = () => {
-    const { fetchMovies, searchMovies, search, setSearch } = useContext(MovieContext);
+const Header = ({ searchMovie, onSearch }) => {
+    const [input, setInput] = useState(searchMovie);
 
-    const searchMovie = async (event) => {
-        event.preventDefault();
-        const searchQuery = search.trim();
-        if (!searchQuery) return fetchMovies(1);
+    const searchMovieHandler = (e) => {
+        e.preventDefault();
+        onSearch(input.trim());
+    };
 
-        searchMovies(1);
-    }
+    useEffect(() => {
+        setInput(searchMovie);
+    }, [searchMovie]);
 
     return (
         <>
             <header>
                 <h1>🎬 Movie Library</h1>
             </header>
-            <div className="search-bar">
-                <input type="text" placeholder="Search for a movie..." onChange={(e) => setSearch(e.target.value)} value={search} />
-                <button type='button' onClick={searchMovie}>Search</button>
-            </div>
+            <form className="search-bar" onSubmit={searchMovieHandler}>
+                <input type="text" placeholder="Search for a movie..." onChange={(e) => setInput(e.target.value)} value={input} />
+                <button type="submit">Search</button>
+            </form>
         </>
     )
 }

@@ -1,77 +1,95 @@
-import { useEffect, useContext, useState } from 'react';
-import { MovieContext } from '../context/MovieContext.jsx';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import '../css/movieDetail.css';
-import AddReviewModal from './AddReviewModal.jsx';
-import SharePopModal from "./SharePopModal.jsx";
-import Loader from './Loader.jsx';
 import { createPortal } from 'react-dom';
+import axios from 'axios';
+
+import '../css/movieDetail.css';
+import { config } from '../utils/axiosConfig.js';
+import AddReviewModal from '../components/AddReviewModal.jsx';
+import ShareModal from "../components/ShareModal.jsx";
+import Loader from '../components/Loader.jsx';
 
 const MovieDetail = () => {
     const { id } = useParams();
-    const { selectedMovie, setSelectedMovie, reviews, fetchReview, loader, setLoader } = useContext(MovieContext);
-
-    const [sharePop, setSharePop] = useState(false);
-    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [movieDetail, setMovieDetail] = useState(null);
+    const [movieReviews, setMovieReviews] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
     useEffect(() => {
-        setSelectedMovie(null);
-        fetchMovieDetail();
-        fetchReview(id);
+        fetchMovieDetail(id);
+        fetchReviews(id);
+        setIsSharePopupOpen(false);
+        setIsReviewModalOpen(false);
     }, [id]);
 
-    const config = {
-        headers: {
-            Authorization: process.env.REACT_APP_MOVIE_TOKEN
-        }
-    };
-
-    const fetchMovieDetail = async () => {
-        setLoader(true);
+    const fetchMovieDetail = async (movieId) => {
+        setIsLoading(true);
         try {
-            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/${process.env.REACT_APP_MOVIE_API_VERSION}/movie/${id}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
-            setSelectedMovie(res.data);
+            const res = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`, config);
+            setMovieDetail(res.data);
         } catch (err) {
             console.error("Failed to fetch movie:", err);
         } finally {
-            setLoader(false);
+            setIsLoading(false);
+        }
+    };
+
+    const fetchReviews = async (movieId) => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/movies/${movieId}`);
+
+            if (res.status === 200 && res.data?.isSuccess && res.data.data) {
+                setMovieReviews(res.data.data);
+            } else {
+                setMovieReviews([]);
+            }
+        } catch (error) {
+            setMovieReviews([]);
+            if (error.response?.status === 404) {
+                console.error("Failed to fetch reviews:", error);
+            }
         }
     };
 
     const handleShare = (e) => {
         e.preventDefault();
-        setSharePop(true);
+        setIsSharePopupOpen(true);
     };
 
     const addReview = (e) => {
         e.preventDefault();
-        setShowReviewModal(true);
+        setIsReviewModalOpen(true);
     };
 
-    if (loader || !selectedMovie) return <Loader />;
+    const handleAddReviewToList = (newReview) => {
+        setMovieReviews(prev => [newReview, ...prev]);
+    };
+
+    if (isLoading || !movieDetail) return <Loader />;
 
     return (
         <>
             <div className="movie-page-container">
                 <div className="movie-banner">
-                    <img src={`${process.env.REACT_APP_IMAGE_URL}/w1280${selectedMovie.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
+                    <img src={`${process.env.REACT_APP_IMAGE_URL}/w1280${movieDetail.backdrop_path}`} alt="Background Poster" className="movie-banner-img" />
                     <div className="overlay"></div>
                 </div>
 
                 <div className="description">
                     <div className="movie-content">
-                        <img src={`${process.env.REACT_APP_IMAGE_URL}/w300${selectedMovie.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
+                        <img src={`${process.env.REACT_APP_IMAGE_URL}/w300${movieDetail.poster_path}`} alt="Movie Poster" className="movie-poster-detail-page" />
                         <div className="movie-info-detail-page">
-                            <h2 className="movie-title-detail-page">{selectedMovie.original_title}</h2>
-                            <p className="movie-release">Release: {selectedMovie.release_date}</p>
-                            <p className="movie-rating-detail-page">⭐ {selectedMovie.vote_average}</p>
+                            <h2 className="movie-title-detail-page">{movieDetail.original_title}</h2>
+                            <p className="movie-release">Release: {movieDetail.release_date}</p>
+                            <p className="movie-rating-detail-page">⭐ {movieDetail.vote_average}</p>
 
                             {/* Genres */}
                             <div className="movie-genres">
                                 <strong>Genres</strong>
                                 <ul className="genres-list">
-                                    {selectedMovie.genres.map(item => (
+                                    {movieDetail.genres.map(item => (
                                         <li key={item.id}>
                                             <span className="genre-badge">{item.name}</span>
                                         </li>
@@ -79,14 +97,14 @@ const MovieDetail = () => {
                                 </ul>
                             </div>
 
-                            <p className="movie-description-detail-page">{selectedMovie.overview}</p>
+                            <p className="movie-description-detail-page">{movieDetail.overview}</p>
 
                             <div className="movie-actions">
                                 <button onClick={(e) => handleShare(e)} className="share-button">
                                     Share
                                 </button>
-                                {sharePop && createPortal(
-                                    <SharePopModal onClose={() => setSharePop(false)} />,
+                                {isSharePopupOpen && createPortal(
+                                    <ShareModal onClose={() => setIsSharePopupOpen(false)} />,
                                     document.getElementById('modal-root')
                                 )}
                             </div>
@@ -99,15 +117,16 @@ const MovieDetail = () => {
                             <button onClick={addReview} className="add-review-button">
                                 + Add Review
                             </button>
-                            {showReviewModal && createPortal(
-                                <AddReviewModal onClose={() => setShowReviewModal(false)} id={id} />,
+                            {isReviewModalOpen && createPortal(
+                                <AddReviewModal onClose={() => setIsReviewModalOpen(false)}
+                                    id={id} onReviewSubmit={handleAddReviewToList} />,
                                 document.getElementById('modal-root')
                             )}
                         </div>
 
-                        {reviews.length > 0 ? (
+                        {movieReviews && movieReviews.length > 0 ? (
                             <div className="detail-wrapper">
-                                {reviews.map((item, index) => (
+                                {movieReviews.map((item, index) => (
                                     <div key={index} className="review-card">
                                         <div className="review-header">
                                             <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
@@ -125,8 +144,6 @@ const MovieDetail = () => {
                     </div>
                 </div>
             </div>
-
-            <div id="modal-root"></div>
         </>
     )
 }

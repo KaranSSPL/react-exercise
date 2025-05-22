@@ -1,10 +1,8 @@
-import React, { useContext, useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios';
 import '../css/addReviewModal.css'
-import { MovieContext } from '../context/MovieContext';
 
-const AddReviewModal = ({ onClose, id }) => {
-    const { fetchReview, loader, setLoader } = useContext(MovieContext);
+const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -25,9 +23,6 @@ const AddReviewModal = ({ onClose, id }) => {
             alert("Please fill out all fields.");
             return;
         }
-
-        setLoader(true);
-
         try {
             const data = {
                 'movieId': id,
@@ -36,10 +31,18 @@ const AddReviewModal = ({ onClose, id }) => {
                 'comment': formData.comment
             };
 
-            const res = await axios.post(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/ReviewMovie/save-review`, data);
+            const res = await axios.post(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/save-review`, data);
 
             if (res.data?.isSuccess) {
-                fetchReview(id);
+                const newReview = {
+                    ...data,
+                    createdDate: new Date().toISOString()
+                };
+
+                if (onReviewSubmit) {
+                    onReviewSubmit(newReview);
+                }
+
                 setFormData({ firstName: '', lastName: '', comment: '' });
                 onClose();
             } else {
@@ -47,8 +50,6 @@ const AddReviewModal = ({ onClose, id }) => {
             }
         } catch (error) {
             console.error("Error saving review:", error);
-        } finally {
-            setLoader(false);
         }
     };
 
@@ -61,7 +62,7 @@ const AddReviewModal = ({ onClose, id }) => {
                     <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
                     <textarea name="comment" placeholder="Your Review" value={formData.comment} onChange={handleChange} required />
                     <div className="modal-actions">
-                        <button type="submit" className="submit-button" disabled={loader}>Submit</button>
+                        <button type="submit" className="submit-button">Submit</button>
                         <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
                     </div>
                 </form>

@@ -152,6 +152,22 @@
 .detail-wrapper{
     max-height: 200px;
     overflow-y: auto;
+    padding-right: 8px;
+}
+
+.detail-wrapper::-webkit-scrollbar {
+    width: 8px;
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.detail-wrapper::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 4px;
+}
+
+.detail-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #888;
 }
 
 .review-card {
@@ -182,6 +198,7 @@
     color: #ddd;
     line-height: 1.5;
     margin: 0;
+    word-wrap: break-word;
 }
 
 .no-reviews {

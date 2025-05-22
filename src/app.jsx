@@ -1,23 +1,30 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { MovieProvider as MovieContextProvider } from './context/MovieContext.jsx';
-import Layout from "./components/Layout.jsx";
-import Loader from "./components/Loader.jsx";
 
-const MovieDetail = lazy(() => import('./components/MovieDetail.jsx'));
+import Loader from "./components/Loader.jsx";
+import LayoutForList from "./components/LayoutForList.jsx";
+import LayoutForDetail from "./components/LayoutForDetail.jsx";
+import MovieContainer from "./components/MovieContainer.jsx";
+
+const MovieDetail = lazy(() => import('./pages/MovieDetail.jsx'));
 
 const App = () => {
     return (
-        <MovieContextProvider>
-            <BrowserRouter>
-                <Suspense fallback={<Loader />}>
-                    <Routes>
-                        <Route path="/" element={<Layout />} />
-                        <Route path="/movies/:id" element={<MovieDetail />} />
-                    </Routes>
-                </Suspense>
-            </BrowserRouter>
-        </MovieContextProvider>
+        <BrowserRouter>
+            <Suspense fallback={<Loader />}>
+                <Routes>
+                    <Route path="/" element={
+                        <LayoutForList>
+                            <MovieContainer />
+                        </LayoutForList>} />
+                    <Route path="/movies/:id" element={
+                        <LayoutForDetail>
+                            <MovieDetail />
+                        </LayoutForDetail>
+                    } />
+                </Routes>
+            </Suspense>
+        </BrowserRouter>
     )
 }
 

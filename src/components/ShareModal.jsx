@@ -1,6 +1,6 @@
 import '../css/sharePopUpModal.css';
 
-const SharePopModal = ({ onClose }) => {
+const ShareModal = ({ onClose }) => {
     const copyLink = () => {
         navigator.clipboard.writeText(window.location.href);
         alert('Link copied to clipboard!');
@@ -49,4 +49,4 @@ const SharePopModal = ({ onClose }) => {
     )
 }
 
-export default SharePopModal
+export default ShareModal

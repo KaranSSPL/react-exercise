@@ -1,57 +1,11 @@
-import { useContext } from "react";
-import { MovieContext } from "../context/MovieContext";
-
-const Pagination = () => {
-    const { fetchMovies, page, search, searchMovies, pageNumber, setPageNumber } = useContext(MovieContext);
-
-    const goToFirstPage = () => {
-        setPageNumber(1);
-        if (search) {
-            searchMovies(1);
-        } else {
-            fetchMovies(1);
-        }
-    };
-
-    const goToPreviousPage = () => {
-        if (pageNumber > 1) {
-            const prevPage = pageNumber - 1;
-            setPageNumber(prevPage);
-            if (search) {
-                searchMovies(prevPage);
-            } else {
-                fetchMovies(prevPage);
-            }
-        }
-    };
-
-    const goToNextPage = () => {
-        const nextPage = pageNumber + 1;
-        if (nextPage <= page) {
-            setPageNumber(nextPage);
-            if (search) {
-                searchMovies(nextPage);
-            } else {
-                fetchMovies(nextPage);
-            }
-        }
-    };
-
-    const goToLastPage = () => {
-        setPageNumber(page);
-        if (search) {
-            searchMovies(page);
-        } else {
-            fetchMovies(page);
-        }
-    };
+const Pagination = ({ currentPageNumber, totalPage, onPageChange }) => {
     return (
         <div className="pagination">
-            <button onClick={goToFirstPage} disabled={pageNumber === 1}>First Page</button>
-            <button onClick={goToPreviousPage} disabled={pageNumber === 1}>Previous</button>
-            <span style={{ margin: '0 10px' }}>Page {pageNumber} of Total {page}</span>
-            <button onClick={goToNextPage} disabled={pageNumber === page}>Next</button>
-            <button onClick={goToLastPage} disabled={pageNumber === page}>Last Page</button>
+            <button onClick={() => onPageChange(1)} disabled={currentPageNumber === 1}>First Page</button>
+            <button onClick={() => onPageChange(currentPageNumber - 1)} disabled={currentPageNumber === 1}>Previous</button>
+            <span style={{ margin: '0 10px' }}>Page {currentPageNumber} of Total {totalPage}</span>
+            <button onClick={() => onPageChange(currentPageNumber + 1)} disabled={currentPageNumber === totalPage}>Next</button>
+            <button onClick={() => onPageChange(totalPage)} disabled={currentPageNumber === totalPage}>Last Page</button>
         </div>
     )
 }
