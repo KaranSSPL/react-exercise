@@ -84,16 +84,16 @@ export default function Sidebar() {
                     </button>
                 </li>
 
-                <li className={`d-flex ${GetPath() === '/dashboard' ? 'active' : ''}`}>
+                <li className={`d-flex ${GetPath() === '/' ? 'active' : ''}`}>
                     <CircleCheckBig />
-                    <Link className={`btn nav-link`} to="/dashboard">
+                    <Link className={`btn nav-link`} to="/">
                         All tasks
                     </Link>
                 </li>
 
-                <li className={`d-flex ${GetPath() === '/dashboard/starred' ? 'active' : ''}`}>
+                <li className={`d-flex ${GetPath() === '/starred' ? 'active' : ''}`}>
                     <Star />
-                    <Link className={`btn nav-link`} to="/dashboard/starred">
+                    <Link className={`btn nav-link`} to="/starred">
                         Starred
                     </Link>
                 </li>

@@ -13,11 +13,11 @@ function App() {
         <BrowserRouter>
             <MyContextProvider>
                 <Routes>
-                    <Route path="/" element={ <Layout></Layout> } />
+                    {/*<Route path="/" element={ <Layout></Layout> } />*/}
 
-                    <Route path="/dashboard" element={ <Layout> <Dashboard /> </Layout>} />
+                    <Route path="/" element={ <Layout> <Dashboard /> </Layout>} />
 
-                    <Route path="/dashboard/starred" element={ <Layout> <Starred /> </Layout>} />
+                    <Route path="/starred" element={ <Layout> <Starred /> </Layout>} />
                 </Routes>
             </MyContextProvider>
         </BrowserRouter>
