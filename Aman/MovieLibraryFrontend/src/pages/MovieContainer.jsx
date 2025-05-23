@@ -87,19 +87,28 @@ const MovieContainer = () => {
       ) : foundSearchResult ? (
         <NotFound />
       ) : fetchError ? (
-        <FailedToFetchMovies message={fetchError} />
+        <>
+          <FailedToFetchMovies message={fetchError} />
+          <Pagination
+            currentPageNumber={currentPageNumber}
+            totalPage={totalPage}
+            onPageChange={handlePageChange}
+          />
+        </>
       ) : (
-        <div className="movie-grid">
-          {moviesList.map((movie) => (
-            <MovieListCard key={movie.id} movie={movie} />
-          ))}
-        </div>
+        <>
+          <div className="movie-grid">
+            {moviesList.map((movie) => (
+              <MovieListCard key={movie.id} movie={movie} />
+            ))}
+          </div>
+          <Pagination
+            currentPageNumber={currentPageNumber}
+            totalPage={totalPage}
+            onPageChange={handlePageChange}
+          />
+        </>
       )}
-      <Pagination
-        currentPageNumber={currentPageNumber}
-        totalPage={totalPage}
-        onPageChange={handlePageChange}
-      />
     </>
   );
 };
