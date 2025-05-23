@@ -10,49 +10,32 @@ using MovieLibraryApi.Persistence.Entities;
 namespace MovieLibraryApi.Service;
 
 public class MovieService(AppDbContext dbContext,
-    IMapper mapper) : IMovieService
+    IMapper mapper, ILogger<MovieService> logger) : IMovieService
 {
-    public async Task<ResponseModel> SaveReviewAsync(ReviewMovieDto request)
+    public async Task<ResponseModel> SaveReviewAsync(int movieId, ReviewMovieDto request)
     {
-        try
-        {
-            var reviewMovie = mapper.Map<ReviewMovie>(request);
-            await dbContext.ReviewMovie.AddAsync(reviewMovie);
-            await dbContext.SaveChangesAsync();
+        var reviewMovie = mapper.Map<ReviewMovie>(request);
+        reviewMovie.MovieId = movieId;
 
-            return new ResponseModel
-            {
-                IsSuccess = true,
-                Message = "Review saved successfully.",
-                ErrorDetails = string.Empty,
-                data = null
-            };
-        }
+        await dbContext.ReviewMovie.AddAsync(reviewMovie);
+        var result = await dbContext.SaveChangesAsync();
+
+        return result > 0 ? ResponseModel.Success("Review saved successfully.", null) : ResponseModel.Fail("Review are not saved");
+
         // ToDo : Add exception middleware
         // ToDo : Add logger
-        catch (Exception ex)
-        {
-            return ResponseModel.Fail("An error occurred while saving the review.");
-        }
     }
 
     public async Task<ResponseModel> GetMovieReviewAsync(int movieId)
     {
-        try
-        {
-            var reviews = await dbContext.ReviewMovie
-                .Where(x => x.MovieId == movieId)
-                .OrderByDescending(x => x.CreatedDate)
-                .ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
-                .ToListAsync();
+        var reviews = await dbContext.ReviewMovie
+        .Where(x => x.MovieId == movieId)
+        .OrderByDescending(x => x.CreatedDate)
+        .ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
+        .ToListAsync();
 
-            return ResponseModel.Success(string.Empty, reviews);
-        }
-        // ToDo : Add exception middleware
-        // ToDo : Add logger
-        catch (Exception ex)
-        {
-            return ResponseModel.Fail("An error occurred while retrieving the review.");
-        }
+        return reviews.Count > 0
+            ? ResponseModel.Success(string.Empty, reviews)
+            : ResponseModel.Fail("Reviews are empty");
     }
 }

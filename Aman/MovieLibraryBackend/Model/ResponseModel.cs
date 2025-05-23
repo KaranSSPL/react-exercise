@@ -19,11 +19,12 @@ public class ResponseModel
     }
 
 
-    public static ResponseModel Fail(string error)
+    public static ResponseModel Fail(string message, string error = "")
     {
         return new ResponseModel
         {
-            IsSuccess = true,
+            IsSuccess = false,
+            Message = message,
             ErrorDetails = error
         };
     }

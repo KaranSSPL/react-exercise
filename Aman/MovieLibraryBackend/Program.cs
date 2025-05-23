@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MovieLibraryApi.Interface;
 using MovieLibraryApi.Mapping;
+using MovieLibraryApi.Middlewares;
 using MovieLibraryApi.Persistence.Data;
 using MovieLibraryApi.Service;
 
@@ -40,7 +41,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Enable console logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(corsPolicyName);
 

@@ -5,9 +5,10 @@ import axios from "axios";
 
 import "../css/movieDetail.css";
 import { config } from "../utils/axiosConfig.js";
-import AddReviewModal from "../components/AddReviewModal.jsx";
 import ShareModal from "../components/ShareModal.jsx";
 import Loader from "../components/Loader.jsx";
+import NotFound from "../components/NotFound.jsx";
+import ReviewSection from "../components/ReviewSection.jsx";
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -15,13 +16,12 @@ const MovieDetail = () => {
   const [movieReviews, setMovieReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isMovieFound, setIsMovieFound] = useState(true);
 
   useEffect(() => {
     fetchMovieDetail(id);
     fetchReviews(id);
     setIsSharePopupOpen(false);
-    setIsReviewModalOpen(false);
   }, [id]);
 
   const fetchMovieDetail = async (movieId) => {
@@ -31,9 +31,17 @@ const MovieDetail = () => {
         `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`,
         config
       );
-      setMovieDetail(res.data);
+      if (!res || !res.data) {
+        setIsMovieFound(false);
+        setMovieDetail(null);
+      } else {
+        setMovieDetail(res.data);
+        setIsMovieFound(true);
+      }
     } catch (err) {
       console.error("Failed to fetch movie:", err);
+      setIsMovieFound(false);
+      setMovieDetail(null);
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +50,7 @@ const MovieDetail = () => {
   const fetchReviews = async (movieId) => {
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_REVIEW_API_BASE_URL}/movies/${movieId}`
+        `${process.env.REACT_APP_REVIEW_API_BASE_URL}/${movieId}/reviews`
       );
 
       if (res.status === 200 && res.data?.isSuccess && res.data.data) {
@@ -63,24 +71,20 @@ const MovieDetail = () => {
     setIsSharePopupOpen(true);
   };
 
-  const addReview = (e) => {
-    e.preventDefault();
-    setIsReviewModalOpen(true);
-  };
-
   const handleAddReviewToList = (newReview) => {
     setMovieReviews((prev) => [newReview, ...prev]);
   };
 
   // ToDo : don't show loader when there is no movie
-  if (isLoading || !movieDetail) return <Loader />;
+  if (isLoading) return <Loader />;
+  if (!isMovieFound) return <NotFound />;
 
   return (
     <>
       <div className="movie-page-container">
         <div className="movie-banner">
           <img
-            src={`${process.env.REACT_APP_IMAGE_URL}/w1280${movieDetail.backdrop_path}`}
+            src={`${process.env.REACT_APP_IMAGE_URL}/w1280${movieDetail?.backdrop_path}`}
             alt="Background Poster"
             className="movie-banner-img"
           />
@@ -90,26 +94,26 @@ const MovieDetail = () => {
         <div className="description">
           <div className="movie-content">
             <img
-              src={`${process.env.REACT_APP_IMAGE_URL}/w300${movieDetail.poster_path}`}
+              src={`${process.env.REACT_APP_IMAGE_URL}/w300${movieDetail?.poster_path}`}
               alt="Movie Poster"
               className="movie-poster-detail-page"
             />
             <div className="movie-info-detail-page">
               <h2 className="movie-title-detail-page">
-                {movieDetail.original_title}
+                {movieDetail?.original_title}
               </h2>
               <p className="movie-release">
-                Release: {movieDetail.release_date}
+                Release: {movieDetail?.release_date}
               </p>
               <p className="movie-rating-detail-page">
-                ⭐ {movieDetail.vote_average}
+                ⭐ {movieDetail?.vote_average}
               </p>
 
               {/* Genres */}
               <div className="movie-genres">
                 <strong>Genres</strong>
                 <ul className="genres-list">
-                  {movieDetail.genres.map((item) => (
+                  {movieDetail?.genres.map((item) => (
                     <li key={item.id}>
                       <span className="genre-badge">{item.name}</span>
                     </li>
@@ -118,7 +122,7 @@ const MovieDetail = () => {
               </div>
 
               <p className="movie-description-detail-page">
-                {movieDetail.overview}
+                {movieDetail?.overview}
               </p>
 
               <div className="movie-actions">
@@ -139,45 +143,9 @@ const MovieDetail = () => {
           {
             // TODO: create a separate component for reviews
           }
-          <div className="review-section">
-            <div className="review-header-top">
-              <h3>User Reviews</h3>
-              <button onClick={addReview} className="add-review-button">
-                + Add Review
-              </button>
-              {isReviewModalOpen &&
-                createPortal(
-                  <AddReviewModal
-                    onClose={() => setIsReviewModalOpen(false)}
-                    id={id}
-                    onReviewSubmit={handleAddReviewToList}
-                  />,
-                  document.getElementById("modal-root")
-                )}
-            </div>
-
-            {movieReviews && movieReviews.length > 0 ? (
-              <div className="detail-wrapper">
-                {movieReviews.map((item, index) => (
-                  <div key={index} className="review-card">
-                    <div className="review-header">
-                      <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
-                      <span className="review-date">
-                        {new Date(item.createdDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="review-content">
-                      <p>{item.comment}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="no-reviews">
-                No reviews yet. Be the first to add one!
-              </p>
-            )}
-          </div>
+          <ReviewSection id={id}
+            handleAddReviewToList={handleAddReviewToList}
+            movieReviews={movieReviews} />
         </div>
       </div>
     </>

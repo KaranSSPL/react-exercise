@@ -14,20 +14,12 @@ public class ReviewMovieController(IMovieService movieService) : ControllerBase
     public async Task<ActionResult<ResponseModel>> GetMovieReviewAsync(int movieId)
     {
         if (movieId <= 0)
-            return BadRequest(new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "Movie id is invalid",
-                data = null
-            });
+            return BadRequest(ResponseModel.Fail("Movie id is invalid"));
 
         var response = await movieService.GetMovieReviewAsync(movieId);
 
         // ToDo: remove 404 status code
-        if (!response.IsSuccess)
-            return NotFound(response);
-
-        if (response.data is IEnumerable<ReviewSummaryDto> reviews && !reviews.Any())
+        if (response.data == null || response.data is IEnumerable<ReviewSummaryDto> reviews && !reviews.Any())
             return NoContent();
 
         return Ok(response);
@@ -37,23 +29,15 @@ public class ReviewMovieController(IMovieService movieService) : ControllerBase
     [Route("{movieId}/reviews")]
     public async Task<ActionResult<ResponseModel>> SaveReviewAsync(int movieId, [FromBody] ReviewMovieDto request)
     {
-        if (!ModelState.IsValid || movieId <= 0)
-        {
-            return BadRequest(new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "Invalid Input",
-                data = null
-            });
-        }
+        if (movieId <= 0)
+            return BadRequest(ResponseModel.Fail("Movie Id is required"));
 
-        var response = await movieService.SaveReviewAsync(request);
-        if (response.IsSuccess)
-        {
-            return Ok(response);
-        }
+        if (!ModelState.IsValid)
+            return BadRequest(ResponseModel.Fail("Invalid Input"));
+
+        var response = await movieService.SaveReviewAsync(movieId, request);
 
         // ToDO: remove 500 status code
-        return StatusCode(500, response);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

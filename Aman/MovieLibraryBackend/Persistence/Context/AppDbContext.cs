@@ -16,7 +16,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ReviewMovie>(entity =>
         {
             entity.Property(r => r.CreatedDate)
-                  .HasDefaultValueSql("GETDATE()");
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("CAST(GETUTCDATE() AS date)");
         });
     }
 }

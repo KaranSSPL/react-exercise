@@ -25,14 +25,13 @@ const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
     }
     try {
       const data = {
-        movieId: id,
         firstName: formData.firstName,
         lastName: formData.lastName,
         comment: formData.comment,
       };
 
       const res = await axios.post(
-        `${process.env.REACT_APP_REVIEW_API_BASE_URL}/save-review`,
+        `${process.env.REACT_APP_REVIEW_API_BASE_URL}/${id}/reviews`,
         data
       );
 
@@ -50,11 +49,15 @@ const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
         onClose();
       } else {
         // ToDo : show error message to user.
-        console.warn("Review submission failed.");
+        alert("Review submission failed.");
+        onClose();
+        // console.warn("Review submission failed.");
       }
     } catch (error) {
       // ToDo : show error message to user.
-      console.error("Error saving review:", error);
+      alert("An error occurred while submitting your review.", error);
+      onClose();
+      // console.error("Error saving review:", error);
     }
   };
 

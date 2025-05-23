@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 import { config } from "../utils/axiosConfig.js";
+import Loader from "../components/Loader.jsx";
 import Header from "../components/Header.jsx";
 import Pagination from "../components/Pagination.jsx";
 import NotFound from "../components/NotFound.jsx";
 import MovieListCard from "../components/MovieListCard.jsx";
+import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 
 const MovieContainer = () => {
   const [searchMovie, setSearchMovie] = useState("");
@@ -13,22 +16,27 @@ const MovieContainer = () => {
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [foundSearchResult, setFoundSearchResult] = useState(false);
+  const [fetchError, setFetchError] = useState("");
 
   const fetchMovies = async (pageNumber = 1) => {
     try {
       setIsLoading(true);
+      setFetchError("");
       const response = await axios.get(
         `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
         config
       );
       // ToDo: handle null error
+      const result = response?.data?.results || [];
+
+      setMoviesList(result);
+      setTotalPage(response?.data?.total_pages || 0);
       setFoundSearchResult(false);
-      setMoviesList(response.data.results);
-      setTotalPage(response.data.total_pages);
     } catch (error) {
-      console.error("Error fetching movies:", error);
-      setFoundSearchResult(false);
+      const message = error?.response?.data?.status_message || "Unexpected error occurred.";
       setMoviesList([]);
+      setFoundSearchResult(false);
+      setFetchError(message)
     } finally {
       setIsLoading(false);
     }
@@ -74,26 +82,24 @@ const MovieContainer = () => {
   return (
     <>
       <Header searchMovie={searchMovie} onSearch={handleSearch} />
-      {foundSearchResult ? (
+      {isLoading ? (
+        <Loader />
+      ) : foundSearchResult ? (
         <NotFound />
+      ) : fetchError ? (
+        <FailedToFetchMovies message={fetchError} />
       ) : (
-        <>
-          <div className="movie-grid">
-            {isLoading ? (
-              <Loader />
-            ) : moviesList && moviesList.length > 0 ? (
-              moviesList?.map((item) => (
-                <MovieListCard key={item.id} movie={item} />
-              ))
-            ) : null}
-          </div>
-          <Pagination
-            currentPageNumber={currentPageNumber}
-            totalPage={totalPage}
-            onPageChange={handlePageChange}
-          />
-        </>
+        <div className="movie-grid">
+          {moviesList.map((movie) => (
+            <MovieListCard key={movie.id} movie={movie} />
+          ))}
+        </div>
       )}
+      <Pagination
+        currentPageNumber={currentPageNumber}
+        totalPage={totalPage}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

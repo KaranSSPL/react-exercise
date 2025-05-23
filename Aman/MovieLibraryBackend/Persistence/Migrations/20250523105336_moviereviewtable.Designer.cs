@@ -9,11 +9,11 @@ using MovieLibraryApi.Persistence.Data;
 
 #nullable disable
 
-namespace MovieLibraryApi.Migrations
+namespace MovieLibraryApi.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250523070021_ReviewMovieTable")]
-    partial class ReviewMovieTable
+    [Migration("20250523105336_moviereviewtable")]
+    partial class moviereviewtable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace MovieLibraryApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MovieLibraryApi.Model.Entities.ReviewMovie", b =>
+            modelBuilder.Entity("MovieLibraryApi.Persistence.Entities.ReviewMovie", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,18 +34,21 @@ namespace MovieLibraryApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateOnly>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("date")
+                        .HasDefaultValueSql("CAST(GETUTCDATE() AS date)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
