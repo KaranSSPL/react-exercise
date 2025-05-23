@@ -1,25 +1,50 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using MovieLibraryApi.Data;
 using MovieLibraryApi.Interface;
 using MovieLibraryApi.Model;
-using NPoco;
+using MovieLibraryApi.Model.Dtos;
+using MovieLibraryApi.Model.Entities;
 
 namespace MovieLibraryApi.Service;
 
-public class MovieService(IDatabase database) : IMovieService
+public class MovieService : IMovieService
 {
-    public async Task<bool> SaveReviewAsync(ReviewMovieDto request)
+    private readonly AppDbContext _dbContext;
+    private readonly IMapper _mapper;
+    public MovieService(AppDbContext dbContext,
+        IMapper mapper)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
+
+    public async Task<ResponseModel> SaveReviewAsync(ReviewMovieDto request)
     {
         try
         {
-            using var t = database.GetTransaction();
-            var res = await database.InsertAsync(request);
-            t.Complete();
-            return res != null;
+            var reviewMovie = _mapper.Map<ReviewMovie>(request);
+            await _dbContext.ReviewMovie.AddAsync(reviewMovie);
+            await _dbContext.SaveChangesAsync();
+
+            return new ResponseModel
+            {
+                IsSuccess = true,
+                Message = "Review saved successfully.",
+                ErrorDetails = string.Empty,
+                data = null
+            };
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return false;
+            return new ResponseModel
+            {
+                IsSuccess = false,
+                Message = "An error occurred while saving the review",
+                ErrorDetails = ex.Message,
+                data = null
+            };
         }
     }
 
@@ -27,20 +52,26 @@ public class MovieService(IDatabase database) : IMovieService
     {
         try
         {
-            var reviews = await database.FetchAsync<ReviewSummaryDto>("SELECT FirstName, LastName, Comment, CreatedDate FROM ReviewMovie WHERE MovieId = @0", movieId);
+            var reviews = await _dbContext.ReviewMovie.Where(x => x.MovieId == movieId)
+                .ProjectTo<ReviewSummaryDto>(_mapper.ConfigurationProvider)
+                .OrderByDescending(x => x.CreatedDate).ToListAsync();
 
             return new ResponseModel
             {
                 IsSuccess = true,
-                data = reviews?.OrderByDescending(x => x.CreatedDate)
+                Message = string.Empty,
+                ErrorDetails = string.Empty,
+                data = reviews
             };
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             return new ResponseModel
             {
                 IsSuccess = false,
-                Message = "An error occurred while retrieving the review."
+                Message = "An error occurred while retrieving the review.",
+                ErrorDetails = ex.Message,
+                data = null
             };
         }
     }

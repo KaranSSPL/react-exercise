@@ -1,19 +1,21 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using MovieLibraryApi.Data;
 using MovieLibraryApi.Interface;
+using MovieLibraryApi.Mapping;
 using MovieLibraryApi.Service;
-using NPoco;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.  
-builder.Services.AddScoped<IDatabase>(provider =>
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    return new Database(connectionString, DatabaseType.SqlServer2012, SqlClientFactory.Instance);
+    options.UseSqlServer(connectionString);
 });
 
 // Register Servie & Interface
 builder.Services.AddScoped<IMovieService, MovieService>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Add CORS
 builder.Services.AddCors(options =>

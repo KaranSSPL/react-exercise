@@ -1,15 +1,15 @@
-﻿using NPoco;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace MovieLibraryApi.Model;
-
-[TableName("ReviewMovie")]
-[PrimaryKey("Id", AutoIncrement = true)]
+namespace MovieLibraryApi.Model.Dtos;
 public class ReviewMovieDto
 {
-    public int Id { get; set; }
-    public string? MovieId { get; set; }
+    [Required]
+    public int MovieId { get; set; }
+    [Required]
     public string? FirstName { get; set; }
+    [Required]
     public string? LastName { get; set; }
+    [Required]
     public string? Comment { get; set; }
 }
 

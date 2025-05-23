@@ -1,9 +1,10 @@
 ﻿using MovieLibraryApi.Model;
+using MovieLibraryApi.Model.Dtos;
 
 namespace MovieLibraryApi.Interface;
 
 public interface IMovieService
 {
-    Task<bool> SaveReviewAsync(ReviewMovieDto request);
+    Task<ResponseModel> SaveReviewAsync(ReviewMovieDto request);
     Task<ResponseModel> GetMovieReviewAsync(int movieId);
 }

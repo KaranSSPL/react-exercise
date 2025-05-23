@@ -1,45 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieLibraryApi.Interface;
 using MovieLibraryApi.Model;
+using MovieLibraryApi.Model.Dtos;
 
 namespace MovieLibraryApi.Controllers;
 
 [Route("api")]
 [ApiController]
-public class ReviewMovieController(IMovieService movieService) : ControllerBase
+public class ReviewMovieController : ControllerBase
 {
+    private readonly IMovieService _movieService;
+    public ReviewMovieController(IMovieService movieService)
+    {
+        _movieService = movieService;
+    }
 
     [HttpPost]
     [Route("save-review")]
     public async Task<ActionResult<ResponseModel>> SaveReviewAsync([FromBody] ReviewMovieDto request)
     {
-        if (request == null)
+        if (!ModelState.IsValid || request.MovieId <= 0)
         {
             return BadRequest(new ResponseModel
             {
                 IsSuccess = false,
-                Message = "Model is empty",
+                Message = "Invalid Input",
                 data = null
             });
         }
 
-        var response = await movieService.SaveReviewAsync(request);
-        if (response)
+        var response = await _movieService.SaveReviewAsync(request);
+        if (response.IsSuccess)
         {
-            return Ok(new ResponseModel
-            {
-                IsSuccess = true,
-                Message = "Review saved successfully",
-                data = null
-            });
+            return Ok(response);
         }
 
-        return StatusCode(500, new ResponseModel
-        {
-            IsSuccess = false,
-            Message = "Failed to save review",
-            data = null
-        });
+        return StatusCode(500, response);
     }
 
     [HttpGet]
@@ -54,7 +50,7 @@ public class ReviewMovieController(IMovieService movieService) : ControllerBase
                 data = null
             });
 
-        var response = await movieService.GetMovieReviewAsync(movieId);
+        var response = await _movieService.GetMovieReviewAsync(movieId);
         if (!response.IsSuccess)
             return NotFound(response);
 
