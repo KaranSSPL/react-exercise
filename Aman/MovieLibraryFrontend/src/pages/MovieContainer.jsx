@@ -50,8 +50,9 @@ const MovieContainer = () => {
         config
       );
       // ToDo: handle null error
-      setTotalPage(response.data.total_pages);
-      if (response.data.results <= 0) {
+      setTotalPage(response?.data?.total_pages || 0);
+      
+      if (response?.data?.results <= 0) {
         setFoundSearchResult(true);
       } else {
         setFoundSearchResult(false);
