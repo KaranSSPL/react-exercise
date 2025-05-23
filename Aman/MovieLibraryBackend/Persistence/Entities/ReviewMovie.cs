@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieLibraryApi.Model.Entities
+namespace MovieLibraryApi.Persistence.Entities
 {
     public class ReviewMovie
     {

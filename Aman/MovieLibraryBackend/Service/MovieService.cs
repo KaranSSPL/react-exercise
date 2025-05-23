@@ -1,32 +1,24 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using MovieLibraryApi.Data;
 using MovieLibraryApi.Interface;
 using MovieLibraryApi.Model;
 using MovieLibraryApi.Model.Dtos;
-using MovieLibraryApi.Model.Entities;
+using MovieLibraryApi.Persistence.Data;
+using MovieLibraryApi.Persistence.Entities;
 
 namespace MovieLibraryApi.Service;
 
-public class MovieService : IMovieService
+public class MovieService(AppDbContext dbContext,
+    IMapper mapper) : IMovieService
 {
-    private readonly AppDbContext _dbContext;
-    private readonly IMapper _mapper;
-    public MovieService(AppDbContext dbContext,
-        IMapper mapper)
-    {
-        _dbContext = dbContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResponseModel> SaveReviewAsync(ReviewMovieDto request)
     {
         try
         {
-            var reviewMovie = _mapper.Map<ReviewMovie>(request);
-            await _dbContext.ReviewMovie.AddAsync(reviewMovie);
-            await _dbContext.SaveChangesAsync();
+            var reviewMovie = mapper.Map<ReviewMovie>(request);
+            await dbContext.ReviewMovie.AddAsync(reviewMovie);
+            await dbContext.SaveChangesAsync();
 
             return new ResponseModel
             {
@@ -36,15 +28,11 @@ public class MovieService : IMovieService
                 data = null
             };
         }
+        // ToDo : Add exception middleware
+        // ToDo : Add logger
         catch (Exception ex)
         {
-            return new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "An error occurred while saving the review",
-                ErrorDetails = ex.Message,
-                data = null
-            };
+            return ResponseModel.Fail("An error occurred while saving the review.");
         }
     }
 
@@ -52,27 +40,19 @@ public class MovieService : IMovieService
     {
         try
         {
-            var reviews = await _dbContext.ReviewMovie.Where(x => x.MovieId == movieId)
-                .ProjectTo<ReviewSummaryDto>(_mapper.ConfigurationProvider)
-                .OrderByDescending(x => x.CreatedDate).ToListAsync();
+            var reviews = await dbContext.ReviewMovie
+                .Where(x => x.MovieId == movieId)
+                .OrderByDescending(x => x.CreatedDate)
+                .ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
 
-            return new ResponseModel
-            {
-                IsSuccess = true,
-                Message = string.Empty,
-                ErrorDetails = string.Empty,
-                data = reviews
-            };
+            return ResponseModel.Success(string.Empty, reviews);
         }
+        // ToDo : Add exception middleware
+        // ToDo : Add logger
         catch (Exception ex)
         {
-            return new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "An error occurred while retrieving the review.",
-                ErrorDetails = ex.Message,
-                data = null
-            };
+            return ResponseModel.Fail("An error occurred while retrieving the review.");
         }
     }
 }
