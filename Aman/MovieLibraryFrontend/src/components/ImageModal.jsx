@@ -4,7 +4,7 @@ const ImageModal = ({ onClose, currentImageIndex, handleImageSlider, images }) =
         <div className="modal" id="modal">
             <button className="close" onClick={onClose}>&times;</button>
             <button className="prev" onClick={() => handleImageSlider((x) => x - 1)} disabled={currentImageIndex === 0}>&#10094;</button>
-            <div className="modal-content">
+            <div className="modal-content-image">
                 <img id="modalImage" src={imageUrl} alt="modal" />
             </div>
             <button className="next" onClick={() => handleImageSlider((x) => x + 1)} disabled={currentImageIndex === images.length - 1}>&#10095;</button>
