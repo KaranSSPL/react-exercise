@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 import axios from "axios";
 
@@ -126,10 +126,7 @@ const MovieDetail = () => {
               </p>
 
               <div className="movie-actions">
-                <button
-                  onClick={(e) => handleShare(e)}
-                  className="share-button"
-                >
+                <button onClick={(e) => handleShare(e)} className="share-button">
                   Share
                 </button>
                 {isSharePopupOpen &&
@@ -137,6 +134,9 @@ const MovieDetail = () => {
                     <ShareModal onClose={() => setIsSharePopupOpen(false)} />,
                     document.getElementById("modal-root")
                   )}
+                <Link to={`/movies/${id}/gallery`} className="movie-link share-button">
+                  Gallery
+                </Link>
               </div>
             </div>
           </div>

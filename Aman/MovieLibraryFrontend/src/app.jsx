@@ -5,6 +5,7 @@ import Loader from "./components/Loader.jsx";
 import LayoutForList from "./components/LayoutForList.jsx";
 import LayoutForDetail from "./components/LayoutForDetail.jsx";
 import MovieContainer from "./pages/MovieContainer.jsx";
+import MovieGallery from "./pages/MovieGallery.jsx";
 
 const MovieDetail = lazy(() => import('./pages/MovieDetail.jsx'));
 
@@ -20,6 +21,11 @@ const App = () => {
                     <Route path="/movies/:id" element={
                         <LayoutForDetail>
                             <MovieDetail />
+                        </LayoutForDetail>
+                    } />
+                    <Route path="/movies/:id/gallery" element={
+                        <LayoutForDetail>
+                            <MovieGallery />
                         </LayoutForDetail>
                     } />
                 </Routes>
