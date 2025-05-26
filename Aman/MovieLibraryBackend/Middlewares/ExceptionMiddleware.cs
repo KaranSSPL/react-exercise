@@ -21,8 +21,7 @@ public class ExceptionMiddleware(RequestDelegate next,
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            var response = ResponseModel.Fail("An unexpected error occurred.",
-                    env.IsDevelopment() ? ex.ToString() : null);
+            var response = ResponseModel.Fail("An unexpected error occurred.", ex.ToString());
 
             await context.Response.WriteAsJsonAsync(response);
         }
