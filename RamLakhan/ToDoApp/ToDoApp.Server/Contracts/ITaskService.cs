@@ -23,7 +23,7 @@ public interface ITaskService
     /// </summary>
     /// <param name="task"></param>
     /// <returns></returns>
-    Task<ResponseModel> AddOrUpdateTaskAsync(Models.Entity.Task task);
+    Task<ResponseModel> AddOrUpdateTaskAsync(int id,Models.Entity.Task task);
 
     /// <summary>
     /// delete a task
@@ -31,17 +31,6 @@ public interface ITaskService
     /// <param name="task"></param>
     /// <returns></returns>
     Task<ResponseModel> DeleteAsync(int id);
-
-    /// <summary>
-    /// Retrieves all tasks associated with the specified group ID.
-    /// </summary>
-    /// <remarks>Use this method to fetch tasks for a specific group. The returned <see
-    /// cref="ResponseModel"/> may include additional metadata  about the operation, such as success status or error
-    /// details.</remarks>
-    /// <param name="groupId">The unique identifier of the group whose tasks are to be retrieved. Must be a positive integer.</param>
-    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.  The result contains a <see
-    /// cref="ResponseModel"/> object that includes the list of tasks associated with the group ID.</returns>
-    Task<ResponseModel> GetAllTaskByGroupId(int groupId);
 
     /// <summary>
     /// Retrieves all task groups along with their associated tasks.

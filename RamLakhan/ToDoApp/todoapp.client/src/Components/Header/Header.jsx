@@ -6,10 +6,10 @@ const Header = () => {
     return (
         <div className="header">
             <div className="row d-flex justify-content-center text-left" >
-                <div className="col-1">
+                <div className="col-4">
                     <SquareMenu className="squaremenu-btn" onClick={() => setHideSidebar(!hideSidebar)} />
                 </div>
-                <div className="col-11 text-end">
+                <div className="col-8 text-end">
                     <p> RAMLAKHAN'S TO DO APP </p>
                 </div>
             </div>

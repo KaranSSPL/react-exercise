@@ -2,29 +2,30 @@ import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { GetTaskById } from '@/api/taskApi';
+import { GetTaskById, AddTask, UpdateTask } from '@/api/taskApi';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 
-const AddOrUpdateTask = ({ show, setShow, onAddOrEdit, editTaskId, setEditTaskId, taskGroupId }) => {
+const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, groups, isStarredTask }) => {
 
-    const {taskGroups} = useTaskEvents();
+    const { RefreshTaskLists } = useTaskEvents();
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState('');
     const [isShowError, setIsShowError] = useState(false);
     const [editTaskItem, setEditTaskItem] = useState([]);
-    const [groupId, setGroupId] = useState(1);
+    const [selectedGroupId, setSelectedGroupId] = useState(1);
 
 
     useEffect(() => {
         (async () => {
-            if (editTaskId > 0) {
-                let res = await GetTaskById(editTaskId);
+            if (taskId > 0) {
+                let res = await GetTaskById(taskId);
                 if (res.isSuccess) {
                     let itemToEdit = res.data;
-                    setTitle(itemToEdit.title);
-                    setDescription(itemToEdit.description);
-                    setDate(itemToEdit.toDoDate);
+                    setTitle(itemToEdit.title ?? '');
+                    setDescription(itemToEdit.description ?? '');
+                    setDate(itemToEdit.toDoDate ?? '');
                     setEditTaskItem(itemToEdit);
                 }
             }
@@ -32,30 +33,38 @@ const AddOrUpdateTask = ({ show, setShow, onAddOrEdit, editTaskId, setEditTaskId
     }, []);
 
     const handleClose = () => {
-        setEditTaskId(0);
-        setShow(false);
+        setTaskId && setTaskId(0);
+        setVisibility(false);
     }
 
-    const handleSubmit = () => {
-        let itemToAddOrEdit = {};
-        const toDoDate = date ? date : null;
-        if (editTaskId > 0) {
-            itemToAddOrEdit = { ...editTaskItem, title: title, description: description, toDoDate: toDoDate };
+    const handleSubmit = async () => {
+        let response = {};
+        const toDoDate = date?.trim() ? date : null;
+
+        if (taskId > 0) {
+            response = await UpdateTask(taskId, { ...editTaskItem, title: title, description: description, toDoDate: toDoDate });
         } else {
-            const groupid = taskGroupId > 0 ? taskGroupId : groupId;
-            itemToAddOrEdit = { taskId: 0, title: title, description: description, toDoDate: date, taskGroupId: groupid };
+            const isStarred = isStarredTask === null || isStarredTask === undefined || !isStarredTask ? false : isStarredTask;
+            const groupid = groupId > 0 ? groupId : selectedGroupId;
+            response = await AddTask({ taskId: 0, title: title, description: description, toDoDate: toDoDate, taskGroupId: groupid, isStarred: isStarred });
         }
 
-        onAddOrEdit(itemToAddOrEdit);
-        setGroupId(1);
+        if (!response.isSuccess) {
+            console.log("Error while adding or updating task", response);
+            return;
+        }
+
+        setSelectedGroupId(1);
         EmptyAllFields();
-        setShow(false);
+        setVisibility(false);
+
+        await RefreshTaskLists();
     }
 
     const EmptyAllFields = () => {
         setTitle('');
         setDescription('');
-        setDate(null);
+        setDate('');
     }
 
     const HendleErrorAndSetTitleValue = (e) => {
@@ -70,9 +79,9 @@ const AddOrUpdateTask = ({ show, setShow, onAddOrEdit, editTaskId, setEditTaskId
 
     return (
 
-        <Modal show={show} onHide={() => handleClose()}>
+        <Modal show={visible} onHide={() => handleClose()}>
             <Modal.Header closeButton>
-                <Modal.Title>{editTaskId > 0 ? "Edit task" : "Add task"}</Modal.Title>
+                <Modal.Title>{taskId > 0 ? "Edit task" : "Add task"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -113,13 +122,13 @@ const AddOrUpdateTask = ({ show, setShow, onAddOrEdit, editTaskId, setEditTaskId
                     </Form.Group>
 
                     {
-                        taskGroupId === 0 && editTaskId == 0 ?
+                        groupId === 0 && taskId == 0 ?
 
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
                                 <Form.Label>Select Task Group</Form.Label>
                                 <Form.Select
-                                    onChange={(e) => setGroupId(e.target.value)} aria-label="Default select example">
-                                    {taskGroups.map((item) => (
+                                    onChange={(e) => setSelectedGroupId(e.target.value)} aria-label="Default select example">
+                                    {groups.map((item) => (
                                         <option key={item.listId} value={item.listId}>{item.listName}</option>
                                     ))}
                                 </Form.Select>
@@ -130,7 +139,7 @@ const AddOrUpdateTask = ({ show, setShow, onAddOrEdit, editTaskId, setEditTaskId
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={()=> handleClose()}>
+                <Button variant="secondary" onClick={() => handleClose()}>
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSubmit} disabled={!title.trim()}>

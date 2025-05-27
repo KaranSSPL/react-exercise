@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { GetGroupById } from '@/api/TaskGroupApi';
+import { AddGroup, UpdateGroup, GetGroupById, GetGroups, GetGroupsTaskList, GetStarredTask } from '@/api/TaskGroupApi';
+import { MoveTaskToNewGroup } from '../../api/TaskApi';
+import { useTaskEvents } from '../../Hooks/TaskEvents';
 
-const AddOrUpdateGroups = ({ show, setShow, handleAddorEdit, editGroupId, setEditGroupId, taskIdToMove,onMove }) => {
+const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) => {
+    const {setTaskGroups, setAllGroupTaskList, setallStarredTasks} = useTaskEvents();
     const [isShowError, setIsShowError] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [groupData, setGroupData] = useState({});
 
-
     useEffect(() => {
         (async () => {
-            if (editGroupId > 0) {
-                let res = await GetGroupById(editGroupId);
+            if (groupId > 0) {
+                let res = await GetGroupById(groupId);
                 if (res.isSuccess) {
 
                     let itemToEdit = res.data;
-                    setGroupName(itemToEdit.listName);
+                    setGroupName(itemToEdit.listName ?? '');
                     setGroupData(itemToEdit);
                 }
             }
@@ -24,22 +26,36 @@ const AddOrUpdateGroups = ({ show, setShow, handleAddorEdit, editGroupId, setEdi
         })();
     }, []);
 
-    const handleSubmit = () => {
 
-        let item = {}
-        if (editGroupId > 0) {
-            item = { ...groupData, listName: groupName };
+    const handleSubmit = async () => {
+
+        let response = {}
+
+        if (taskIdToMove && taskIdToMove != null && taskIdToMove != undefined && taskIdToMove > 0) {
+            response = await MoveTaskToNewGroup(taskIdToMove, { listId: 0, listName: groupName, isEnableShow: true, sortBy: 'My order' });
+            if (!response.isSuccess) {
+                console.error("error while moving task to new group ", response);
+                return;
+            }
+
         } else {
-            item = { listId: 0, listName: groupName, isEnableShow: true,sortBy:'My order' };
-        }
-        setGroupName('');
-        setShow(false);
 
-        if (taskIdToMove > 0) {
-            onMove(taskIdToMove, { listId: 0, listName: groupName, isEnableShow: true, sortBy: 'My order' })
-            return;
+            if (groupId > 0) {
+                response = await UpdateGroup(groupId, { ...groupData, listName: groupName });
+            } else {
+                response = await AddGroup({ listId: 0, listName: groupName, isEnableShow: true, sortBy: 'My order' });
+            }
+
+            if (!response.isSuccess) {
+                console.log("Error while adding or updating group", response);
+                return;
+            }
         }
-        handleAddorEdit(item);
+
+        setGroupName('');
+        setVisibility(false);
+        await refreshGroupData();
+
     }
 
     /*handle add list*/
@@ -53,21 +69,37 @@ const AddOrUpdateGroups = ({ show, setShow, handleAddorEdit, editGroupId, setEdi
     }
 
     const handleClose = () => {
-        if (editGroupId > 0) {
-            setEditGroupId(0);
-        }
-        setShow(false);
+        setVisibility(false);
         setGroupName('');
+    }
+
+    const refreshGroupData = async () => {
+        let response = {};
+        response = await GetGroups();
+        if (response.data && response.data.length > 0) {
+            setTaskGroups(response.data);
+        }
+
+        response = await GetGroupsTaskList();
+        if (!response.isSuccess)
+            console.error("Failed or unexpected response:", response);
+        setAllGroupTaskList(response.data);
+
+        response = await GetStarredTask();
+        if (!response.isSuccess)
+            console.error("Failed or unexpected response:", response.message, response.data);
+
+        setallStarredTasks(response.data);
     }
 
     return (
 
-        < Modal show={show} onHide={() => handleClose()}>
+        < Modal show={visible} onHide={() => handleClose()}>
             <Modal.Header closeButton>
-                <Modal.Title>{editGroupId > 0 ? "Rename Group" : "Add Group"}</Modal.Title>
+                <Modal.Title>{groupId > 0 ? "Rename Group" : "Add Group"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                Name: <input type="text" className="form-control" value={groupName} onChange={(e) => handleErrorAddGroup(e.target.value)} />
+                Name: <input type="text" autoFocus className="form-control" value={groupName} onChange={(e) => handleErrorAddGroup(e.target.value)} />
                 <br />
                 <span className={`${isShowError == false ? "d-none" : ""} text-danger`}>please enter value</span>
             </Modal.Body>
@@ -75,7 +107,7 @@ const AddOrUpdateGroups = ({ show, setShow, handleAddorEdit, editGroupId, setEdi
                 <Button variant="secondary" onClick={() => handleClose()}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={() => handleSubmit()} disabled={!groupName.trim()}>
+                <Button variant="primary" onClick={() => handleSubmit()} disabled={!groupName?.trim()}>
                     Submit
                 </Button>
             </Modal.Footer>
