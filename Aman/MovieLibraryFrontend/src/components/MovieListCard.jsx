@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom"
 
-const MovieListCard = ({ movie }) => {
+const MovieListCard = ({ movie, currentPage }) => {
+    const page = currentPage || 1;
     return (
-        <Link to={`/movies/${movie.id}`} className="movie-link" >
+        <Link to={`/movies/${movie.id}?page=${page}`} className="movie-link" >
             <div className="movie-card">
                 <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${movie.poster_path}`} className="movie-poster" alt="Movie Poster" />
                 <div className="movie-info">

@@ -12,6 +12,7 @@ import ReviewSection from "../components/ReviewSection.jsx";
 
 const MovieDetail = () => {
   const { id } = useParams();
+
   const [movieDetail, setMovieDetail] = useState(null);
   const [movieReviews, setMovieReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

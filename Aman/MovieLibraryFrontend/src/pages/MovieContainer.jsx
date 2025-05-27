@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "../css/index.css";
@@ -11,10 +12,15 @@ import MovieListCard from "../components/MovieListCard.jsx";
 import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 
 const MovieContainer = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get("page") || 1;
+  const navigate = useNavigate();
+
   const [searchMovie, setSearchMovie] = useState("");
   const [moviesList, setMoviesList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
   const [isLoading, setIsLoading] = useState(true);
   const [foundSearchResult, setFoundSearchResult] = useState(false);
   const [fetchError, setFetchError] = useState("");
@@ -79,6 +85,7 @@ const MovieContainer = () => {
 
   const handlePageChange = (page) => {
     setCurrentPageNumber(page);
+    navigate(`?page=${page}`);
   };
 
   return (
@@ -101,7 +108,7 @@ const MovieContainer = () => {
         <>
           <div className="movie-grid">
             {moviesList.map((movie) => (
-              <MovieListCard key={movie.id} movie={movie} />
+              <MovieListCard key={movie.id} movie={movie} currentPage={currentPageNumber} />
             ))}
           </div>
           <Pagination
