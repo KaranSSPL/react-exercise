@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+import "../css/index.css";
 import { config } from "../utils/axiosConfig.js";
 import Loader from "../components/Loader.jsx";
 import Header from "../components/Header.jsx";
