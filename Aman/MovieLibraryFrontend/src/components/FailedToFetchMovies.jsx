@@ -1,6 +1,8 @@
+import styles from '../css/notfound.module.css';
+
 const FailedToFetchMovies = ({ message }) => {
     return (
-        <div className="no-data-container">
+        <div className={styles["no-data-container"]}>
             <h2>{message}</h2>
         </div>
     )

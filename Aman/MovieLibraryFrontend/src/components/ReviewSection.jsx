@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom'
 import AddReviewModal from './AddReviewModal'
 import { useState } from 'react';
 
-const ReviewSection = ({ id, handleAddReviewToList, movieReviews }) => {
+const ReviewSection = ({ id, handleAddReviewToList, movieReviews, styles, reviewLoading }) => {
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
@@ -12,10 +12,10 @@ const ReviewSection = ({ id, handleAddReviewToList, movieReviews }) => {
     };
 
     return (
-        <div className="review-section">
-            <div className="review-header-top">
+        <div className={styles["review-section"]}>
+            <div className={styles["review-header-top"]}>
                 <h3>User Reviews</h3>
-                <button onClick={addReview} className="add-review-button">
+                <button onClick={addReview} className={styles["add-review-button"]}>
                     + Add Review
                 </button>
                 {isReviewModalOpen &&
@@ -29,24 +29,28 @@ const ReviewSection = ({ id, handleAddReviewToList, movieReviews }) => {
                     )}
             </div>
 
-            {movieReviews && movieReviews.length > 0 ? (
-                <div className="detail-wrapper">
+            {reviewLoading ? (
+                <div className={styles["review-loader-wrapper"]}>
+                    <div className={styles["spinner-inline"]}></div>
+                </div>
+            ) : movieReviews && movieReviews.length > 0 ? (
+                <div className={styles["detail-wrapper"]}>
                     {movieReviews.map((item, index) => (
-                        <div key={index} className="review-card">
-                            <div className="review-header">
-                                <span className="review-username">{`${item.firstName} ${item.lastName}`}</span>
-                                <span className="review-date">
+                        <div key={index} className={styles["review-card"]}>
+                            <div className={styles["review-header"]}>
+                                <span className={styles["review-username"]}>{`${item.firstName} ${item.lastName}`}</span>
+                                <span className={styles["review-date"]}>
                                     {new Date(item.createdDate).toLocaleDateString()}
                                 </span>
                             </div>
-                            <div className="review-content">
+                            <div className={styles["review-content"]}>
                                 <p>{item.comment}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <p className="no-reviews">
+                <p className={styles["no-reviews"]}>
                     No reviews yet. Be the first to add one!
                 </p>
             )}

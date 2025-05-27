@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 
-import '../css/movieGallery.css';
+import styles from '../css/movieGallery.module.css';
 import MovieGalleryImage from '../components/MovieGalleryImage';
 import Loader from "../components/Loader";
 import { config } from "../utils/axiosConfig";
@@ -55,9 +55,9 @@ const MovieGallery = () => {
     return isLoading ? (
         <Loader />
     ) : (
-        <div className="gallery-wrapper">
+        <div className={styles["gallery-wrapper"]}>
             {galleryImages && galleryImages.length > 0 ? (
-                <div className="gallery" id="gallery">
+                <div className={styles.gallery} id="gallery">
                     {galleryImages.map((gallery, index) => (
                         <MovieGalleryImage
                             key={index}
@@ -65,6 +65,7 @@ const MovieGallery = () => {
                             gallery={gallery}
                             handleImageClick={() => handleImageClick(index)}
                             isSelected={selectedImageIndex === index}
+                            styles={styles}
                         />
                     ))}
                     {isModalOpen && createPortal(
@@ -73,6 +74,7 @@ const MovieGallery = () => {
                             currentImageIndex={currentImageIndex}
                             handleImageSlider={handleImageSlider}
                             images={galleryImages}
+                            styles={styles}
                         />,
                         document.getElementById("modal-root")
                     )}

@@ -81,6 +81,7 @@ const MovieContainer = () => {
   const handleSearch = (query) => {
     setSearchMovie(query);
     setCurrentPageNumber(1);
+    navigate(`?page=1`);
   };
 
   const handlePageChange = (page) => {

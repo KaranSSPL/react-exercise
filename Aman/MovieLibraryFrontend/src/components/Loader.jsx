@@ -1,9 +1,9 @@
-import '../css/loader.css';
+import styles from '../css/loader.module.css';
 
 const Loader = () => {
     return (
-        <div id="loader-overlay">
-            <div className="spinner"></div>
+        <div id={styles["loader-overlay"]}>
+            <div className={styles.spinner}></div>
         </div>
     )
 }
