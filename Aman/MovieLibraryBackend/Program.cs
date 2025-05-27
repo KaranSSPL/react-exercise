@@ -52,11 +52,11 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(corsPolicyName);
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 

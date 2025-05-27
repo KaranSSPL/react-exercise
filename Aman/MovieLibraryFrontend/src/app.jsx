@@ -17,7 +17,8 @@ const App = () => {
                     <Route path="/" element={
                         <LayoutForList>
                             <MovieContainer />
-                        </LayoutForList>} />
+                        </LayoutForList>
+                    } />
                     <Route path="/movies/:id" element={
                         <LayoutForDetail>
                             <MovieDetail />
