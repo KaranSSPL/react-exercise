@@ -17,7 +17,7 @@ public class AppDbContext : DbContext
         {
             entity.Property(r => r.CreatedDate)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("CAST(GETUTCDATE() AS date)");
+            .HasDefaultValueSql("GetUTCDate()");
         });
     }
 }

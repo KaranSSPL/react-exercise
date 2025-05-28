@@ -10,7 +10,7 @@ using MovieLibraryApi.Persistence.Entities;
 namespace MovieLibraryApi.Service;
 
 public class MovieService(AppDbContext dbContext,
-    IMapper mapper, ILogger<MovieService> logger) : IMovieService
+    IMapper mapper) : IMovieService
 {
     public async Task<ResponseModel> SaveReviewAsync(int movieId, ReviewMovieDto request)
     {
@@ -33,6 +33,12 @@ public class MovieService(AppDbContext dbContext,
         .OrderByDescending(x => x.CreatedDate)
         .ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
         .ToListAsync();
+
+        var istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        foreach (var review in reviews)
+        {
+            review.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(review.CreatedDate, istTimeZone);
+        }
 
         return reviews.Count > 0
             ? ResponseModel.Success(string.Empty, reviews)

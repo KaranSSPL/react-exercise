@@ -1,6 +1,6 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import styles from "../css/addReviewModal.module.css";
+import { submitMovieReview } from "../api";
 
 const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
   const [formData, setFormData] = useState({
@@ -8,6 +8,21 @@ const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
     lastName: "",
     comment: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -18,60 +33,90 @@ const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
-    if (!formData.firstName || !formData.lastName || !formData.comment) {
-      alert("Please fill out all fields.");
+    setIsSubmitting(true);
+
+    const newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "First Name is required.";
+    else if (!formData.lastName) newErrors.lastName = "Last Name is required.";
+    else if (!formData.comment) newErrors.comment = "Comment is required.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
       return;
     }
-    try {
-      const data = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        comment: formData.comment,
+
+    const data = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      comment: formData.comment,
+    };
+
+    const response = await submitMovieReview(id, data);
+
+    if (response.status === 400) {
+      const apiErrors = response.response?.data?.errors;
+      if (apiErrors) {
+        const apiErrorMessages = {};
+        for (const key in apiErrors) {
+          const camelKey = pascalToCamel(key);
+          apiErrorMessages[camelKey] = apiErrors[key].join(" ");
+        }
+        setErrors(apiErrorMessages);
+      } else {
+        setErrors({ general: "An unexpected error occurred." });
+      }
+    } else if (response.status === 200 && response?.data?.isSuccess) {
+      const newReview = {
+        ...data,
+        createdDate: new Date().toISOString(),
       };
 
-      const res = await axios.post(
-        `${process.env.REACT_APP_REVIEW_API_BASE_URL}/${id}/reviews`,
-        data
-      );
-
-      if (res.data?.isSuccess) {
-        const newReview = {
-          ...data,
-          createdDate: new Date().toISOString(),
-        };
-
-        if (onReviewSubmit) {
-          onReviewSubmit(newReview);
-        }
-
-        setFormData({ firstName: "", lastName: "", comment: "" });
-        onClose();
-      } else {
-        // ToDo : show error message to user.
-        alert("Review submission failed.");
-        onClose();
-        // console.warn("Review submission failed.");
+      if (onReviewSubmit) {
+        onReviewSubmit(newReview);
       }
-    } catch (error) {
-      // ToDo : show error message to user.
-      alert("An error occurred while submitting your review.", error);
+
+      setFormData({ firstName: "", lastName: "", comment: "" });
+      setErrors({});
       onClose();
-      // console.error("Error saving review:", error);
+    } else {
+      setErrors({ general: "Review submission failed." });
     }
+
+    setIsSubmitting(false);
   };
+
+  const pascalToCamel = (str) => {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+  }
 
   return (
     <div className={styles["modal-overlay-review"]}>
       <div className={styles["modal-content-review"]}>
         <h2>Add a Review</h2>
+        {errors.general && (
+          <div className={styles.error} style={{ marginBottom: "1rem" }}>
+            {errors.general}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className={styles["review-form"]}>
-          <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required />
-          <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
-          <textarea name="comment" placeholder="Your Review" value={formData.comment} onChange={handleChange} required />
+          <div>
+            <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} autoFocus />
+            {errors.firstName && <span className={styles.error}>{errors.firstName}</span>}
+          </div>
+          <div>
+            <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} />
+            {errors.lastName && <span className={styles.error}>{errors.lastName}</span>}
+          </div>
+          <div>
+            <textarea name="comment" placeholder="Your Review" value={formData.comment} onChange={handleChange} />
+            {errors.comment && <span className={styles.error}>{errors.comment}</span>}
+          </div>
           <div className={styles["modal-actions"]}>
-            <button type="submit" className={styles["submit-button"]}>
-              Submit
+            <button type="submit" className={styles["submit-button"]} disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button type="button" className={styles["cancel-button"]} onClick={onClose}>
               Cancel
