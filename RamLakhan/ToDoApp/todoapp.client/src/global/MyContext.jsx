@@ -7,9 +7,12 @@ export const MyContextProvider = ({ children }) => {
     const [allGroupTaskList, setAllGroupTaskList] = useState([]);
     const [allStarredTasks, setallStarredTasks] = useState({});
     const [hideSidebar, setHideSidebar] = useState(false);
+    const [sidebarShow, setSidebarShow] = useState(true);
+    const [unfoldable, setUnfoldable] = useState(false);
+    const [theme, setTheme] = useState('light');
 
     return (
-        <Context.Provider value={{ taskGroups, setTaskGroups, allGroupTaskList, setAllGroupTaskList, allStarredTasks, setallStarredTasks, hideSidebar, setHideSidebar }}>
+        <Context.Provider value={{ theme, setTheme, sidebarShow, setSidebarShow, unfoldable, setUnfoldable, taskGroups, setTaskGroups, allGroupTaskList, setAllGroupTaskList, allStarredTasks, setallStarredTasks, hideSidebar, setHideSidebar }}>
             {children}
         </Context.Provider>
     );

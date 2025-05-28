@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@coreui/icons-react": "^2.3.0",
+    "react-redux": "^9.2.0",
+    "redux": "^5.0.1",
+    "simplebar-react": "^3.3.1"
+  }
+}

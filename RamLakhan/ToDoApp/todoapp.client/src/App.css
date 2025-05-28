@@ -4,7 +4,7 @@
     padding: 0;
 }
 
-body {
+/*body {
     background-color: #ebe9e9;
 }
 
@@ -42,9 +42,9 @@ body {
     position: fixed;
     top: 0;
     left: 0px;
-    background-color: #fff;
+    background-color: #fff;*/
     /* flex: 0 0 20%; */
-    transition: all 0.3s ease-in-out;
+    /*transition: all 0.3s ease-in-out;
 }
 
     .sidebar.hide {
@@ -93,9 +93,9 @@ body {
 .sidebar ul li button {
     font-size: 20px;
     font-weight: 600;
-    border: none;
+    border: none;*/
     /*width: 100%;*/
-    text-align: left;
+    /*text-align: left;
 }
 
     .sidebar ul li button.grouplist svg {
@@ -147,7 +147,7 @@ body {
             left: 0;
             transition: left 0.3s ease-in-out;
             height: 100%;
-        }
+        }*/
 
 .task-scroll-container {
     overflow-x: auto;
@@ -401,4 +401,8 @@ body {
     text-align: left;
     margin-top: 10px;
     padding-left: 0px;
+}
+a svg{
+    height:30px;
+    width:30pc;
 }
