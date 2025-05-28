@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import "../css/index.css";
-import { config } from "../utils/axiosConfig.js";
 import Loader from "../components/Loader.jsx";
 import Header from "../components/Header.jsx";
 import Pagination from "../components/Pagination.jsx";
 import NotFound from "../components/NotFound.jsx";
 import MovieListCard from "../components/MovieListCard.jsx";
 import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
+
+import { fetchMoviesList, searchMoviesList } from "../api.jsx";
 
 const MovieContainer = () => {
   const location = useLocation();
@@ -26,56 +26,58 @@ const MovieContainer = () => {
   const [fetchError, setFetchError] = useState("");
 
   const fetchMovies = async (pageNumber = 1) => {
-    try {
-      setIsLoading(true);
-      setFetchError("");
-      const response = await axios.get(
-        `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
-        config
-      );
-      // ToDo: handle null error
-      const result = response?.data?.results || [];
+    setIsLoading(true);
+    setFetchError("");
 
+    const response = await fetchMoviesList(pageNumber);
+    if (response?.status === 200) {
+      const result = response?.data?.results || [];
       setMoviesList(result);
       setTotalPage(response?.data?.total_pages || 0);
       setFoundSearchResult(false);
-    } catch (error) {
-      const message = error?.response?.data?.status_message || "Unexpected error occurred.";
+    } else {
+      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
       setMoviesList([]);
       setFoundSearchResult(false);
       setFetchError(message)
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   };
 
   const searchMovies = async (searchText, pageNumber = 1) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/search/movie?query=${searchText}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
-        config
-      );
-      // ToDo: handle null error
+    setIsLoading(true);
+    setFetchError("");
+    
+    const response = await searchMoviesList(searchText, pageNumber)
+    if (response?.status === 200) {
       setTotalPage(response?.data?.total_pages || 0);
-      
+
       if (response?.data?.results <= 0) {
         setFoundSearchResult(true);
       } else {
         setFoundSearchResult(false);
         setMoviesList(response.data.results);
       }
-    } catch (error) {
-      console.error("Error while searching movie:", error);
-    } finally {
-      setIsLoading(false);
+    } else {
+      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
+      setMoviesList([]);
+      setFoundSearchResult(false);
+      setFetchError(message);
     }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    searchMovie.trim()
-      ? searchMovies(searchMovie, currentPageNumber)
-      : fetchMovies(currentPageNumber);
+    const handler = setTimeout(() => {
+      searchMovie.trim()
+        ? searchMovies(searchMovie, currentPageNumber)
+        : fetchMovies(currentPageNumber);
+    }, 500);
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchMovie, currentPageNumber]);
 
   const handleSearch = (query) => {

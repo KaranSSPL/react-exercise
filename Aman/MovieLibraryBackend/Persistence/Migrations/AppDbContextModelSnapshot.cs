@@ -34,10 +34,10 @@ namespace MovieLibraryApi.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateOnly>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("date")
-                        .HasDefaultValueSql("CAST(GETUTCDATE() AS date)");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GetUTCDate()");
 
                     b.Property<string>("FirstName")
                         .HasMaxLength(50)

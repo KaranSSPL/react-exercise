@@ -15,6 +15,6 @@ namespace MovieLibraryApi.Persistence.Entities
         public string? LastName { get; set; }
         [MaxLength(500)]
         public string? Comment { get; set; }
-        public DateOnly CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

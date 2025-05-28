@@ -2,12 +2,10 @@ const MovieGalleryImage = ({ index, gallery, handleImageClick, isSelected, style
     const imageUrl = `${process.env.REACT_APP_IMAGE_URL}/w200${gallery.file_path}`;
 
     return (
-        <>
-            <button onClick={handleImageClick}
-                className={`${styles["image-button"]} ${isSelected ? styles["selected-image"] : ""}`} >
-                <img src={imageUrl} alt={index + 1} />
-            </button>
-        </>
+        <button onClick={handleImageClick}
+            className={`${styles["image-button"]} ${isSelected ? styles["selected-image"] : ""}`} >
+            <img src={imageUrl} alt={index + 1} />
+        </button>
     )
 }
 

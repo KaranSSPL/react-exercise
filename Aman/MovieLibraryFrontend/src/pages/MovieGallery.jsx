@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 
 import styles from '../css/movieGallery.module.css';
 import MovieGalleryImage from '../components/MovieGalleryImage';
 import Loader from "../components/Loader";
-import { config } from "../utils/axiosConfig";
 import FailedToFetchMovies from "../components/FailedToFetchMovies";
 import ImageModal from "../components/ImageModal";
+
+import { fetchMovieImages } from "../api";
 
 const MovieGallery = () => {
     const { id } = useParams();
@@ -20,18 +20,15 @@ const MovieGallery = () => {
 
     const fetchGalleryImages = async (movieId) => {
         setIsLoading(true);
-        try {
-            const response = await axios.get(
-                `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}/images`,
-                config
-            );
+
+        const response = await fetchMovieImages(movieId)
+        if (response.status === 200) {
             setGalleryImages((response?.data?.posters || []).slice(0, 50));
-        } catch (error) {
-            console.error("Error fetching movie gallery:", error);
+        } else {
             setGalleryImages([]);
-        } finally {
-            setIsLoading(false);
         }
+
+        setIsLoading(false);
     };
 
     useEffect(() => {
