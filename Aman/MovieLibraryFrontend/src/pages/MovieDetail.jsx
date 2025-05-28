@@ -138,6 +138,9 @@ const MovieDetail = () => {
                 <Link to={`/movies/${id}/gallery`} className={`${styles["movie-link"]} ${styles["share-button"]}`}>
                   Gallery
                 </Link>
+                <Link to={`/movies/${id}/similar`} className={`${styles["movie-link"]} ${styles["share-button"]}`}>
+                  Similar Movies
+                </Link>
               </div>
             </div>
           </div>
