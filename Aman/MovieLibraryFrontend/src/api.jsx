@@ -62,3 +62,15 @@ export const submitMovieReview = async (movieId, data) => {
         return error;
     }
 }
+
+export const fetchSimilarMoviesList = async (movieId, pageNumber) => {
+    try {
+        const response = await axios.get(
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}/similar?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
+            config
+        );
+        return response;
+    } catch (error) {
+        return error;
+    }
+}

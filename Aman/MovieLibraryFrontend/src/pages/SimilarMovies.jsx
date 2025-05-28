@@ -1,43 +1,44 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { config } from "../utils/axiosConfig";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import styles from '../css/movieGallery.module.css';
 import Loader from "../components/Loader";
 import FailedToFetchMovies from "../components/FailedToFetchMovies";
 import Pagination from "../components/Pagination";
 
+import { fetchSimilarMoviesList } from "../api";
+
 const SimilarMovies = () => {
     const { id } = useParams();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page") || 1;
+    const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(true);
     const [similarMovies, setSimilarMovies] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
-    const [currentPageNumber, setCurrentPageNumber] = useState(1);
+    const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
     const [fetchError, setFetchError] = useState("");
 
     const fetchSimilarMovies = async (movieId, pageNumber) => {
         setIsLoading(true);
         setFetchError("");
-        try {
-            const res = await axios.get(
-                `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}/similar?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
-                config
-            );
-            if (!res || !res.data || !res.data.results) {
-                setSimilarMovies([]);
-            } else {
-                setSimilarMovies(res.data.results);
-                setTotalPage(res.data.total_pages);
-            }
-        } catch (err) {
-            const message = err?.response?.data?.status_message || "Unexpected error occurred.";
+
+        const response = await fetchSimilarMoviesList(movieId, pageNumber);
+        
+        if (response.status === 200) {
+            setSimilarMovies(response.data.results);
+            setTotalPage(response.data.total_pages);
+        } else if (response.status === 400) {
+            const message = response?.response?.data?.status_message || "Unexpected error occurred.";
             setSimilarMovies([]);
             setFetchError(message)
-        } finally {
-            setIsLoading(false);
+        } else {
+            setSimilarMovies([]);
         }
+
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -46,6 +47,7 @@ const SimilarMovies = () => {
 
     const handlePageChange = (page) => {
         setCurrentPageNumber(page);
+        navigate(`?page=${page}`);
     };
 
     return isLoading ? (
