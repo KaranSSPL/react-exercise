@@ -9,12 +9,14 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
 
     const { RefreshTaskLists } = useTaskEvents();
 
+    const [disable, setDisable] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [isShowError, setIsShowError] = useState(false);
     const [editTaskItem, setEditTaskItem] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(1);
+    const [responseError, setResponseError] = useState(null);
 
 
     useEffect(() => {
@@ -38,6 +40,7 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
     }
 
     const handleSubmit = async () => {
+        setDisable(true);
         let response = {};
         const toDoDate = date?.trim() ? date : null;
 
@@ -45,19 +48,21 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
             response = await UpdateTask(taskId, { ...editTaskItem, title: title, description: description, toDoDate: toDoDate });
         } else {
             const isStarred = isStarredTask === null || isStarredTask === undefined || !isStarredTask ? false : isStarredTask;
-            const groupid = groupId > 0 ? groupId : selectedGroupId;
-            response = await AddTask({ taskId: 0, title: title, description: description, toDoDate: toDoDate, taskGroupId: groupid, isStarred: isStarred });
+            const taskGroupId = groupId > 0 ? groupId : selectedGroupId;
+            response = await AddTask({ taskId: 0, title: title, description: description, toDoDate: toDoDate, taskGroupId: taskGroupId, isStarred: isStarred });
         }
+
+        setDisable(false);
 
         if (!response.isSuccess) {
             console.log("Error while adding or updating task", response);
+            setResponseError(response.message);
             return;
         }
 
         setSelectedGroupId(1);
         EmptyAllFields();
-        setVisibility(false);
-
+        response.isSuccess && setVisibility(false);
         await RefreshTaskLists();
     }
 
@@ -83,6 +88,7 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
             <Modal.Header closeButton>
                 <Modal.Title>{taskId > 0 ? "Edit task" : "Add task"}</Modal.Title>
             </Modal.Header>
+            {responseError && <p className=" text-center mt-2 mb-0 text-danger">{responseError}</p>}
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -142,7 +148,7 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
                 <Button variant="secondary" onClick={() => handleClose()}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSubmit} disabled={!title.trim()}>
+                <Button variant="primary" onClick={handleSubmit} disabled={!title.trim() || disable}>
                     Save
                 </Button>
             </Modal.Footer>

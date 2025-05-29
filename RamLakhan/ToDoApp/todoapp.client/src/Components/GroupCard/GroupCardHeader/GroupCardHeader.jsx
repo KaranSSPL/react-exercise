@@ -21,7 +21,7 @@ const GroupCardHeader = ({ group, isStarredList, openGroupMenuPopup, setOpenGrou
             <h4>{group.groupName}</h4>
             <div className="task-group-menu" tabIndex={0} role="button" aria-label="Open menu">
                 <EllipsisVertical onClick={() => setOpenGroupMenuPopup(openGroupMenuPopup === group.groupId ? null : group.groupId)} />
-                {openGroupMenuPopup === group.groupId && <GroupMenuPopup group={group} isStarredList={isStarredList} />}
+                {openGroupMenuPopup === group.groupId && <GroupMenuPopup group={group} isStarredList={isStarredList} setOpenGroupMenuPopup={setOpenGroupMenuPopup} />}
             </div>
         </div>
     )

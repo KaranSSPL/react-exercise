@@ -18,6 +18,7 @@ const GroupCard = ({ group, isStarredList, openGroupMenuPopup, setOpenGroupMenuP
         let response = await UpdateTask(task.taskId, { ...task, isCompleted: isComplete });
         if (!response.isSuccess) {
             console.error("error while updating task for complete or uncomplete", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 

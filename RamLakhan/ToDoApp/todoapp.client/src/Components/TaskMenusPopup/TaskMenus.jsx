@@ -4,16 +4,18 @@ import { DeleteTask, GetTaskById, UpdateTask } from '../../api/TaskApi';
 import { Trash2, Check } from 'lucide-react';
 import AddOrUpdateGroups from '../Sidebar/AddOrUpdateGroups';
 
-const TaskMenus = ({ task }) => {
+const TaskMenus = ({ task,setOpenTaskMenuPopup }) => {
     const { taskGroups, RefreshTaskLists } = useTaskEvents();
     const [taskIdForMove, setTaskIdForMove] = useState(0);
     const [visibleModelPopup, setVisibleModelPopup] = useState(false);
 
     // Delete task handler 
     const handleDeleteTask = async (taskId) => {
-        const res = await DeleteTask(taskId);
-        if (!res.isSuccess) {
-            console.error("error while delete task", res);
+        const response = await DeleteTask(taskId);
+        setOpenTaskMenuPopup(false);
+        if (!response.isSuccess) {
+            console.error("error while delete task", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 
@@ -23,15 +25,17 @@ const TaskMenus = ({ task }) => {
     // handle move task to anothe created group
     const handleMoveTask = async (taskId, groupId) => {
         const task = await GetTaskById(taskId);
-
+        setOpenTaskMenuPopup(false);
         if (!task.isSuccess) {
-            console.log("error while getting task for move to another group ", res);
+            console.log("error while getting task for move to another group ", task);
+            alert(`Error! ${task.message}`);
             return;
         }
 
-        const res = await UpdateTask(taskId, { ...task.data, taskGroupId: groupId });
-        if (!res.isSuccess) {
-            console.log("error while moving task to another group ", res);
+        const response = await UpdateTask(taskId, { ...task.data, taskGroupId: groupId });
+        if (!response.isSuccess) {
+            console.log("error while moving task to another group ", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 

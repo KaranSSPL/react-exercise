@@ -17,14 +17,16 @@ const CompletedTask = ({ groupId, task, onComplete }) => {
 
     // Delete task handler 
     const handleDeleteTask = async (taskId) => {
-        const res = await DeleteTask(taskId);
-        if (!res.isSuccess) {
-            console.error("error while delete task", res);
+        const response = await DeleteTask(taskId);
+        if (!response.isSuccess) {
+            console.error("error while delete task", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 
         await RefreshTaskLists();
     };
+
     return (
         <>
             <div key={task.taskId} className="row">

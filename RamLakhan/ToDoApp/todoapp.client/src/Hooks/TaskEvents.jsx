@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Context } from '../global/MyContext';
-import {  GetGroupsTaskList, GetStarredTask,} from '../api/TaskGroupApi';
+import { GetGroupsTaskList, GetStarredTask, } from '../api/TaskGroupApi';
 
 export function useTaskEvents() {
 
@@ -16,17 +16,29 @@ export function useTaskEvents() {
 
     // Refresh groups task list and starred task list
     const RefreshTaskLists = async () => {
-        const res = await GetGroupsTaskList();
-        if (res.isSuccess) {
-            setAllGroupTaskList(res.data);
-        } else {
-            console.error("Failed or unexpected response:", res.message, res.data);
-        }
-        const starredTask = await GetStarredTask();
-        if (starredTask.isSuccess) {
-            setallStarredTasks(starredTask.data);
-        } else {
-            console.error("Failed or unexpected response:", starredTask.message, starredTask.data);
+        try {
+            const [groupRes, starredRes] = await Promise.all([
+                GetGroupsTaskList(),
+                GetStarredTask()
+            ]);
+
+            if (!groupRes?.isSuccess) {
+                console.error("Group tasks fetch failed:", groupRes?.message || "Unknown error", groupRes?.data);
+                alert(`Error! ${groupRes.message}`);
+            } else {
+                setAllGroupTaskList(groupRes.data);
+            }
+
+            if (!starredRes?.isSuccess) {
+                console.error("Starred tasks fetch failed:", starredRes?.message || "Unknown error", starredRes?.data);
+                alert(`Error! ${starredRes.message}`);
+            } else {
+                setallStarredTasks(starredRes.data);
+            }
+
+        } catch (error) {
+            console.error("Unexpected error during RefreshTaskLists:", error);
+            alert(`Error! ${error}`);
         }
     };
 

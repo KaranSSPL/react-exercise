@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { UpdateGroup, DeleteGroup, DeleteCompletedTask, GetGroupById } from '../../api/TaskGroupApi';
+import { UpdateGroup, DeleteGroup, DeleteCompletedTask } from '../../api/TaskGroupApi';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 import AddOrUpdateGroups from '../Sidebar/AddOrUpdateGroups';
 
-const GroupMenuPopup = ({ group, isStarredList }) => {
+const GroupMenuPopup = ({ group, isStarredList, setOpenGroupMenuPopup }) => {
     const orderList = ["My order", "Date", "Title", "Description"];
     const { RefreshTaskLists, setAllGroupTaskList, allGroupTaskList, setTaskGroups, taskGroups } = useTaskEvents();
     const [visibleModel, setVisibleModel] = useState(false);
@@ -11,20 +11,18 @@ const GroupMenuPopup = ({ group, isStarredList }) => {
 
     const handleSort = async (option, groupId) => {
         let response = {};
-        response = await GetGroupById(groupId);
-        if (!response.isSuccess) {
-            console.error("error while getting group by id", response);
-            return;
-        }
+        response = taskGroups.find(item => item.listId === groupId);
+        setOpenGroupMenuPopup(false);
+        if (response?.groupId && response?.groupId > 0) {
 
-        response = await UpdateGroup(groupId, { ...response.data, sortBy: option });
-        if (!response.isSuccess) {
-            console.log("error while calling api for save group", response);
-            return;
+            response = await UpdateGroup(groupId, { ...response.data, sortBy: option });
+            if (!response.isSuccess) {
+                console.error("error while calling api for save group", response);
+                alert(`Error! ${response.message}`);
+                return;
+            }
         }
-
         await RefreshTaskLists();
-
     };
 
     const handleRenameGroup = (groupId) => {
@@ -34,9 +32,11 @@ const GroupMenuPopup = ({ group, isStarredList }) => {
 
     // Delete a goroup 
     const handleDeleteGroup = async (groupId) => {
-        const res = await DeleteGroup(groupId);
-        if (!res.isSuccess) {
-            console.error("error while delete group", res);
+        const response = await DeleteGroup(groupId);
+        setOpenGroupMenuPopup(false);
+        if (!response.isSuccess) {
+            console.error("error while delete group", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 
@@ -47,9 +47,11 @@ const GroupMenuPopup = ({ group, isStarredList }) => {
     };
 
     const handleDeleteCompletedTask = async (groupId) => {
-        const res = await DeleteCompletedTask(groupId);
-        if (!res.isSuccess) {
-            console.error("error while delete group", res);
+        const response = await DeleteCompletedTask(groupId);
+        setOpenGroupMenuPopup(false);
+        if (!response.isSuccess) {
+            console.error("error while delete group", response);
+            alert(`Error! ${response.message}`);
             return;
         }
 
@@ -95,6 +97,7 @@ const GroupMenuPopup = ({ group, isStarredList }) => {
                     setVisibility={setVisibleModel}
                     groupId={groupId}
                     taskIdToMove={0}
+                    setOpenGroupMenuPopup={setOpenGroupMenuPopup}
                 />
             }
         </>

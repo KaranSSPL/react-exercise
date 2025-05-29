@@ -7,12 +7,15 @@ import Form from 'react-bootstrap/Form';
 const HandleVisibleGroups = () => {
     const { taskGroups, setTaskGroups, allGroupTaskList, setAllGroupTaskList } = useTaskEvents();
     const [isCollapse, setIsCollapse] = useState(false);
+    const [responseError, setResponseError] = useState(null);
 
     useEffect(() => {
         (async () => {
             const response = await GetGroups();
             if (!response.isSuccess) {
                 console.error("Failed to fetch groups:", response.message);
+                setResponseError(response.message);
+                return;
             }
             setTaskGroups(response.data);
         })();
@@ -22,9 +25,11 @@ const HandleVisibleGroups = () => {
         const group = taskGroups.find(item => item.listId === groupId);
         if (group) {
             const updatedGroup = { ...group, isEnableShow: !group.isEnableShow };
-            const result = await UpdateGroup(updatedGroup.listId, updatedGroup);
-            if (!result.isSuccess) {
-                console.error("Failed to update group visibility:", result.message);
+            const response = await UpdateGroup(updatedGroup.listId, updatedGroup);
+            if (!response.isSuccess) {
+                console.error("Failed to update group visibility:", response.message);
+                alert(`Error! ${response.message}`);
+                return;
             }
 
             const updatedTaskGroups = taskGroups.map(item =>
@@ -60,25 +65,21 @@ const HandleVisibleGroups = () => {
                 List {isCollapse == false ? <ChevronUp /> : <ChevronDown />}
             </button>
             <ul className={`submenu ${isCollapse == true ? 'collapse' : ''}`}>
-                {taskGroups.length > 0 &&
-                    taskGroups.map(item => (
-
-                        <li key={item.listId} className="submenu-item">
-                            <div className="row d-flex justify-content-center">
-                                {/*<div className="col-1 mt-1 text-left">
-                                    <input className="checkinput" type="checkbox" checked={item.isEnableShow} onChange={() => HandleVisibilityCheck(item.listId)} />
-                                </div>*/}
-
-                                <div className="col-10 text-left">
-                                    <Form.Check type="switch" id="custom-switch" checked={item.isEnableShow} onChange={() => HandleVisibilityCheck(item.listId)} label={item.listName} />
-                                    {/*<span>{item.listName}</span>*/}
+                {
+                    responseError != null ? <li><p className="pl-1 mt-2 mb-0 text-danger">{responseError}</p></li>
+                        :
+                        taskGroups.length > 0 &&
+                        taskGroups.map(item => (
+                            <li key={item.listId} className="submenu-item">
+                                <div className="row d-flex justify-content-center">
+                                    <div className="col-10 text-left">
+                                        <Form.Check type="switch" id="custom-switch" checked={item.isEnableShow} onChange={() => HandleVisibilityCheck(item.listId)} label={item.listName} />                                        
+                                    </div>
+                                    <div className="col-2 text-end"><span className="group-count">{countTask(item.listId)}</span></div>
                                 </div>
 
-                                <div className="col-2 text-end"><span className="group-count">{countTask(item.listId)}</span></div>
-                            </div>
-
-                        </li>
-                    ))
+                            </li>
+                        ))
                 }
             </ul>
         </>

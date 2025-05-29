@@ -33,12 +33,13 @@ const InCompleteTask = ({ groupId, task, onComplete, openTaskMenuPopup, setOpenT
 
     // mark a task to star or undo
     const handleToggleStar = async (taskId) => {
-        let res = await ToggleStarTask(taskId);
-        if (!res.isSuccess) {
-            console.error(`error while calling hendleUpdateStar message '${res.message}'`);
-        } else {
-            await RefreshTaskLists();
+        let response = await ToggleStarTask(taskId);
+        if (!response.isSuccess) {
+            console.error(`error while calling hendleUpdateStar message '${response.message}'`);
+            alert(`Error! ${response.message}`);
+            return;
         }
+        await RefreshTaskLists();
     };
 
     return (
@@ -70,7 +71,7 @@ const InCompleteTask = ({ groupId, task, onComplete, openTaskMenuPopup, setOpenT
                         <EllipsisVertical onClick={() => { setOpenTaskMenuPopup(openTaskMenuPopup === task.taskId ? null : task.taskId); }}
                         />
                         {openTaskMenuPopup === task.taskId && (
-                            <TaskMenus groupId={groupId} task={task} />
+                            <TaskMenus groupId={groupId} task={task} setOpenTaskMenuPopup={setOpenTaskMenuPopup } />
                         )}
                     </div>
                 </div>
