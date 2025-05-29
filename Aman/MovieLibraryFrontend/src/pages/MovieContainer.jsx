@@ -9,36 +9,38 @@ import NotFound from "../components/NotFound.jsx";
 import MovieListCard from "../components/MovieListCard.jsx";
 import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 
-import { fetchMoviesList, searchMoviesList } from "../api.jsx";
+import { fetchMediaList, searchMediaList } from "../api.jsx";
 
 const MovieContainer = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const page = queryParams.get("page") || 1;
+  const searchQuery = queryParams.get("search") || "";
+  const mediaTypeFromURL = queryParams.get("mediaType") || "movie";
   const navigate = useNavigate();
 
-  const [searchMovie, setSearchMovie] = useState("");
-  // const [mediaType, setMediaType] = useState("movie");
-  const [moviesList, setMoviesList] = useState([]);
+  const [searchedMedia, setSearchedMedia] = useState(searchQuery);
+  const [mediaType, setMediaType] = useState(mediaTypeFromURL);
+  const [mediaList, setMediaList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
   const [isLoading, setIsLoading] = useState(true);
   const [foundSearchResult, setFoundSearchResult] = useState(false);
   const [fetchError, setFetchError] = useState("");
 
-  const fetchMovies = async (pageNumber = 1) => {
+  const fetchMedia = async (mediaType, pageNumber = 1) => {
     setIsLoading(true);
     setFetchError("");
 
-    const response = await fetchMoviesList(pageNumber);
+    const response = await fetchMediaList(mediaType, pageNumber);
     if (response?.status === 200) {
       const result = response?.data?.results || [];
-      setMoviesList(result);
+      setMediaList(result);
       setTotalPage(response?.data?.total_pages || 0);
       setFoundSearchResult(false);
     } else {
       const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMoviesList([]);
+      setMediaList([]);
       setFoundSearchResult(false);
       setFetchError(message)
     }
@@ -46,11 +48,11 @@ const MovieContainer = () => {
     setIsLoading(false);
   };
 
-  const searchMovies = async (searchText, pageNumber = 1) => {
+  const searchMedia = async (mediaType, searchText, pageNumber = 1) => {
     setIsLoading(true);
     setFetchError("");
-    
-    const response = await searchMoviesList(searchText, pageNumber)
+
+    const response = await searchMediaList(mediaType, searchText, pageNumber)
     if (response?.status === 200) {
       setTotalPage(response?.data?.total_pages || 0);
 
@@ -58,11 +60,11 @@ const MovieContainer = () => {
         setFoundSearchResult(true);
       } else {
         setFoundSearchResult(false);
-        setMoviesList(response.data.results);
+        setMediaList(response.data.results);
       }
     } else {
       const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMoviesList([]);
+      setMediaList([]);
       setFoundSearchResult(false);
       setFetchError(message);
     }
@@ -72,29 +74,52 @@ const MovieContainer = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      searchMovie.trim()
-        ? searchMovies(searchMovie, currentPageNumber)
-        : fetchMovies(currentPageNumber);
+      searchedMedia.trim()
+        ? searchMedia(mediaType, searchedMedia, currentPageNumber)
+        : fetchMedia(mediaType, currentPageNumber);
     }, 500);
     return () => {
       clearTimeout(handler);
     };
-  }, [searchMovie, currentPageNumber]);
+  }, [searchedMedia, currentPageNumber, mediaType]);
 
   const handleSearch = (query) => {
-    setSearchMovie(query);
+    setSearchedMedia(query);
     setCurrentPageNumber(1);
-    navigate(`?page=1`);
+
+    if (query.trim()) {
+      navigate(`?page=1&search=${encodeURIComponent(query)}&mediaType=${mediaType}`);
+    } else {
+      navigate(`?mediaType=${mediaType}`);
+    }
   };
 
   const handlePageChange = (page) => {
     setCurrentPageNumber(page);
-    navigate(`?page=${page}`);
+    if (searchedMedia.trim()) {
+      navigate(`?page=${page}&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${mediaType}`);
+    } else {
+      navigate(`?page=${page}&mediaType=${mediaType}`);
+    }
+  };
+
+  const handleMediaTypeChange = (type) => {
+    setMediaType(type);
+    setCurrentPageNumber(1);
+    if (searchedMedia.trim()) {
+      navigate(`?page=1&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${type}`);
+    } else {
+      navigate(`?mediaType=${type}`);
+    }
   };
 
   return (
     <>
-      <Header searchMovie={searchMovie} onSearch={handleSearch} />
+      <Header
+        searchedMedia={searchedMedia}
+        onSearch={handleSearch}
+        mediaType={mediaType}
+        onMediaTypeChange={handleMediaTypeChange} />
       {isLoading ? (
         <Loader />
       ) : foundSearchResult ? (
@@ -111,8 +136,8 @@ const MovieContainer = () => {
       ) : (
         <>
           <div className="movie-grid">
-            {moviesList.map((movie) => (
-              <MovieListCard key={movie.id} movie={movie} currentPage={currentPageNumber} />
+            {mediaList.map((media) => (
+              <MovieListCard key={media.id} media={media} currentPage={currentPageNumber} mediaType={mediaType} />
             ))}
           </div>
           <Pagination

@@ -20,17 +20,17 @@ const App = () => {
                             <MovieContainer />
                         </LayoutForList>
                     } />
-                    <Route path="/movies/:id" element={
+                    <Route path="/:mediaType/:id" element={
                         <LayoutForDetail>
                             <MovieDetail />
                         </LayoutForDetail>
                     } />
-                    <Route path="/movies/:id/gallery" element={
+                    <Route path="/:mediaType/:id/gallery" element={
                         <LayoutForDetail>
                             <MovieGallery />
                         </LayoutForDetail>
                     } />
-                    <Route path="/movies/:id/similar" element={
+                    <Route path="/:mediaType/:id/similar" element={
                         <LayoutForDetail>
                             <SimilarMovies />
                         </LayoutForDetail>

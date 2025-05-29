@@ -6,10 +6,10 @@ import Loader from "../components/Loader";
 import FailedToFetchMovies from "../components/FailedToFetchMovies";
 import Pagination from "../components/Pagination";
 
-import { fetchSimilarMoviesList } from "../api";
+import { fetchSimilarMediaList } from "../api";
 
 const SimilarMovies = () => {
-    const { id } = useParams();
+    const { mediaType, id } = useParams();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const page = queryParams.get("page") || 1;
@@ -21,11 +21,11 @@ const SimilarMovies = () => {
     const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
     const [fetchError, setFetchError] = useState("");
 
-    const fetchSimilarMovies = async (movieId, pageNumber) => {
+    const fetchSimilarMovies = async (mediaType, movieId, pageNumber) => {
         setIsLoading(true);
         setFetchError("");
 
-        const response = await fetchSimilarMoviesList(movieId, pageNumber);
+        const response = await fetchSimilarMediaList(mediaType, movieId, pageNumber);
         
         if (response.status === 200) {
             setSimilarMovies(response.data.results);
@@ -42,8 +42,8 @@ const SimilarMovies = () => {
     };
 
     useEffect(() => {
-        fetchSimilarMovies(id, currentPageNumber);
-    }, [id, currentPageNumber]);
+        fetchSimilarMovies(mediaType, id, currentPageNumber);
+    }, [id, currentPageNumber, mediaType]);
 
     const handlePageChange = (page) => {
         setCurrentPageNumber(page);

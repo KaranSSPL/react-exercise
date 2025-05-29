@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "../css/addReviewModal.module.css";
-import { submitMovieReview } from "../api";
+import { submitMediaReview } from "../api";
 
-const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
+const AddReviewModal = ({ onClose, id, mediaType, onReviewSubmit }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -54,7 +54,7 @@ const AddReviewModal = ({ onClose, id, onReviewSubmit }) => {
       comment: formData.comment,
     };
 
-    const response = await submitMovieReview(id, data);
+    const response = await submitMediaReview(mediaType, id, data);
 
     if (response.status === 400) {
       const apiErrors = response.response?.data?.errors;

@@ -8,10 +8,10 @@ import Loader from "../components/Loader";
 import FailedToFetchMovies from "../components/FailedToFetchMovies";
 import ImageModal from "../components/ImageModal";
 
-import { fetchMovieImages } from "../api";
+import { fetchMediaImages } from "../api";
 
 const MovieGallery = () => {
-    const { id } = useParams();
+    const { mediaType, id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [galleryImages, setGalleryImages] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,10 +19,10 @@ const MovieGallery = () => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [showAllImages, setShowAllImages] = useState(false);
 
-    const fetchGalleryImages = async (movieId) => {
+    const fetchGalleryImages = async (mediaType, movieId) => {
         setIsLoading(true);
 
-        const response = await fetchMovieImages(movieId)
+        const response = await fetchMediaImages(mediaType, movieId)
         if (response.status === 200) {
             setGalleryImages(response?.data?.posters);
         } else {
@@ -33,8 +33,8 @@ const MovieGallery = () => {
     };
 
     useEffect(() => {
-        fetchGalleryImages(id);
-    }, [id]);
+        fetchGalleryImages(mediaType, id);
+    }, [id, mediaType]);
 
     const handleImageClick = (index) => {
         setCurrentImageIndex(index);

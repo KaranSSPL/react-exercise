@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
-const Header = ({ searchMovie, onSearch }) => {
-    const [input, setInput] = useState(searchMovie);
+const Header = ({ searchedMedia, onSearch, mediaType, onMediaTypeChange }) => {
+    const [input, setInput] = useState(searchedMedia);
 
     const searchMovieHandler = (e) => {
         e.preventDefault();
@@ -9,8 +9,8 @@ const Header = ({ searchMovie, onSearch }) => {
     };
 
     useEffect(() => {
-        setInput(searchMovie);
-    }, [searchMovie]);
+        setInput(searchedMedia);
+    }, [searchedMedia]);
 
     return (
         <>
@@ -22,9 +22,15 @@ const Header = ({ searchMovie, onSearch }) => {
                     <input type="text" placeholder="Search..." onChange={(e) => setInput(e.target.value)} value={input} />
                     <button type="submit">Search</button>
                 </form>
-                <button className="movie-button">Movies</button>
-                <button className="tv-series-button">TV Series</button>
-            </div>
+                <button className={`movie-button ${mediaType === "movie" ? "active" : ""}`}
+                    onClick={() => onMediaTypeChange("movie")}>
+                    Movies
+                </button>
+                <button className={`tv-series-button ${mediaType === "tv" ? "active" : ""}`}
+                    onClick={() => onMediaTypeChange("tv")}>
+                    TV Series
+                </button>
+            </div >
         </>
     )
 }

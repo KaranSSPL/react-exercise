@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom"
 
-const MovieListCard = ({ movie, currentPage }) => {
+const MovieListCard = ({ media, currentPage, mediaType }) => {
     const page = currentPage || 1;
     return (
-        <Link to={`/movies/${movie.id}?page=${page}`} className="movie-link" >
+        <Link to={`/${mediaType}/${media.id}?page=${page}`} className="movie-link" >
             <div className="movie-card">
-                <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${movie.poster_path}`} className="movie-poster" alt="Movie Poster" />
+                <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${media.poster_path}`} className="movie-poster" alt="Movie Poster" />
                 <div className="movie-info">
-                    <div className="movie-title">{movie.title}</div>
-                    <div className="movie-release-date">{movie.release_date}</div>
-                    <div className="movie-description">{movie.overview.substring(0, 120)} <strong>read more</strong></div>
-                    <div className="movie-rating">⭐ {movie.vote_average}</div>
+                    <div className="movie-title">{media.title ?? media.name}</div>
+                    <div className="movie-release-date">{media.release_date ?? media.first_air_date}</div>
+                    <div className="movie-description">{media.overview.substring(0, 120)} <strong>read more</strong></div>
+                    <div className="movie-rating">⭐ {media.vote_average}</div>
                 </div>
             </div>
         </Link>

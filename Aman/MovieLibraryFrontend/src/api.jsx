@@ -1,10 +1,10 @@
 import axios from "axios";
 import { config } from "./utils/axiosConfig";
 
-export const fetchMoviesList = async (pageNumber) => {
+export const fetchMediaList = async (mediaType = "movie", page = 1) => {
     try {
         const response = await axios.get(
-            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/movie?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/${mediaType}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
             config);
         return response;
     } catch (error) {
@@ -12,10 +12,10 @@ export const fetchMoviesList = async (pageNumber) => {
     }
 }
 
-export const searchMoviesList = async (searchText, pageNumber) => {
+export const searchMediaList = async (mediaType = "movie", query, page) => {
     try {
         const response = await axios.get(
-            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/search/movie?query=${searchText}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/search/${mediaType}?query=${query}&language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
             config
         );
         return response;
@@ -24,10 +24,10 @@ export const searchMoviesList = async (searchText, pageNumber) => {
     }
 }
 
-export const fetchMovieDetail = async (movieId) => {
+export const fetchMediaDetail = async (mediaType = "movie", movieId) => {
     try {
         const response = await axios.get(
-            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`,
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`,
             config
         );
         return response;
@@ -36,37 +36,37 @@ export const fetchMovieDetail = async (movieId) => {
     }
 }
 
-export const fetchMovieReviews = async (movieId) => {
+export const fetchMediaReviews = async (mediaType = "movie", movieId) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/movies/${movieId}/reviews`);
+        const response = await axios.get(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/${mediaType}/${movieId}/reviews`);
         return response;
     } catch (error) {
         return error;
     }
 }
 
-export const fetchMovieImages = async (movieId) => {
+export const fetchMediaImages = async (mediaType = "movie", movieId) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}/images`, config);
+        const response = await axios.get(`${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/images`, config);
         return response;
     } catch (error) {
         return error;
     }
 }
 
-export const submitMovieReview = async (movieId, data) => {
+export const submitMediaReview = async (mediaType = "movie", movieId, data) => {
     try {
-        const response = await axios.post(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/movies/${movieId}/reviews`, data);
+        const response = await axios.post(`${process.env.REACT_APP_REVIEW_API_BASE_URL}/${mediaType}/${movieId}/reviews`, data);
         return response;
     } catch (error) {
         return error;
     }
 }
 
-export const fetchSimilarMoviesList = async (movieId, pageNumber) => {
+export const fetchSimilarMediaList = async (mediaType = "movie", movieId, page) => {
     try {
         const response = await axios.get(
-            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/movie/${movieId}/similar?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${pageNumber}`,
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/similar?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
             config
         );
         return response;

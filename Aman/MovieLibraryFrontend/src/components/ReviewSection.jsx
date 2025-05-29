@@ -2,13 +2,13 @@ import { createPortal } from 'react-dom'
 import AddReviewModal from './AddReviewModal'
 import { useEffect, useRef, useState } from 'react';
 
-import { fetchMovieReviews } from '../api.jsx';
+import { fetchMediaReviews } from '../api.jsx';
 
-const ReviewSection = ({ id, styles }) => {
+const ReviewSection = ({ mediaType, id, styles }) => {
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [reviewLoading, setReviewLoading] = useState(true);
-    const [movieReviews, setMovieReviews] = useState([]);
+    const [mediaReviews, setMediaReviews] = useState([]);
     const addReviewButtonRef = useRef(null);
     const [apiError, setApiError] = useState("");
 
@@ -17,30 +17,30 @@ const ReviewSection = ({ id, styles }) => {
         setIsReviewModalOpen(true);
     };
 
-    const fetchReviews = async (movieId) => {
+    const fetchReviews = async (mediaType, movieId) => {
         setReviewLoading(true);
         
-        const response = await fetchMovieReviews(movieId);
+        const response = await fetchMediaReviews(mediaType, movieId);
 
         if (response.code === "ERR_NETWORK") {
-            setMovieReviews([]);
+            setMediaReviews([]);
             setApiError(response.message);
         } else if (response.status === 200 && response.data?.isSuccess && response.data.data) {
-            setMovieReviews(response.data.data);
+            setMediaReviews(response.data.data);
         } else {
-            setMovieReviews([]);
+            setMediaReviews([]);
         }
 
         setReviewLoading(false);
     };
 
     const handleAddReviewToList = (newReview) => {
-        setMovieReviews((prev) => [newReview, ...prev]);
+        setMediaReviews((prev) => [newReview, ...prev]);
     };
 
     useEffect(() => {
-        fetchReviews(id);
-    }, [id])
+        fetchReviews(mediaType, id);
+    }, [id, mediaType])
 
     return (
         <div className={styles["review-section"]}>
@@ -61,6 +61,7 @@ const ReviewSection = ({ id, styles }) => {
                                 addReviewButtonRef.current?.focus();
                             }}
                             id={id}
+                            mediaType={mediaType}
                             onReviewSubmit={handleAddReviewToList}
                         />,
                         document.getElementById("modal-root")
@@ -75,9 +76,9 @@ const ReviewSection = ({ id, styles }) => {
                 <p className={styles["no-reviews"]}>
                     {`Failed to load reviews: ${apiError}`}
                 </p>
-            ) : movieReviews && movieReviews.length > 0 ? (
+            ) : mediaReviews && mediaReviews.length > 0 ? (
                 <div className={styles["detail-wrapper"]}>
-                    {movieReviews.map((item) => (
+                    {mediaReviews.map((item) => (
                         <div key={item.id} className={styles["review-card"]} id={item.id}>
                             <div className={styles["review-header"]}>
                                 <span className={styles["review-username"]}>{`${item.firstName} ${item.lastName}`}</span>

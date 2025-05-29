@@ -10,5 +10,8 @@ public class MappingProfile : Profile
     {
         CreateMap<ReviewMovieDto, ReviewMovie>().ReverseMap();
         CreateMap<ReviewMovie, ReviewSummaryDto>().ReverseMap();
+
+        CreateMap<ReviewMovieDto, ReviewTvSeries>().ReverseMap();
+        CreateMap<ReviewTvSeries, ReviewSummaryDto>().ReverseMap();
     }
 }

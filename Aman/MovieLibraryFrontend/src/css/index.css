@@ -65,6 +65,11 @@ header h1 {
     cursor: pointer;
 }
 
+.active {
+    background-color: #444;
+    color: white;
+}
+
 .movie-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
