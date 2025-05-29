@@ -18,6 +18,7 @@ const MovieContainer = () => {
   const navigate = useNavigate();
 
   const [searchMovie, setSearchMovie] = useState("");
+  // const [mediaType, setMediaType] = useState("movie");
   const [moviesList, setMoviesList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));

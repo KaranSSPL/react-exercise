@@ -24,10 +24,16 @@ header h1 {
     padding: 20px;
 }
 
-.search-bar {
+.media-type {
     display: flex;
+    margin-bottom: 30px;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar {
     max-width: 500px;
-    margin: 0 auto 30px;
 }
 
 .search-bar input {
@@ -45,6 +51,17 @@ header h1 {
     color: white;
     font-size: 16px;
     border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.movie-button,
+.tv-series-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #db595f;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
