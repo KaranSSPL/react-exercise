@@ -17,13 +17,14 @@ const MovieGallery = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+    const [showAllImages, setShowAllImages] = useState(false);
 
     const fetchGalleryImages = async (movieId) => {
         setIsLoading(true);
 
         const response = await fetchMovieImages(movieId)
         if (response.status === 200) {
-            setGalleryImages((response?.data?.posters || []).slice(0, 50));
+            setGalleryImages(response?.data?.posters);
         } else {
             setGalleryImages([]);
         }
@@ -33,49 +34,62 @@ const MovieGallery = () => {
 
     useEffect(() => {
         fetchGalleryImages(id);
-    }, [id])
+    }, [id]);
 
     const handleImageClick = (index) => {
         setCurrentImageIndex(index);
         setIsModalOpen(true);
-    }
+    };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedImageIndex(currentImageIndex);
-    }
+    };
 
     const handleImageSlider = (direction) => {
         setCurrentImageIndex(direction);
     };
+
+    const visibleImages = showAllImages || galleryImages.length <= 20
+        ? galleryImages
+        : galleryImages.slice(0, 20);
 
     return isLoading ? (
         <Loader />
     ) : (
         <div className={styles["gallery-wrapper"]}>
             {galleryImages && galleryImages.length > 0 ? (
-                <div className={styles.gallery} id="gallery">
-                    {galleryImages.map((gallery, index) => (
-                        <MovieGalleryImage
-                            key={index}
-                            index={index}
-                            gallery={gallery}
-                            handleImageClick={() => handleImageClick(index)}
-                            isSelected={selectedImageIndex === index}
-                            styles={styles}
-                        />
-                    ))}
-                    {isModalOpen && createPortal(
-                        <ImageModal
-                            onClose={handleCloseModal}
-                            currentImageIndex={currentImageIndex}
-                            handleImageSlider={handleImageSlider}
-                            images={galleryImages}
-                            styles={styles}
-                        />,
-                        document.getElementById("modal-root")
+                <>
+                    <div className={styles.gallery} id="gallery">
+                        {visibleImages.map((gallery, index) => (
+                            <MovieGalleryImage
+                                key={index}
+                                index={index}
+                                gallery={gallery}
+                                handleImageClick={() => handleImageClick(index)}
+                                isSelected={selectedImageIndex === index}
+                                styles={styles}
+                            />
+                        ))}
+
+                        {isModalOpen && createPortal(
+                            <ImageModal
+                                onClose={handleCloseModal}
+                                currentImageIndex={currentImageIndex}
+                                handleImageSlider={handleImageSlider}
+                                images={galleryImages}
+                                styles={styles}
+                            />,
+                            document.getElementById("modal-root")
+                        )}
+                    </div>
+
+                    {galleryImages.length > 20 && (
+                        <button className={styles["show-more-btn"]} onClick={() => setShowAllImages(prev => !prev)}>
+                            {showAllImages ? "Show Less" : "Show More"}
+                        </button>
                     )}
-                </div>
+                </>
             ) : (
                 <FailedToFetchMovies message={"No images available."} />
             )}
