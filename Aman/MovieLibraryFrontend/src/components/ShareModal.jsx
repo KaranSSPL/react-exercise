@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../css/sharePopUpModal.module.css';
 
 const ShareModal = ({ onClose }) => {
+    const [errors, setErrors] = useState("");
+    const [copied, setCopied] = useState(false);
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
@@ -16,8 +19,11 @@ const ShareModal = ({ onClose }) => {
     }, [onClose]);
 
     const copyLink = () => {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 5000);
+            }).catch(() => setErrors("Failed to copy the link."));
     };
 
     const shareData = {
@@ -33,41 +39,39 @@ const ShareModal = ({ onClose }) => {
     };
 
     const handleShare = async (platform) => {
+        setErrors("");
         if (navigator.share) {
             try {
                 await navigator.share(shareData);
                 onClose();
                 return;
             } catch (error) {
-                console.error('Error sharing:', error);
+                setErrors(`Error sharing: ${error}`);
             }
         }
         const url = fallbackUrls[platform];
         if (url) {
             window.open(url, '_blank');
         } else {
-            console.error('Unsupported share option');
+            setErrors('Unsupported sharing option.');
         }
     };
-    //     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,
-    //         '_blank')
-    // };
-
-    // const shareOnTwitter = () => {
-    //     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}`,
-    //         '_blank')
-    // };
-
-    // const shareOnWhatsapp = () => {
-    //     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(window.location.href)}`,
-    //         '_blank')
-    // };
 
     return (
         <div className={styles["modal-overlay"]} onClick={onClose}>
             <div className={styles["modal-content"]} onClick={e => e.stopPropagation()}>
                 <button className={styles["modal-close-btn"]} onClick={onClose}>&times;</button>
                 <h3>Share this movie</h3>
+                {errors && (
+                    <div className={styles.error}>
+                        {errors}
+                    </div>
+                )}
+                {copied && (
+                    <div className={styles.success}>
+                        Link copied to clipboard!
+                    </div>
+                )}
                 <input type="text" readOnly value={window.location.href} onFocus={e => e.target.select()} className={styles["share-link-input"]} />
                 <button className={styles["copy-btn"]} onClick={copyLink}>
                     Copy Link

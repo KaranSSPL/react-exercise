@@ -1,8 +1,9 @@
 import { createPortal } from 'react-dom'
 import AddReviewModal from './AddReviewModal'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 import { fetchMovieReviews } from '../api.jsx';
+import ReviewCard from './ReviewCard.jsx';
 
 const ReviewSection = ({ id, styles }) => {
 
@@ -17,9 +18,21 @@ const ReviewSection = ({ id, styles }) => {
         setIsReviewModalOpen(true);
     };
 
+    const renderedReviews = useMemo(() => {
+        if (!movieReviews || movieReviews.length === 0) return null;
+
+        return (
+            <div className={styles["detail-wrapper"]}>
+                {movieReviews.map((item) => (
+                    <ReviewCard key={item.id} item={item} styles={styles} />
+                ))}
+            </div>
+        )
+    }, [movieReviews, styles]);
+
     const fetchReviews = async (movieId) => {
         setReviewLoading(true);
-        
+
         const response = await fetchMovieReviews(movieId);
 
         if (response.code === "ERR_NETWORK") {
@@ -46,23 +59,15 @@ const ReviewSection = ({ id, styles }) => {
         <div className={styles["review-section"]}>
             <div className={styles["review-header-top"]}>
                 <h3>User Reviews</h3>
-                <button
-                    onClick={addReview}
-                    className={styles["add-review-button"]}
-                    ref={addReviewButtonRef}
-                >
+                <button onClick={addReview} className={styles["add-review-button"]} ref={addReviewButtonRef}>
                     + Add Review
                 </button>
                 {isReviewModalOpen &&
                     createPortal(
-                        <AddReviewModal
-                            onClose={() => {
-                                setIsReviewModalOpen(false);
-                                addReviewButtonRef.current?.focus();
-                            }}
-                            id={id}
-                            onReviewSubmit={handleAddReviewToList}
-                        />,
+                        <AddReviewModal onClose={() => {
+                            setIsReviewModalOpen(false);
+                            addReviewButtonRef.current?.focus();
+                        }} id={id} onReviewSubmit={handleAddReviewToList} />,
                         document.getElementById("modal-root")
                     )}
             </div>
@@ -76,21 +81,7 @@ const ReviewSection = ({ id, styles }) => {
                     {`Failed to load reviews: ${apiError}`}
                 </p>
             ) : movieReviews && movieReviews.length > 0 ? (
-                <div className={styles["detail-wrapper"]}>
-                    {movieReviews.map((item) => (
-                        <div key={item.id} className={styles["review-card"]} id={item.id}>
-                            <div className={styles["review-header"]}>
-                                <span className={styles["review-username"]}>{`${item.firstName} ${item.lastName}`}</span>
-                                <span className={styles["review-date"]}>
-                                    {new Date(item.createdDate).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <div className={styles["review-content"]}>
-                                <p>{item.comment}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                renderedReviews
             ) : (
                 <p className={styles["no-reviews"]}>
                     No reviews yet. Be the first to add one!
