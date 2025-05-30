@@ -1,10 +1,11 @@
 import axios from "axios";
 import { config } from "./utils/axiosConfig";
 
-export const fetchMediaList = async (mediaType = "movie", page = 1) => {
+export const fetchMediaList = async (mediaType = "movie", page = 1, genreId = null) => {
     try {
+        const genreParam = genreId ? `&with_genres=${genreId}` : "";
         const response = await axios.get(
-            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/${mediaType}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/discover/${mediaType}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}${genreParam}`,
             config);
         return response;
     } catch (error) {
@@ -67,6 +68,18 @@ export const fetchSimilarMediaList = async (mediaType = "movie", movieId, page) 
     try {
         const response = await axios.get(
             `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/similar?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            config
+        );
+        return response;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const fetchGenreListOfMedia = async (mediaType = "movie") => {
+    try {
+        const response = await axios.get(
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/genre/${mediaType}/list?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}`,
             config
         );
         return response;

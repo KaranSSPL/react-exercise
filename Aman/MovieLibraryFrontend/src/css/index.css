@@ -55,7 +55,8 @@ header h1 {
 }
 
 .movie-button,
-.tv-series-button {
+.tv-series-button,
+.genre-button {
     padding: 10px 20px;
     border: none;
     background-color: #db595f;
@@ -68,6 +69,33 @@ header h1 {
 .active {
     background-color: #444;
     color: white;
+}
+
+.genre-dropdown {
+    position: absolute;
+    background-color: white;
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    color: #000;
+}
+
+.genre-dropdown li {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.genre-dropdown li:hover {
+    background-color: #eee;
+}
+
+.selected-genre{
+    background: #f3dcdc;
 }
 
 .movie-grid {

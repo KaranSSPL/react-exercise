@@ -17,6 +17,8 @@ const MovieContainer = () => {
   const page = queryParams.get("page") || 1;
   const searchQuery = queryParams.get("search") || "";
   const mediaTypeFromURL = queryParams.get("mediaType") || "movie";
+  const selectedGenreIdFromURL = queryParams.get("genreId");
+
   const navigate = useNavigate();
 
   const [searchedMedia, setSearchedMedia] = useState(searchQuery);
@@ -27,12 +29,13 @@ const MovieContainer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [foundSearchResult, setFoundSearchResult] = useState(false);
   const [fetchError, setFetchError] = useState("");
+  const [selectedGenreId, setSelectedGenreId] = useState(selectedGenreIdFromURL ? Number(selectedGenreIdFromURL) : null);
 
-  const fetchMedia = async (mediaType, pageNumber = 1) => {
+  const fetchMedia = async (mediaType, pageNumber = 1, genreId = null) => {
     setIsLoading(true);
     setFetchError("");
 
-    const response = await fetchMediaList(mediaType, pageNumber);
+    const response = await fetchMediaList(mediaType, pageNumber, genreId);
     if (response?.status === 200) {
       const result = response?.data?.results || [];
       setMediaList(result);
@@ -76,12 +79,12 @@ const MovieContainer = () => {
     const handler = setTimeout(() => {
       searchedMedia.trim()
         ? searchMedia(mediaType, searchedMedia, currentPageNumber)
-        : fetchMedia(mediaType, currentPageNumber);
+        : fetchMedia(mediaType, currentPageNumber, selectedGenreId);
     }, 500);
     return () => {
       clearTimeout(handler);
     };
-  }, [searchedMedia, currentPageNumber, mediaType]);
+  }, [searchedMedia, currentPageNumber, mediaType, selectedGenreId]);
 
   const handleSearch = (query) => {
     setSearchedMedia(query);
@@ -96,22 +99,53 @@ const MovieContainer = () => {
 
   const handlePageChange = (page) => {
     setCurrentPageNumber(page);
+
     if (searchedMedia.trim()) {
-      navigate(`?page=${page}&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${mediaType}`);
+      let url = `?page=${page}&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${mediaType}`;
+      if (selectedGenreId !== null) {
+        url += `&genreId=${selectedGenreId}`;
+      }
+      navigate(url);
     } else {
-      navigate(`?page=${page}&mediaType=${mediaType}`);
+      let url = `?page=${page}&mediaType=${mediaType}`;
+      if (selectedGenreId !== null) {
+        url += `&genreId=${selectedGenreId}`;
+      }
+      navigate(url);
     }
   };
 
   const handleMediaTypeChange = (type) => {
     setMediaType(type);
     setCurrentPageNumber(1);
+    setSelectedGenreId(null);
+
+    const baseParams = new URLSearchParams();
+    baseParams.set("mediaType", type);
+    baseParams.set("page", 1);
+
     if (searchedMedia.trim()) {
-      navigate(`?page=1&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${type}`);
+      baseParams.set("search", searchedMedia.trim());
+    }
+
+    navigate(`?${baseParams.toString()}`);
+  };
+
+  const handleGenreSelect = (genreId) => {
+    setSelectedGenreId(genreId);
+    setCurrentPageNumber(1);
+
+    if (genreId !== null) {
+      navigate(`?mediaType=${mediaType}&genreId=${genreId}`);
     } else {
-      navigate(`?mediaType=${type}`);
+      if (searchedMedia.trim()) {
+        navigate(`?mediaType=${mediaType}&search=${encodeURIComponent(searchedMedia.trim())}`);
+      } else {
+        navigate(`?mediaType=${mediaType}`);
+      }
     }
   };
+
 
   return (
     <>
@@ -119,7 +153,9 @@ const MovieContainer = () => {
         searchedMedia={searchedMedia}
         onSearch={handleSearch}
         mediaType={mediaType}
-        onMediaTypeChange={handleMediaTypeChange} />
+        onMediaTypeChange={handleMediaTypeChange}
+        onGenreSelect={handleGenreSelect}
+        selectedGenreId={selectedGenreId} />
       {isLoading ? (
         <Loader />
       ) : foundSearchResult ? (
