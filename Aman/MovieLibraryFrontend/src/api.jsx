@@ -87,3 +87,15 @@ export const fetchGenreListOfMedia = async (mediaType = "movie") => {
         return error;
     }
 }
+
+export const fetchSortByListOfMedia = async (mediaType, sortBy, page) => {
+    try {
+        const response = await axios.get(
+            `${process.env.REACT_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${sortBy}?language=${process.env.REACT_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            config
+        );
+        return response;
+    } catch (error) {
+        return error;
+    }
+}

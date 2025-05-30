@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchGenreListOfMedia } from '../api';
 
-const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
+const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId, disabled }) => {
     const [genres, setGenres] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
     const [fetchError, setFetchError] = useState('');
     const dropdownRef = useRef(null);
@@ -33,6 +34,7 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
 
     const toggleDropdown = () => {
         setShowDropdown((prev) => {
+            setIsLoading(true);
             const nextShow = !prev;
             if (nextShow && lastFetchedMediaTypeRef.current !== mediaType) {
                 fetchGenreListOfMedia(mediaType).then((response) => {
@@ -47,6 +49,7 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
                     }
                 });
             }
+            setIsLoading(false);
             return nextShow;
         });
     };
@@ -58,7 +61,7 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
 
     return (
         <div className='dropdown' ref={dropdownRef}>
-            <button className="genre-button" onClick={toggleDropdown}>
+            <button className="genre-button" onClick={toggleDropdown} disabled={disabled}>
                 {showDropdown ? "Hide Genres" : "Show Genres"}
             </button>
             {fetchError ? (
@@ -69,7 +72,11 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
                         <li onClick={() => handleGenreClick(null)}>
                             Reset
                         </li>
-                        {
+                        {isLoading ? (
+                            <div className="review-loader-wrapper">
+                                <div className="spinner-inline"></div>
+                            </div>
+                        ) : (
                             genres.map((genre) => (
                                 <li
                                     key={genre.id}
@@ -78,6 +85,7 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId }) => {
                                     {genre.name}
                                 </li>
                             ))
+                        )
                         }
                     </ul>
                 )

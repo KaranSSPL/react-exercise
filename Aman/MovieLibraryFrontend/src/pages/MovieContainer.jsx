@@ -9,7 +9,7 @@ import NotFound from "../components/NotFound.jsx";
 import MovieListCard from "../components/MovieListCard.jsx";
 import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 
-import { fetchMediaList, searchMediaList } from "../api.jsx";
+import { fetchMediaList, fetchSortByListOfMedia, searchMediaList } from "../api.jsx";
 
 const MovieContainer = () => {
   const location = useLocation();
@@ -18,6 +18,7 @@ const MovieContainer = () => {
   const searchQuery = queryParams.get("search") || "";
   const mediaTypeFromURL = queryParams.get("mediaType") || "movie";
   const selectedGenreIdFromURL = queryParams.get("genreId");
+  const selectedSortIdFromURL = queryParams.get("sortId");
 
   const navigate = useNavigate();
 
@@ -32,61 +33,42 @@ const MovieContainer = () => {
   const [selectedGenreId, setSelectedGenreId] = useState(
     selectedGenreIdFromURL ? Number(selectedGenreIdFromURL) : null
   );
-
-  const fetchMedia = async (mediaType, pageNumber = 1, genreId = null) => {
-    setIsLoading(true);
-    setFetchError("");
-
-    const response = await fetchMediaList(mediaType, pageNumber, genreId);
-    if (response?.status === 200) {
-      const result = response?.data?.results || [];
-      setMediaList(result);
-      setTotalPage(response?.data?.total_pages || 0);
-      setFoundSearchResult(false);
-    } else {
-      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMediaList([]);
-      setFoundSearchResult(false);
-      setFetchError(message)
-    }
-
-    setIsLoading(false);
-  };
-
-  const searchMedia = async (mediaType, searchText, pageNumber = 1) => {
-    setIsLoading(true);
-    setFetchError("");
-
-    const response = await searchMediaList(mediaType, searchText, pageNumber)
-    if (response?.status === 200) {
-      setTotalPage(response?.data?.total_pages || 0);
-
-      if (response?.data?.results <= 0) {
-        setFoundSearchResult(true);
-      } else {
-        setFoundSearchResult(false);
-        setMediaList(response.data.results);
-      }
-    } else {
-      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMediaList([]);
-      setFoundSearchResult(false);
-      setFetchError(message);
-    }
-
-    setIsLoading(false);
-  };
+  const [selectedSortId, setSelectedSortId] = useState(
+    selectedSortIdFromURL ? selectedSortIdFromURL : null
+  );
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (searchedMedia.trim()) {
-        searchMedia(mediaType, searchedMedia, currentPageNumber)
+    const fetchData = async () => {
+      setIsLoading(true);
+      setFetchError("");
+      let response;
+
+      if (selectedSortId) {
+        response = await fetchSortByListOfMedia(mediaType, selectedSortId, currentPageNumber);
+      } else if (searchedMedia) {
+        response = await searchMediaList(mediaType, searchedMedia, currentPageNumber);
       } else {
-        fetchMedia(mediaType, currentPageNumber, selectedGenreId);
+        response = await fetchMediaList(mediaType, currentPageNumber, selectedGenreId);
       }
+
+      if (response?.status === 200) {
+        setMediaList(response.data.results || []);
+        setTotalPage(response.data.total_pages || 0);
+        setFoundSearchResult(!response.data.results.length);
+      } else {
+        const message = response?.response?.data?.status_message;
+        setFetchError(message)
+        setMediaList([]);
+        setFoundSearchResult(false);
+      }
+
+      setIsLoading(false);
+    };
+    const handler = setTimeout(() => {
+      fetchData();
     }, 500);
     return () => clearTimeout(handler);
-  }, [searchedMedia, currentPageNumber, mediaType, selectedGenreId]);
+  }, [mediaType, searchedMedia, selectedGenreId, selectedSortId, currentPageNumber]);
 
   const buildQuery = (params) => {
     const searchParams = new URLSearchParams();
@@ -117,7 +99,8 @@ const MovieContainer = () => {
       page,
       mediaType,
       search: searchedMedia.trim() || undefined,
-      genreId: selectedGenreId !== null ? selectedGenreId : undefined,
+      genreId: selectedSortId ? undefined : (selectedGenreId !== null ? selectedGenreId : undefined),
+      sortId: selectedSortId || undefined,
     };
     navigate(buildQuery(params));
   };
@@ -130,6 +113,7 @@ const MovieContainer = () => {
       mediaType: type,
       page: 1,
       search: searchedMedia.trim() || undefined,
+      sortId: selectedSortId || undefined
     };
     navigate(buildQuery(params));
   };
@@ -146,6 +130,17 @@ const MovieContainer = () => {
     navigate(buildQuery(params));
   };
 
+  const handleSortSelect = (sortId) => {
+    setSelectedSortId(sortId);
+    setCurrentPageNumber(1);
+    const params = {
+      mediaType,
+      page: 1,
+      sortId: sortId || undefined
+    };
+    navigate(buildQuery(params));
+  }
+
   return (
     <>
       <Header
@@ -154,7 +149,9 @@ const MovieContainer = () => {
         mediaType={mediaType}
         onMediaTypeChange={handleMediaTypeChange}
         onGenreSelect={handleGenreSelect}
-        selectedGenreId={selectedGenreId} />
+        selectedGenreId={selectedGenreId}
+        onSortSelect={handleSortSelect}
+        selectedSortId={selectedSortId} />
       {isLoading ? (
         <Loader />
       ) : foundSearchResult ? (

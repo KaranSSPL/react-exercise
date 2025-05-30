@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 
 import GenreDropdown from './GenreDropdown';
+import SortMedia from './SortMedia';
 
-const Header = ({ searchedMedia, onSearch, mediaType, onMediaTypeChange, onGenreSelect, selectedGenreId }) => {
+const Header = ({ searchedMedia, onSearch,
+    mediaType, onMediaTypeChange,
+    onGenreSelect, selectedGenreId,
+    onSortSelect, selectedSortId }) => {
+
     const [input, setInput] = useState(searchedMedia);
-
 
     useEffect(() => {
         setInput(searchedMedia);
@@ -18,7 +22,7 @@ const Header = ({ searchedMedia, onSearch, mediaType, onMediaTypeChange, onGenre
     return (
         <>
             <header>
-                <h1>🎬 Movie Library</h1>
+                <h1>🎬 Library</h1>
             </header>
             <div className="media-type">
                 <form className="search-bar" onSubmit={searchMovieHandler}>
@@ -26,8 +30,9 @@ const Header = ({ searchedMedia, onSearch, mediaType, onMediaTypeChange, onGenre
                         type="text"
                         placeholder="Search..."
                         onChange={(e) => setInput(e.target.value)}
-                        value={input} />
-                    <button type="submit">Search</button>
+                        value={input}
+                        disabled={!!selectedSortId || !!selectedGenreId} />
+                    <button type="submit" disabled={!!selectedSortId || !!selectedGenreId}>Search</button>
                 </form>
 
                 <button
@@ -45,7 +50,12 @@ const Header = ({ searchedMedia, onSearch, mediaType, onMediaTypeChange, onGenre
                 <GenreDropdown
                     mediaType={mediaType}
                     onGenreSelect={onGenreSelect}
-                    selectedGenreId={selectedGenreId} />
+                    selectedGenreId={selectedGenreId}
+                    disabled={!!selectedSortId} />
+
+                <SortMedia onSortSelect={onSortSelect}
+                    selectedSortId={selectedSortId}
+                    disabled={!!selectedGenreId} />
             </div>
         </>
     )
