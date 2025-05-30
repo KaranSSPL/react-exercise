@@ -1,78 +1,47 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using MovieLibraryApi.Data;
 using MovieLibraryApi.Interface;
 using MovieLibraryApi.Model;
 using MovieLibraryApi.Model.Dtos;
-using MovieLibraryApi.Model.Entities;
+using MovieLibraryApi.Persistence.Data;
+using MovieLibraryApi.Persistence.Entities;
 
 namespace MovieLibraryApi.Service;
 
-public class MovieService : IMovieService
+public class MovieService(AppDbContext dbContext,
+    IMapper mapper) : IMovieService
 {
-    private readonly AppDbContext _dbContext;
-    private readonly IMapper _mapper;
-    public MovieService(AppDbContext dbContext,
-        IMapper mapper)
+    public async Task<ResponseModel> SaveReviewAsync(int movieId, ReviewMovieDto request)
     {
-        _dbContext = dbContext;
-        _mapper = mapper;
-    }
+        var reviewMovie = mapper.Map<ReviewMovie>(request);
+        reviewMovie.MovieId = movieId;
 
-    public async Task<ResponseModel> SaveReviewAsync(ReviewMovieDto request)
-    {
-        try
-        {
-            var reviewMovie = _mapper.Map<ReviewMovie>(request);
-            await _dbContext.ReviewMovie.AddAsync(reviewMovie);
-            await _dbContext.SaveChangesAsync();
+        await dbContext.ReviewMovie.AddAsync(reviewMovie);
+        var result = await dbContext.SaveChangesAsync();
 
-            return new ResponseModel
-            {
-                IsSuccess = true,
-                Message = "Review saved successfully.",
-                ErrorDetails = string.Empty,
-                data = null
-            };
-        }
-        catch (Exception ex)
-        {
-            return new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "An error occurred while saving the review",
-                ErrorDetails = ex.Message,
-                data = null
-            };
-        }
+        return result > 0 ? ResponseModel.Success("Review saved successfully.", null) : ResponseModel.Fail("Review are not saved");
+
+        // ToDo : Add exception middleware
+        // ToDo : Add logger
     }
 
     public async Task<ResponseModel> GetMovieReviewAsync(int movieId)
     {
-        try
-        {
-            var reviews = await _dbContext.ReviewMovie.Where(x => x.MovieId == movieId)
-                .ProjectTo<ReviewSummaryDto>(_mapper.ConfigurationProvider)
-                .OrderByDescending(x => x.CreatedDate).ToListAsync();
+        var reviews = await dbContext.ReviewMovie
+        .Where(x => x.MovieId == movieId)
+        .OrderByDescending(x => x.CreatedDate)
+        .ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
+        .ToListAsync();
 
-            return new ResponseModel
-            {
-                IsSuccess = true,
-                Message = string.Empty,
-                ErrorDetails = string.Empty,
-                data = reviews
-            };
-        }
-        catch (Exception ex)
+        var istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        foreach (var review in reviews)
         {
-            return new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "An error occurred while retrieving the review.",
-                ErrorDetails = ex.Message,
-                data = null
-            };
+            review.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(review.CreatedDate, istTimeZone);
         }
+
+        return reviews.Count > 0
+            ? ResponseModel.Success(string.Empty, reviews)
+            : ResponseModel.Fail("Reviews are empty");
     }
 }

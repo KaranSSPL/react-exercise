@@ -5,58 +5,39 @@ using MovieLibraryApi.Model.Dtos;
 
 namespace MovieLibraryApi.Controllers;
 
-[Route("api")]
 [ApiController]
-public class ReviewMovieController : ControllerBase
+[Route("api/movies")]
+public class ReviewMovieController(IMovieService movieService) : ControllerBase
 {
-    private readonly IMovieService _movieService;
-    public ReviewMovieController(IMovieService movieService)
-    {
-        _movieService = movieService;
-    }
-
-    [HttpPost]
-    [Route("save-review")]
-    public async Task<ActionResult<ResponseModel>> SaveReviewAsync([FromBody] ReviewMovieDto request)
-    {
-        if (!ModelState.IsValid || request.MovieId <= 0)
-        {
-            return BadRequest(new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "Invalid Input",
-                data = null
-            });
-        }
-
-        var response = await _movieService.SaveReviewAsync(request);
-        if (response.IsSuccess)
-        {
-            return Ok(response);
-        }
-
-        return StatusCode(500, response);
-    }
-
     [HttpGet]
-    [Route("movies/{movieId}")]
+    [Route("{movieId}/reviews")]
     public async Task<ActionResult<ResponseModel>> GetMovieReviewAsync(int movieId)
     {
         if (movieId <= 0)
-            return BadRequest(new ResponseModel
-            {
-                IsSuccess = false,
-                Message = "Movie id is invalid",
-                data = null
-            });
+            return BadRequest(ResponseModel.Fail("Movie id is invalid"));
 
-        var response = await _movieService.GetMovieReviewAsync(movieId);
-        if (!response.IsSuccess)
-            return NotFound(response);
+        var response = await movieService.GetMovieReviewAsync(movieId);
 
-        if (response.data is IEnumerable<ReviewSummaryDto> reviews && !reviews.Any())
+        // ToDo: remove 404 status code
+        if (response.data == null || response.data is IEnumerable<ReviewSummaryDto> reviews && !reviews.Any())
             return NoContent();
 
         return Ok(response);
+    }
+
+    [HttpPost]
+    [Route("{movieId}/reviews")]
+    public async Task<ActionResult<ResponseModel>> SaveReviewAsync(int movieId, [FromBody] ReviewMovieDto request)
+    {
+        if (movieId <= 0)
+            return BadRequest(ResponseModel.Fail("Movie Id is required"));
+
+        if (!ModelState.IsValid)
+            return BadRequest(ResponseModel.Fail("Invalid Input"));
+
+        var response = await movieService.SaveReviewAsync(movieId, request);
+
+        // ToDO: remove 500 status code
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

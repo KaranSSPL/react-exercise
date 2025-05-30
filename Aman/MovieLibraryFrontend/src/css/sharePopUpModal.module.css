@@ -39,6 +39,18 @@
     color: #333;
 }
 
+.error {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.success {
+    color: green;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
 /* Modal Title */
 .modal-content h3 {
     margin-top: 0;
