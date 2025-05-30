@@ -14,7 +14,7 @@ import { fetchMediaList, searchMediaList } from "../api.jsx";
 const MovieContainer = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const page = queryParams.get("page") || 1;
+  const page = Number(queryParams.get("page")) || 1;
   const searchQuery = queryParams.get("search") || "";
   const mediaTypeFromURL = queryParams.get("mediaType") || "movie";
   const selectedGenreIdFromURL = queryParams.get("genreId");
@@ -25,11 +25,13 @@ const MovieContainer = () => {
   const [mediaType, setMediaType] = useState(mediaTypeFromURL);
   const [mediaList, setMediaList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
-  const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
+  const [currentPageNumber, setCurrentPageNumber] = useState(page);
   const [isLoading, setIsLoading] = useState(true);
   const [foundSearchResult, setFoundSearchResult] = useState(false);
   const [fetchError, setFetchError] = useState("");
-  const [selectedGenreId, setSelectedGenreId] = useState(selectedGenreIdFromURL ? Number(selectedGenreIdFromURL) : null);
+  const [selectedGenreId, setSelectedGenreId] = useState(
+    selectedGenreIdFromURL ? Number(selectedGenreIdFromURL) : null
+  );
 
   const fetchMedia = async (mediaType, pageNumber = 1, genreId = null) => {
     setIsLoading(true);
@@ -77,75 +79,72 @@ const MovieContainer = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      searchedMedia.trim()
-        ? searchMedia(mediaType, searchedMedia, currentPageNumber)
-        : fetchMedia(mediaType, currentPageNumber, selectedGenreId);
+      if (searchedMedia.trim()) {
+        searchMedia(mediaType, searchedMedia, currentPageNumber)
+      } else {
+        fetchMedia(mediaType, currentPageNumber, selectedGenreId);
+      }
     }, 500);
-    return () => {
-      clearTimeout(handler);
-    };
+    return () => clearTimeout(handler);
   }, [searchedMedia, currentPageNumber, mediaType, selectedGenreId]);
+
+  const buildQuery = (params) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        searchParams.set(key, value);
+      }
+    });
+    return `?${searchParams.toString()}`;
+  };
 
   const handleSearch = (query) => {
     setSearchedMedia(query);
     setCurrentPageNumber(1);
 
-    if (query.trim()) {
-      navigate(`?page=1&search=${encodeURIComponent(query)}&mediaType=${mediaType}`);
-    } else {
-      navigate(`?mediaType=${mediaType}`);
-    }
+    const params = {
+      page: 1,
+      search: query.trim() || undefined,
+      mediaType
+    };
+    navigate(buildQuery(params));
+
   };
 
   const handlePageChange = (page) => {
     setCurrentPageNumber(page);
-
-    if (searchedMedia.trim()) {
-      let url = `?page=${page}&search=${encodeURIComponent(searchedMedia.trim())}&mediaType=${mediaType}`;
-      if (selectedGenreId !== null) {
-        url += `&genreId=${selectedGenreId}`;
-      }
-      navigate(url);
-    } else {
-      let url = `?page=${page}&mediaType=${mediaType}`;
-      if (selectedGenreId !== null) {
-        url += `&genreId=${selectedGenreId}`;
-      }
-      navigate(url);
-    }
+    const params = {
+      page,
+      mediaType,
+      search: searchedMedia.trim() || undefined,
+      genreId: selectedGenreId !== null ? selectedGenreId : undefined,
+    };
+    navigate(buildQuery(params));
   };
 
   const handleMediaTypeChange = (type) => {
     setMediaType(type);
     setCurrentPageNumber(1);
     setSelectedGenreId(null);
-
-    const baseParams = new URLSearchParams();
-    baseParams.set("mediaType", type);
-    baseParams.set("page", 1);
-
-    if (searchedMedia.trim()) {
-      baseParams.set("search", searchedMedia.trim());
-    }
-
-    navigate(`?${baseParams.toString()}`);
+    const params = {
+      mediaType: type,
+      page: 1,
+      search: searchedMedia.trim() || undefined,
+    };
+    navigate(buildQuery(params));
   };
 
   const handleGenreSelect = (genreId) => {
     setSelectedGenreId(genreId);
     setCurrentPageNumber(1);
-
-    if (genreId !== null) {
-      navigate(`?mediaType=${mediaType}&genreId=${genreId}`);
-    } else {
-      if (searchedMedia.trim()) {
-        navigate(`?mediaType=${mediaType}&search=${encodeURIComponent(searchedMedia.trim())}`);
-      } else {
-        navigate(`?mediaType=${mediaType}`);
-      }
-    }
+    const params = {
+      mediaType,
+      page: 1,
+      genreId: genreId !== null ? genreId : undefined,
+      search: genreId === null && searchedMedia.trim() ? searchedMedia.trim() : undefined,
+    };
+    navigate(buildQuery(params));
   };
-
 
   return (
     <>
@@ -173,7 +172,11 @@ const MovieContainer = () => {
         <>
           <div className="movie-grid">
             {mediaList.map((media) => (
-              <MovieListCard key={media.id} media={media} currentPage={currentPageNumber} mediaType={mediaType} />
+              <MovieListCard
+                key={media.id}
+                media={media}
+                currentPage={currentPageNumber}
+                mediaType={mediaType} />
             ))}
           </div>
           <Pagination
