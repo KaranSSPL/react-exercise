@@ -3,16 +3,16 @@ import { useState, useEffect } from 'react'
 import GenreDropdown from './GenreDropdown';
 import SortMedia from './SortMedia';
 
-const Header = ({ searchedMedia, onSearch,
+const Header = ({ searchTerm, onSearch,
     mediaType, onMediaTypeChange,
     onGenreSelect, selectedGenreId,
     onSortSelect, selectedSortId }) => {
 
-    const [input, setInput] = useState(searchedMedia);
+    const [input, setInput] = useState(searchTerm);
 
     useEffect(() => {
-        setInput(searchedMedia);
-    }, [searchedMedia]);
+        setInput(searchTerm);
+    }, [searchTerm]);
 
     const searchMovieHandler = (e) => {
         e.preventDefault();

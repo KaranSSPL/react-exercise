@@ -13,53 +13,54 @@ import { fetchMediaList, fetchSortByListOfMedia, searchMediaList } from "../api.
 
 const MovieContainer = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const page = Number(queryParams.get("page")) || 1;
-  const searchQuery = queryParams.get("search") || "";
-  const mediaTypeFromURL = queryParams.get("mediaType") || "movie";
-  const selectedGenreIdFromURL = queryParams.get("genreId");
-  const selectedSortIdFromURL = queryParams.get("sortId");
-
   const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  
+  const initialPage = Number(queryParams.get("page")) || 1;
+  const initialSearch = queryParams.get("search") || "";
+  const initialMediaType = queryParams.get("mediaType") || "movie";
+  const initialGenreId = queryParams.get("genreId");
+  const initialSortId = queryParams.get("sortId");
 
-  const [searchedMedia, setSearchedMedia] = useState(searchQuery);
-  const [mediaType, setMediaType] = useState(mediaTypeFromURL);
+
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [mediaType, setMediaType] = useState(initialMediaType);
   const [mediaList, setMediaList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
-  const [currentPageNumber, setCurrentPageNumber] = useState(page);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(true);
-  const [foundSearchResult, setFoundSearchResult] = useState(false);
-  const [fetchError, setFetchError] = useState("");
+  const [noResults, setNoResults] = useState(false);
+  const [error, setError] = useState("");
   const [selectedGenreId, setSelectedGenreId] = useState(
-    selectedGenreIdFromURL ? Number(selectedGenreIdFromURL) : null
+    initialGenreId ? Number(initialGenreId) : null
   );
   const [selectedSortId, setSelectedSortId] = useState(
-    selectedSortIdFromURL ? selectedSortIdFromURL : null
+    initialSortId ? initialSortId : null
   );
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      setFetchError("");
+      setError("");
       let response;
 
       if (selectedSortId) {
-        response = await fetchSortByListOfMedia(mediaType, selectedSortId, currentPageNumber);
-      } else if (searchedMedia) {
-        response = await searchMediaList(mediaType, searchedMedia, currentPageNumber);
+        response = await fetchSortByListOfMedia(mediaType, selectedSortId, currentPage);
+      } else if (searchTerm) {
+        response = await searchMediaList(mediaType, searchTerm, currentPage);
       } else {
-        response = await fetchMediaList(mediaType, currentPageNumber, selectedGenreId);
+        response = await fetchMediaList(mediaType, currentPage, selectedGenreId);
       }
 
       if (response?.status === 200) {
         setMediaList(response.data.results || []);
         setTotalPage(response.data.total_pages || 0);
-        setFoundSearchResult(!response.data.results.length);
+        setNoResults(!response.data.results.length);
       } else {
         const message = response?.response?.data?.status_message;
-        setFetchError(message)
+        setError(message || "Failed to fetch data.")
         setMediaList([]);
-        setFoundSearchResult(false);
+        setNoResults(false);
       }
 
       setIsLoading(false);
@@ -68,9 +69,9 @@ const MovieContainer = () => {
       fetchData();
     }, 500);
     return () => clearTimeout(handler);
-  }, [mediaType, searchedMedia, selectedGenreId, selectedSortId, currentPageNumber]);
+  }, [mediaType, searchTerm, selectedGenreId, selectedSortId, currentPage]);
 
-  const buildQuery = (params) => {
+  const buildQueryString = (params) => {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== "") {
@@ -81,70 +82,69 @@ const MovieContainer = () => {
   };
 
   const handleSearch = (query) => {
-    setSearchedMedia(query);
-    setCurrentPageNumber(1);
+    setSearchTerm(query);
+    setCurrentPage(1);
 
     const params = {
       page: 1,
       search: query.trim() || undefined,
       mediaType
     };
-    navigate(buildQuery(params));
-
+    navigate(buildQueryString(params));
   };
 
   const handlePageChange = (page) => {
-    setCurrentPageNumber(page);
+    setCurrentPage(page);
     const params = {
       page,
       mediaType,
-      search: searchedMedia.trim() || undefined,
+      search: searchTerm.trim() || undefined,
       genreId: selectedSortId ? undefined : (selectedGenreId !== null ? selectedGenreId : undefined),
       sortId: selectedSortId || undefined,
     };
-    navigate(buildQuery(params));
+    navigate(buildQueryString(params));
   };
 
   const handleMediaTypeChange = (type) => {
     setMediaType(type);
-    setCurrentPageNumber(1);
+    setCurrentPage(1);
     setSelectedGenreId(null);
     const params = {
       mediaType: type,
       page: 1,
-      search: searchedMedia.trim() || undefined,
+      search: searchTerm.trim() || undefined,
       sortId: selectedSortId || undefined
     };
-    navigate(buildQuery(params));
+    navigate(buildQueryString(params));
   };
 
   const handleGenreSelect = (genreId) => {
     setSelectedGenreId(genreId);
-    setCurrentPageNumber(1);
+    setCurrentPage(1);
     const params = {
       mediaType,
       page: 1,
       genreId: genreId !== null ? genreId : undefined,
-      search: genreId === null && searchedMedia.trim() ? searchedMedia.trim() : undefined,
+      search: genreId === null && searchTerm.trim() ? searchTerm.trim() : undefined,
     };
-    navigate(buildQuery(params));
+    navigate(buildQueryString(params));
   };
 
   const handleSortSelect = (sortId) => {
     setSelectedSortId(sortId);
-    setCurrentPageNumber(1);
+    setCurrentPage(1);
     const params = {
       mediaType,
       page: 1,
       sortId: sortId || undefined
     };
-    navigate(buildQuery(params));
+    navigate(buildQueryString(params));
   }
 
   return (
     <>
       <Header
-        searchedMedia={searchedMedia}
+        searchedMedia={searchTerm}
         onSearch={handleSearch}
         mediaType={mediaType}
         onMediaTypeChange={handleMediaTypeChange}
@@ -154,13 +154,13 @@ const MovieContainer = () => {
         selectedSortId={selectedSortId} />
       {isLoading ? (
         <Loader />
-      ) : foundSearchResult ? (
+      ) : noResults ? (
         <NotFound />
-      ) : fetchError ? (
+      ) : error ? (
         <>
-          <FailedToFetchMovies message={fetchError} />
+          <FailedToFetchMovies message={error} />
           <Pagination
-            currentPageNumber={currentPageNumber}
+            currentPage={currentPage}
             totalPage={totalPage}
             onPageChange={handlePageChange}
           />
@@ -172,12 +172,12 @@ const MovieContainer = () => {
               <MovieListCard
                 key={media.id}
                 media={media}
-                currentPage={currentPageNumber}
+                currentPage={currentPage}
                 mediaType={mediaType} />
             ))}
           </div>
           <Pagination
-            currentPageNumber={currentPageNumber}
+            currentPage={currentPage}
             totalPage={totalPage}
             onPageChange={handlePageChange}
           />
