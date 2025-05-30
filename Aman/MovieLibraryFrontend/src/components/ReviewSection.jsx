@@ -1,8 +1,9 @@
 import { createPortal } from 'react-dom'
 import AddReviewModal from './AddReviewModal'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 import { fetchMediaReviews } from '../api.jsx';
+import ReviewCard from './ReviewCard.jsx';
 
 const ReviewSection = ({ mediaType, id, styles }) => {
 
@@ -10,21 +11,31 @@ const ReviewSection = ({ mediaType, id, styles }) => {
     const [reviewLoading, setReviewLoading] = useState(true);
     const [mediaReviews, setMediaReviews] = useState([]);
     const addReviewButtonRef = useRef(null);
-    const [apiError, setApiError] = useState("");
+    const [error, setError] = useState("");
 
     const addReview = (e) => {
         e.preventDefault();
         setIsReviewModalOpen(true);
     };
 
+    const renderedReviews = useMemo(() => {
+        return (
+            <div className={styles["detail-wrapper"]}>
+                {mediaReviews.map((item) => (
+                    <ReviewCard key={item.id} item={item} styles={styles} />
+                ))}
+            </div>
+        )
+    }, [mediaReviews, styles]);
+
     const fetchReviews = async (mediaType, movieId) => {
         setReviewLoading(true);
-        
+
         const response = await fetchMediaReviews(mediaType, movieId);
 
         if (response.code === "ERR_NETWORK") {
             setMediaReviews([]);
-            setApiError(response.message);
+            setError(response.message);
         } else if (response.status === 200 && response.data?.isSuccess && response.data.data) {
             setMediaReviews(response.data.data);
         } else {
@@ -46,11 +57,7 @@ const ReviewSection = ({ mediaType, id, styles }) => {
         <div className={styles["review-section"]}>
             <div className={styles["review-header-top"]}>
                 <h3>User Reviews</h3>
-                <button
-                    onClick={addReview}
-                    className={styles["add-review-button"]}
-                    ref={addReviewButtonRef}
-                >
+                <button onClick={addReview} className={styles["add-review-button"]} ref={addReviewButtonRef}>
                     + Add Review
                 </button>
                 {isReviewModalOpen &&
@@ -62,8 +69,7 @@ const ReviewSection = ({ mediaType, id, styles }) => {
                             }}
                             id={id}
                             mediaType={mediaType}
-                            onReviewSubmit={handleAddReviewToList}
-                        />,
+                            onReviewSubmit={handleAddReviewToList} />,
                         document.getElementById("modal-root")
                     )}
             </div>
@@ -72,26 +78,12 @@ const ReviewSection = ({ mediaType, id, styles }) => {
                 <div className={styles["review-loader-wrapper"]}>
                     <div className={styles["spinner-inline"]}></div>
                 </div>
-            ) : apiError ? (
+            ) : error ? (
                 <p className={styles["no-reviews"]}>
-                    {`Failed to load reviews: ${apiError}`}
+                    {`Failed to load reviews: ${error}`}
                 </p>
             ) : mediaReviews && mediaReviews.length > 0 ? (
-                <div className={styles["detail-wrapper"]}>
-                    {mediaReviews.map((item) => (
-                        <div key={item.id} className={styles["review-card"]} id={item.id}>
-                            <div className={styles["review-header"]}>
-                                <span className={styles["review-username"]}>{`${item.firstName} ${item.lastName}`}</span>
-                                <span className={styles["review-date"]}>
-                                    {new Date(item.createdDate).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <div className={styles["review-content"]}>
-                                <p>{item.comment}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                renderedReviews
             ) : (
                 <p className={styles["no-reviews"]}>
                     No reviews yet. Be the first to add one!
