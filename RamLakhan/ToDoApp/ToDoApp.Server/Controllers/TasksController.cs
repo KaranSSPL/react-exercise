@@ -41,7 +41,7 @@ public class TasksController(ITaskService taskService) : ControllerBase
     [HttpPost("")]
     public async Task<IActionResult> Post([FromBody] Models.Entity.Task model)
     {
-        var response = await taskService.AddOrUpdateTaskAsync(model);
+        var response = await taskService.AddOrUpdateTaskAsync(0,model);
         if (!response.IsSuccess)
         {
             return BadRequest(response);
@@ -53,9 +53,9 @@ public class TasksController(ITaskService taskService) : ControllerBase
 
     #region [Update task]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put([FromBody] Models.Entity.Task model)
+    public async Task<IActionResult> Put(int id,[FromBody] Models.Entity.Task model)
     {
-        var response = await taskService.AddOrUpdateTaskAsync(model);
+        var response = await taskService.AddOrUpdateTaskAsync(id,model);
         if (!response.IsSuccess)
         {
             return BadRequest(response);
@@ -94,9 +94,9 @@ public class TasksController(ITaskService taskService) : ControllerBase
 
     #region [Move Task To New List]
     [HttpPatch("{taskId}/move")]
-    public async Task<IActionResult> MoveTaskToNewList(int id, [FromBody] TaskGroup group)
+    public async Task<IActionResult> MoveTaskToNewList(int taskId, [FromBody] TaskGroup group)
     {
-        var response = await taskService.MoveTaskToNewList(id, group);
+        var response = await taskService.MoveTaskToNewList(taskId, group);
         if (!response.IsSuccess)
         {
             return BadRequest(response);

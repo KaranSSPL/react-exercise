@@ -174,8 +174,9 @@ public class TaskService(IBaseRepository<Models.Entity.Task> taskRepo, IBaseRepo
             response.Data = new GroupTaskListVM
             {
                 GroupId = group.ListId,
-                GroupName = "starred tasks",
+                GroupName = "Starred tasks",
                 SortBy = group.SortBy,
+                isEnableShow = true,
                 TaskList = starredTasks.Where(x => x.IsStarred && !x.IsCompleted)
                                    .OrderBy(x => group.SortBy == "Title" ? x.Title :
                                    group.SortBy == "Date" ? x.ToDoDate.ToString() :
