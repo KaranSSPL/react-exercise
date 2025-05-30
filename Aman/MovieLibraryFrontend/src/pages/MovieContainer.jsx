@@ -87,7 +87,7 @@ const MovieContainer = () => {
 
     const params = {
       page: 1,
-      search: query.trim() || undefined,
+      search: query || undefined,
       mediaType
     };
     navigate(buildQueryString(params));
@@ -98,7 +98,7 @@ const MovieContainer = () => {
     const params = {
       page,
       mediaType,
-      search: searchTerm.trim() || undefined,
+      search: searchTerm || undefined,
       genreId: selectedSortId ? undefined : (selectedGenreId !== null ? selectedGenreId : undefined),
       sortId: selectedSortId || undefined,
     };
@@ -112,7 +112,7 @@ const MovieContainer = () => {
     const params = {
       mediaType: type,
       page: 1,
-      search: searchTerm.trim() || undefined,
+      search: searchTerm || undefined,
       sortId: selectedSortId || undefined
     };
     navigate(buildQueryString(params));
@@ -125,7 +125,7 @@ const MovieContainer = () => {
       mediaType,
       page: 1,
       genreId: genreId !== null ? genreId : undefined,
-      search: genreId === null && searchTerm.trim() ? searchTerm.trim() : undefined,
+      search: genreId === null && searchTerm ? searchTerm : undefined,
     };
     navigate(buildQueryString(params));
   };

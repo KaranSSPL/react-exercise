@@ -16,7 +16,7 @@ const Header = ({ searchTerm, onSearch,
 
     const searchMovieHandler = (e) => {
         e.preventDefault();
-        onSearch(input.trim());
+        onSearch(input);
     };
 
     return (
@@ -30,7 +30,6 @@ const Header = ({ searchTerm, onSearch,
                         type="text"
                         placeholder="Search..."
                         onChange={(e) => setInput(e.target.value)}
-                        value={input}
                         disabled={!!selectedSortId || !!selectedGenreId} />
                     <button type="submit" disabled={!!selectedSortId || !!selectedGenreId}>Search</button>
                 </form>
