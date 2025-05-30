@@ -18,7 +18,7 @@ const SimilarMovies = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [similarMovies, setSimilarMovies] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
-    const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
+    const [currentPage, setCurrentPage] = useState(Number(page));
     const [fetchError, setFetchError] = useState("");
 
     const fetchSimilarMovies = async (mediaType, movieId, pageNumber) => {
@@ -42,11 +42,11 @@ const SimilarMovies = () => {
     };
 
     useEffect(() => {
-        fetchSimilarMovies(mediaType, id, currentPageNumber);
-    }, [id, currentPageNumber, mediaType]);
+        fetchSimilarMovies(mediaType, id, currentPage);
+    }, [id, currentPage, mediaType]);
 
     const handlePageChange = (page) => {
-        setCurrentPageNumber(page);
+        setCurrentPage(page);
         navigate(`?page=${page}`);
     };
 
@@ -56,7 +56,7 @@ const SimilarMovies = () => {
         <>
             <FailedToFetchMovies message={fetchError} />
             <Pagination
-                currentPageNumber={currentPageNumber}
+                currentPage={currentPage}
                 totalPage={totalPage}
                 onPageChange={handlePageChange}
             />
@@ -67,12 +67,12 @@ const SimilarMovies = () => {
                 {similarMovies && similarMovies.length > 0 ? (
                     <div className={styles.gallery} id="gallery">
                         {similarMovies.map((item) => (
-                            <Link to={`/movies/${item.id}?page=${currentPageNumber || 1}`} className={styles["movie-link"]} key={item.id}>
+                            <Link to={`/movies/${item.id}?page=${currentPage || 1}`} className={styles["movie-link"]} key={item.id}>
                                 <div className={styles["movie-card"]}>
                                     <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${item.poster_path}`}
                                         alt="Movie Poster" style={{ borderRadius: '0', height: '448px' }} />
                                     <div className={styles["movie-content"]}>
-                                        <div className={styles["movie-title"]}>{item.title}</div>
+                                        <div className={styles["movie-title"]}>{item.title ?? item.name}</div>
                                     </div>
                                 </div>
                             </Link>
@@ -83,7 +83,7 @@ const SimilarMovies = () => {
                 )}
             </div >
             <Pagination
-                currentPageNumber={currentPageNumber}
+                currentPage={currentPage}
                 totalPage={totalPage}
                 onPageChange={handlePageChange}
             />

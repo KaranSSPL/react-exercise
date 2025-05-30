@@ -105,7 +105,7 @@ const MovieDetail = () => {
                   Gallery
                 </Link>
                 <Link to={`/${mediaType}/${id}/similar`} className={`${styles["movie-link"]} ${styles["share-button"]}`}>
-                  Similar Movies
+                  {`${mediaType === "movie" ? "Similar Movies" : "Similar Shows"}`}
                 </Link>
               </div>
             </div>
