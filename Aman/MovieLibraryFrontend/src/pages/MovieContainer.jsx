@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "../css/index.css";
 import Loader from "../components/Loader.jsx";
@@ -12,31 +12,20 @@ import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 import { fetchMediaList, fetchSortByListOfMedia, searchMediaList } from "../api.jsx";
 
 const MovieContainer = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  
-  const initialPage = Number(queryParams.get("page")) || 1;
-  const initialSearch = queryParams.get("search") || "";
-  const initialMediaType = queryParams.get("mediaType") || "movie";
-  const initialGenreId = queryParams.get("genreId");
-  const initialSortId = queryParams.get("sortId");
+  const [searchParams] = useSearchParams();
 
+  const searchTerm = searchParams.get("search") || "";
+  const mediaType = searchParams.get("mediaType") || "movie";
+  const selectedGenreId = searchParams.get("genreId") ? Number(searchParams.get("genreId")) : null;
+  const selectedSortId = searchParams.get("sortId") || null;
+  const currentPage = Number(searchParams.get("page")) || 1;
 
-  const [searchTerm, setSearchTerm] = useState(initialSearch);
-  const [mediaType, setMediaType] = useState(initialMediaType);
   const [mediaList, setMediaList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
-  const [currentPage, setCurrentPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(true);
   const [noResults, setNoResults] = useState(false);
   const [error, setError] = useState("");
-  const [selectedGenreId, setSelectedGenreId] = useState(
-    initialGenreId ? Number(initialGenreId) : null
-  );
-  const [selectedSortId, setSelectedSortId] = useState(
-    initialSortId ? initialSortId : null
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,9 +71,6 @@ const MovieContainer = () => {
   };
 
   const handleSearch = (query) => {
-    setSearchTerm(query);
-    setCurrentPage(1);
-
     const params = {
       page: 1,
       search: query || undefined,
@@ -94,21 +80,17 @@ const MovieContainer = () => {
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
     const params = {
       page,
       mediaType,
       search: searchTerm || undefined,
-      genreId: selectedSortId ? undefined : (selectedGenreId !== null ? selectedGenreId : undefined),
+      genreId: selectedSortId ? undefined : selectedGenreId || undefined,
       sortId: selectedSortId || undefined,
     };
     navigate(buildQueryString(params));
   };
 
   const handleMediaTypeChange = (type) => {
-    setMediaType(type);
-    setCurrentPage(1);
-    setSelectedGenreId(null);
     const params = {
       mediaType: type,
       page: 1,
@@ -118,29 +100,6 @@ const MovieContainer = () => {
     navigate(buildQueryString(params));
   };
 
-  const handleGenreSelect = (genreId) => {
-    setSelectedGenreId(genreId);
-    setCurrentPage(1);
-    const params = {
-      mediaType,
-      page: 1,
-      genreId: genreId !== null ? genreId : undefined,
-      search: genreId === null && searchTerm ? searchTerm : undefined,
-    };
-    navigate(buildQueryString(params));
-  };
-
-  const handleSortSelect = (sortId) => {
-    setSelectedSortId(sortId);
-    setCurrentPage(1);
-    const params = {
-      mediaType,
-      page: 1,
-      sortId: sortId || undefined
-    };
-    navigate(buildQueryString(params));
-  }
-
   return (
     <>
       <Header
@@ -148,9 +107,7 @@ const MovieContainer = () => {
         onSearch={handleSearch}
         mediaType={mediaType}
         onMediaTypeChange={handleMediaTypeChange}
-        onGenreSelect={handleGenreSelect}
         selectedGenreId={selectedGenreId}
-        onSortSelect={handleSortSelect}
         selectedSortId={selectedSortId} />
       {isLoading ? (
         <Loader />

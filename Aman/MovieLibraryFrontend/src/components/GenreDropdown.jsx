@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from "react-router-dom";
 import { fetchGenreListOfMedia } from '../api';
 
-const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId, disabled }) => {
+const GenreDropdown = ({ mediaType, disabled }) => {
     const [genres, setGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [fetchError, setFetchError] = useState('');
-    const lastFetchedMediaTypeRef = useRef(null);
+    const [selectedGenre, setSelectedGenre] = useState(null);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const fetchGenre = async () => {
-            if (!mediaType || lastFetchedMediaTypeRef.current === mediaType) return;
 
             setIsLoading(true);
 
@@ -18,7 +19,6 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId, disabled }) 
             if (response?.status === 200) {
                 setGenres(response.data.genres);
                 setFetchError('');
-                lastFetchedMediaTypeRef.current = mediaType;
             } else {
                 const message = response?.response?.data?.status_message || 'Unexpected error occurred.';
                 setGenres([]);
@@ -31,9 +31,24 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId, disabled }) 
         fetchGenre();
     }, [mediaType]);
 
-    const handleChange = (event) => {
-        const value = event.target.value;
-        onGenreSelect(value === '' ? null : parseInt(value));
+    useEffect(() => {
+        const initialGenre = searchParams.get("genreId");
+        setSelectedGenre(initialGenre ? Number(initialGenre) : null);
+    }, [searchParams]);
+
+    const handleChange = (e) => {
+        const genreId = e.target.value ? Number(e.target.value) : null;
+        setSelectedGenre(genreId);
+
+        const params = Object.fromEntries([...searchParams]);
+        if (genreId === null) {
+            delete params.genreId;
+        } else {
+            params.genreId = genreId;
+            delete params.search;
+        }
+        params.page = 1;
+        setSearchParams(params);
     };
 
     return (
@@ -42,23 +57,25 @@ const GenreDropdown = ({ mediaType, onGenreSelect, selectedGenreId, disabled }) 
                 <div className="genre-error">{fetchError}</div>
             ) : (
                 <select className="genre-select"
-                    value={selectedGenreId ?? ''}
+                    value={selectedGenre ?? ""}
                     onChange={handleChange}
-                    disabled={disabled || isLoading}>
-                    <option value="">Reset</option>
-                    {
+                    disabled={disabled}
+                >
+                    <option value="">
+                        Reset
+                    </option>
+                    {isLoading ? (
+                        <option disabled>
+                            Loading...
+                        </option>
+                    ) : (
                         genres.map((genre) => (
                             <option key={genre.id} value={genre.id}>
                                 {genre.name}
                             </option>
                         ))
-                    }
+                    )}
                 </select>
-            )}
-            {isLoading && (
-                <div className="review-loader-wrapper">
-                    <div className="spinner-inline"></div>
-                </div>
             )}
         </div>
     )
