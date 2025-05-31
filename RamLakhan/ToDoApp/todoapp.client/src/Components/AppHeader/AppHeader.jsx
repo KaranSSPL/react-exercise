@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext } from 'react'
+import React, { useEffect, useRef,useContext } from 'react'
 import { Context } from '../../global/MyContext';
 import { NavLink } from 'react-router-dom';
 
@@ -23,13 +23,10 @@ import {
     cilSun,
 } from '@coreui/icons'
 
-import { AppBreadcrumb } from '../index'
-
 const AppHeader = () => {
-    const { sidebarShow,setSidebarShow } = useContext(Context);
+    const { sidebarShow, setSidebarShow } = useContext(Context);
     const headerRef = useRef()
     const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
-
 
     useEffect(() => {
         document.addEventListener('scroll', () => {
@@ -47,12 +44,14 @@ const AppHeader = () => {
                 >
                     <CIcon icon={cilMenu} size="lg" />
                 </CHeaderToggler>
-                <CHeaderNav className="d-none d-md-flex">
+                <CHeaderNav className="d-none d-md-flex text-left">
                     <CNavItem>
-                        <CNavLink to="/dashboard" as={NavLink}>
+                        <CNavLink to="/" as={NavLink}>
                             Dashboard
                         </CNavLink>
                     </CNavItem>
+                </CHeaderNav>
+                <CHeaderNav className="ms-auto">
                 </CHeaderNav>
                 <CHeaderNav>
                     <li className="nav-item py-1">
@@ -102,9 +101,6 @@ const AppHeader = () => {
                         <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
                     </li>
                 </CHeaderNav>
-            </CContainer>
-            <CContainer className="px-4" fluid>
-                <AppBreadcrumb />
             </CContainer>
         </CHeader>
     )

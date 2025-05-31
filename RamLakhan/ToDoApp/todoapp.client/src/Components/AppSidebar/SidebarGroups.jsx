@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useTaskEvents } from '../../Hooks/TaskEvents';
-import { GetGroups, UpdateGroup } from '../../api/TaskGroupApi';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import Form from 'react-bootstrap/Form';
+import React from 'react'
+import { cilTask, cilSquare, cilStorage } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
+import { CNavGroup,CNavItem,CBadge,CNavLink,} from '@coreui/react'
+import { useTaskEvents } from '../../Hooks/TaskEvents'
+import { useEffect } from 'react'
+import { GetGroups, UpdateGroup } from '../../api/TaskGroupApi'
 
-const HandleVisibleGroups = () => {
+const SidebarGroups = () => {
     const { taskGroups, setTaskGroups, allGroupTaskList, setAllGroupTaskList } = useTaskEvents();
-    const [isCollapse, setIsCollapse] = useState(false);
+
 
     useEffect(() => {
         (async () => {
@@ -20,6 +22,7 @@ const HandleVisibleGroups = () => {
 
     const HandleVisibilityCheck = async (groupId) => {
         const group = taskGroups.find(item => item.listId === groupId);
+
         if (group) {
             const updatedGroup = { ...group, isEnableShow: !group.isEnableShow };
             const result = await UpdateGroup(updatedGroup.listId, updatedGroup);
@@ -55,33 +58,28 @@ const HandleVisibleGroups = () => {
     }
 
     return (
-        <>
-            <button onClick={() => setIsCollapse(!isCollapse)} className="btn grouplist w-100">
-                List {isCollapse == false ? <ChevronUp /> : <ChevronDown />}
-            </button>
-            <ul className={`submenu ${isCollapse == true ? 'collapse' : ''}`}>
-                {taskGroups.length > 0 &&
-                    taskGroups.map(item => (
+        <>{taskGroups.length > 0 && (
+            <CNavGroup compact as="div"
+                toggler={<><CIcon icon={cilStorage}
+                    customClassName="nav-icon"
+                /> <span>Groups</span></>}>
 
-                        <li key={item.listId} className="submenu-item">
-                            <div className="row d-flex justify-content-center">
-                                {/*<div className="col-1 mt-1 text-left">
-                                    <input className="checkinput" type="checkbox" checked={item.isEnableShow} onChange={() => HandleVisibilityCheck(item.listId)} />
-                                </div>*/}
-
-                                <div className="col-10 text-left">
-                                    <Form.Check type="switch" id="custom-switch" checked={item.isEnableShow} onChange={() => HandleVisibilityCheck(item.listId)} label={item.listName} />
-                                    {/*<span>{item.listName}</span>*/}
-                                </div>
-
-                                <div className="col-2 text-end"><span className="group-count">{countTask(item.listId)}</span></div>
-                            </div>
-
-                        </li>
-                    ))
-                }
-            </ul>
+                {taskGroups.map((item) => (
+                    <CNavItem as="div" key={item.listId}>
+                        <CNavLink href="#" style={{ cursor: 'pointer' }} onClick={() => HandleVisibilityCheck(item.listId)}>
+                            <CIcon
+                                icon={item.isEnableShow ? cilTask : cilSquare}
+                                customClassName="nav-icon" />
+                            {item.listName}
+                            <CBadge color="secondary" className="ms-auto" size="sm">
+                                {countTask(item.listId)}
+                            </CBadge>
+                        </CNavLink>
+                    </CNavItem>
+                ))}
+            </CNavGroup>)}
         </>
     )
 }
-export default HandleVisibleGroups;
+
+export default SidebarGroups

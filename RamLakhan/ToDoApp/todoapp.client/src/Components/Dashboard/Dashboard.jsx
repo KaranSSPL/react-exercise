@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
+﻿import React, { useEffect } from 'react'
 import { GetGroupsTaskList } from '../../api/TaskGroupApi';
 import { useTaskEvents } from '@/Hooks/TaskEvents';
-import GroupCard from '../GroupCard/GroupCard';
+import { GroupCard } from '../index';
 
 const Dashboard = () => {
-    const { hideSidebar, allGroupTaskList, setAllGroupTaskList } = useTaskEvents();
-    const [openGroupMenuPopup, setOpenGroupMenuPopup] = useState(null);
-    const [openTaskMenuPopup, setOpenTaskMenuPopup] = useState(null);
+    const { allGroupTaskList, setAllGroupTaskList } = useTaskEvents();
 
     useEffect(() => {
         (async () => {
@@ -20,25 +18,16 @@ const Dashboard = () => {
 
 
     return (
-
-        <div className={`content ${hideSidebar ? "sidebar-hidden" : ""}`}>
-            <div className="task-scroll-container">
-                    <div className="task-scroll">
-                        {
-                            allGroupTaskList && allGroupTaskList.length > 0 &&
-                            allGroupTaskList.map(groupItem => (
-                                <GroupCard
-                                    key={groupItem.groupId}
-                                    group={groupItem}
-                                    isStarredList={false}
-                                    openGroupMenuPopup={openGroupMenuPopup}
-                                    setOpenGroupMenuPopup={setOpenGroupMenuPopup}
-                                    openTaskMenuPopup={openTaskMenuPopup}
-                                    setOpenTaskMenuPopup={setOpenTaskMenuPopup} />
-                            ))
-                        }
-                    </div>
-            </div >
+        <div className="row g-4">
+            {
+                allGroupTaskList && allGroupTaskList.length > 0 &&
+                allGroupTaskList.map(groupItem => (
+                    <GroupCard
+                        key={groupItem.groupId}
+                        group={groupItem}
+                        isStarredList={false} />
+                ))
+            }
         </div>
     )
 }

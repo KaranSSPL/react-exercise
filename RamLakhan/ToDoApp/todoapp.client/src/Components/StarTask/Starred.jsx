@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 import { GetStarredTask } from '../../api/TaskGroupApi';
-import GroupCard from '../GroupCard/GroupCard';
+import { GroupCard } from '../index';
 
 const Starred = () => {
-    const { hideSidebar, allStarredTasks, setallStarredTasks } = useTaskEvents();
-    const [openGroupMenuPopup, setOpenGroupMenuPopup] = useState(null);
-    const [openTaskMenuPopup, setOpenTaskMenuPopup] = useState(null);
+    const { allStarredTasks, setallStarredTasks } = useTaskEvents();
     useEffect(() => {
         (async () => {
             const response = await GetStarredTask();
@@ -17,21 +15,14 @@ const Starred = () => {
         })();
     }, []);
 
-
     return (
-        <div className={`content ${hideSidebar ? "sidebar-hidden" : ""}`}>
-            <div className="task-scroll-container">
-                    <div className="task-scroll m-auto">
-                    {allStarredTasks && <GroupCard
-                        key={allStarredTasks.groupId}
-                        group={allStarredTasks}
-                        isStarredList={true}
-                        openGroupMenuPopup={openGroupMenuPopup}
-                        setOpenGroupMenuPopup={setOpenGroupMenuPopup}
-                        openTaskMenuPopup={openTaskMenuPopup}
-                        setOpenTaskMenuPopup={setOpenTaskMenuPopup} />}
-                    </div>
-            </div>
+        <div className="row g-4">
+            {allStarredTasks &&
+                <GroupCard
+                    key={allStarredTasks.groupId}
+                    group={allStarredTasks}
+                    isStarredList={true}
+                />}
         </div>
     )
 }

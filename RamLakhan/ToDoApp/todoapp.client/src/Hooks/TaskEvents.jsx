@@ -10,8 +10,7 @@ export function useTaskEvents() {
         allStarredTasks,
         setallStarredTasks,
         taskGroups,
-        setTaskGroups,
-        hideSidebar, setHideSidebar
+        setTaskGroups
     } = useContext(Context);
 
     // Refresh groups task list and starred task list
@@ -31,8 +30,6 @@ export function useTaskEvents() {
     };
 
     return {
-        //states
-        hideSidebar, setHideSidebar,
         //handlers
         RefreshTaskLists,
         //context values

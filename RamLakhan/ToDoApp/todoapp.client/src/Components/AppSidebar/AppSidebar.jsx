@@ -1,5 +1,4 @@
-import React from 'react';
-//import { Context } from '../../global/MyContext';
+import React, { useContext } from 'react';
 import {
     CCloseButton,
     CSidebar,
@@ -8,18 +7,15 @@ import {
     CSidebarHeader,
     CSidebarToggler,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react'
-/*import { AppSidebarNav } from './AppSidebarNav';
-import navigation from '../../_nav';*/
-/*import { logo } from '../../assets/brand/logo'*/
-import { sygnet } from '../../assets/brand/sygnet'
-import { useSelector, useDispatch } from 'react-redux'
+import { cibR, cibTesla, cibAtlassian } from '@coreui/icons';
+import CIcon from "@coreui/icons-react";
+import { AppSidebarNav } from './AppSidebarNav';
+import navigation from '../../_nav';
+import { Context } from '../../global/MyContext';
+
 
 const AppSidebar = () => {
-    //const { unfoldable, setUnfoldable, sidebarShow, setSidebarShow } = useContext(Context);
-    const dispatch = useDispatch()
-    const unfoldable = useSelector((state) => state.sidebarUnfoldable)
-     const sidebarShow = useSelector((state) => state.sidebarShow)
+    const { sidebarShow, setSidebarShow, unfoldable, setUnfoldable } = useContext(Context);
 
     return (
         <CSidebar
@@ -28,27 +24,22 @@ const AppSidebar = () => {
             position="fixed"
             unfoldable={unfoldable}
             visible={sidebarShow}
-            onVisibleChange={(visible) => {
-                dispatch({ type: 'set', sidebarShow: visible })
-            }}>
+            onVisibleChange={(visible) => setSidebarShow(visible)}>
+
             <CSidebarHeader className="border-bottom">
                 <CSidebarBrand to="/">
-                    {/*Raml Todo App*/}
-                    <p className="sidebar-brand-full">Ramlakhan</p>
-                    {/*<CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />*/}
-                    <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
+                    <span className="sidebar-brand-full"><CIcon icon={cibR} height={32} /><CIcon icon={cibTesla} height={32} /><CIcon icon={cibAtlassian} height={32} /> </span>
+                    <span style={{ color: 'white' }} className="sidebar-brand-narrow"><CIcon icon={cibR} height={32} /></span>
                 </CSidebarBrand>
                 <CCloseButton
                     className="d-lg-none"
                     dark
-                    onClick={() => dispatch({ type: 'set', sidebarShow: false })}
+                    onClick={() => setSidebarShow(false)}
                 />
             </CSidebarHeader>
-           {/* <AppSidebarNav items={navigation} />*/}
+            <AppSidebarNav items={navigation} />
             <CSidebarFooter className="border-top d-none d-lg-flex">
-                <CSidebarToggler
-                    onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
-                />
+                <CSidebarToggler onClick={() => setUnfoldable(!unfoldable)} />
             </CSidebarFooter>
         </CSidebar>
     )

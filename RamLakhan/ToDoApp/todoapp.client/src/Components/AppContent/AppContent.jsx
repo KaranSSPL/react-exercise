@@ -1,41 +1,17 @@
-import React, { Suspense } from 'react'
-/*import { Navigate, Route, Routes } from 'react-router-dom'*/
-import { CContainer, CSpinner } from '@coreui/react'
+import { CContainer } from '@coreui/react'
 import Dashboard from '../Dashboard/Dashboard'
 import Starred from '../StarTask/Starred'
-import {  Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-// routes config
-/*import routes from '../routes'*/
 
 const AppContent = () => {
     return (
-        <CContainer className="px-4" lg>
-            <Suspense fallback={<CSpinner color="primary" />}>
-                {/*<Routes>
-                    {routes.map((route, idx) => {
-                        return (
-                            route.element && (
-                                <Route
-                                    key={idx}
-                                    path={route.path}
-                                    exact={route.exact}
-                                    name={route.name}
-                                    element={<route.element />}
-                                />
-                            )
-                        )
-                    })}
-                    <Route path="/" element={<Navigate to="dashboard" replace />} />
-                </Routes>*/}
-                <Routes>
-                    <Route path="/" element={ <Dashboard />} />
-
-                    <Route path="/starred" element={<Starred />} />
-                </Routes>
-            </Suspense>
+        <CContainer fluid className="px-5">
+            <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/starred" element={<Starred />} />
+            </Routes>
         </CContainer>
     )
 }
-
-export default React.memo(AppContent)
+export default AppContent;

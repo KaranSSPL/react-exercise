@@ -1,15 +1,16 @@
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 import { UpdateTask } from '../../api/TaskApi';
-import AddTaskButton from '../AddTaskButtons/AddTaskButton';
-import GroupCardHeader from '../GroupCard/GroupCardHeader/GroupCardHeader';
-import InCompleteTask from './InCompleteTask/InCompleteTask';
-import CompletedTaskList from './completedTaskSection/CompletedTaskList';
-import NoTaskYetMessage from '../NoTaskYetMessage/NoTaskYetMessage';
-import TaskCompletedMessage from '../AllTaskCompletedMessage/TaskCompletedMessage';
+import {
+    AddTaskButton,
+    CompletedTaskList,
+    GroupCardHeader,
+    InCompleteTasks,
+    NoTaskYetMessage,
+    TaskCompletedMessage
+} from '../index';
+import { CCard, CCardBody,CListGroup } from '@coreui/react'
 
-
-const GroupCard = ({ group, isStarredList, openGroupMenuPopup, setOpenGroupMenuPopup, openTaskMenuPopup, setOpenTaskMenuPopup }) => {
-
+const GroupCard = ({ group, isStarredList }) => {
     const { RefreshTaskLists } = useTaskEvents();
 
     // mark complete or uncomplete a task
@@ -26,41 +27,32 @@ const GroupCard = ({ group, isStarredList, openGroupMenuPopup, setOpenGroupMenuP
 
     return (
         group.isEnableShow &&
+        <div className={`col-md-4 ${isStarredList ? 'm-auto mt-4' : ''}`}>
+            <CCard className="shadow-sm rounded-3">
+                <GroupCardHeader group={group} isStarredList={isStarredList} />
+                <CCardBody>
+                    <AddTaskButton groupId={group.groupId} isStarredTask={isStarredList} />
+                    {
+                            group.taskList && group.taskList.length > 0
+                                ? <CListGroup flush>
+                                {
+                                    group.taskList.map(task => (
+                                        <InCompleteTasks key={task.taskId} groupId={group.groupId} task={task} onComplete={handleCompleteTask} />
+                                    ))
+                                    }</CListGroup>
 
-        <div key={group.groupId} className="group-card">
-
-            <GroupCardHeader group={group} isStarredList={isStarredList} openGroupMenuPopup={openGroupMenuPopup}
-                setOpenGroupMenuPopup={setOpenGroupMenuPopup} />
-
-            <AddTaskButton groupId={group.groupId} isStarredTask={isStarredList} />
-
-            <div className="group-card-body">
-                {
-                    group.taskList && group.taskList.length > 0 ?
-                        <div className="incomplete-task">
-                            {
-                                group.taskList.map(task => (<InCompleteTask
-                                    key={task.taskId}
-                                    groupId={group.groupId}
-                                    task={task}
-                                    onComplete={handleCompleteTask}
-                                    openTaskMenuPopup={openTaskMenuPopup}
-                                    setOpenTaskMenuPopup={setOpenTaskMenuPopup} />))
-                            }
-                        </div> :
-                        group.completedTaskList && group.completedTaskList.length > 0 ?
-                            <TaskCompletedMessage />
-                            :
-                            <NoTaskYetMessage />
-                }
-
-                {
-                    group.completedTaskList && group.completedTaskList.length > 0 &&
-                    <CompletedTaskList groupId={group.groupId} completedTaskList={group.completedTaskList} onComplete={handleCompleteTask} />
-                }
-
-            </div>
-        </div>
+                            : group.completedTaskList && group.completedTaskList.length > 0 ? <TaskCompletedMessage /> : <NoTaskYetMessage />
+                    }
+                    {
+                        group.completedTaskList && group.completedTaskList.length > 0 &&
+                        <>
+                            <hr /><CompletedTaskList groupId={group.groupId} completedTaskList={group.completedTaskList} onComplete={handleCompleteTask} />
+                        </>
+                    }
+                </CCardBody>
+            </CCard>
+        </div >
     )
 }
+
 export default GroupCard;

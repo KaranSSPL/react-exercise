@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { DeleteTask } from "../../../api/TaskApi";
-import { Check, Trash2 } from 'lucide-react';
 import { FormateDate } from "../../../global/Helper";
-import AddOrUpdateTask from "../../AddorUpdateModel/AddOrUpdateTask";
 import { useTaskEvents } from "../../../Hooks/TaskEvents";
+import CIcon from '@coreui/icons-react';
+import { cilTrash, cibVerizon } from '@coreui/icons';
+import { CListGroupItem } from '@coreui/react';
+import { AddOrUpdateTask } from "../../index";
 
 const CompletedTask = ({ groupId, task, onComplete }) => {
     const { RefreshTaskLists } = useTaskEvents();
@@ -25,37 +27,32 @@ const CompletedTask = ({ groupId, task, onComplete }) => {
 
         await RefreshTaskLists();
     };
+
     return (
         <>
-            <div key={task.taskId} className="row">
-                <div className="col-1 mt-2" onClick={() => onComplete(task, false)}> <Check /></div>
-                <div className="col-9 task-details mt-2"
-                    onClick={() => handleEditTask(task.taskId)}>
-                    <div className="task-title">
-                        <del>
-                            {task.title}
-                        </del>
-                    </div>
-
-                    {task.description?.trim() &&
-
-                        <div className="task-description">
-                            {task.description}
-                        </div>
-                    }
-                    {task.toDoDate?.trim() &&
-
-                        <div className="task-date">
-                            Completed: {FormateDate(task.toDoDate)}
-                        </div>
+            <CListGroupItem className={`d-flex justify-content-between align-items-start position-relative task-item `}>
+                <div className="me-2 d-flex align-items-start">
+                    <CIcon
+                        icon={cibVerizon}
+                        className="mt-1"
+                        onClick={() => onComplete(task, false)}
+                        style={{ cursor: 'pointer' }}
+                    />
+                </div>
+                <div className="flex-grow-1 text-wrap text-break" onClick={() => handleEditTask(task.taskId)} style={{ cursor: 'pointer' }}>
+                    <div className="ms-4"><del>{task.title}</del></div>
+                    <div className="ms-4">{task.description}</div>
+                    {
+                        task.completeDate?.trim() && <div className="small mt-1"> Completed: {FormateDate(task.completeDate)}</div>
                     }
                 </div>
 
-                <div className="col-2 delete-complete-icon d-flex justify-content-center" >
-                    <Trash2 className="delete-complete-task" onClick={() => handleDeleteTask(task.taskId)} />
+                <div className="btn-gorup trash-icon-complete-section">
+                    <button className="btn btn-undefined" type="button" onClick={() => handleDeleteTask(task.taskId)}>
+                        <CIcon icon={cilTrash} className="ms-2 action-icon" />
+                    </button>
                 </div>
-
-            </div>
+            </CListGroupItem>
 
             {visibleModel && editTaskId > 0 && (
                 <AddOrUpdateTask

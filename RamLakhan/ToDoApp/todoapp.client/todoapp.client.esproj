@@ -9,8 +9,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\Components\AllTaskButton\" />
-    <Folder Include="src\Components\GroupCardMenus\" />
     <Folder Include="src\Components\AllTaskCompletedMessage\" />
   </ItemGroup>
 </Project>
