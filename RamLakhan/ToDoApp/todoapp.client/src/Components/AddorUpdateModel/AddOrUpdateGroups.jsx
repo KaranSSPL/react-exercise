@@ -5,11 +5,14 @@ import { AddGroup, UpdateGroup, GetGroupById, GetGroups, GetGroupsTaskList, GetS
 import { MoveTaskToNewGroup } from '../../api/TaskApi';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 
-const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) => {
-    const {setTaskGroups, setAllGroupTaskList, setallStarredTasks} = useTaskEvents();
+const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove, setOpenGroupMenuPopup }) => {
+
+    const { setTaskGroups, setAllGroupTaskList, setallStarredTasks } = useTaskEvents();
+    const [disable, setDisable] = useState(false);
     const [isShowError, setIsShowError] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [groupData, setGroupData] = useState({});
+    const [responseError, setResponseError] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -28,13 +31,15 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) =>
 
 
     const handleSubmit = async () => {
-
+        setDisable(true);
         let response = {}
 
         if (taskIdToMove && taskIdToMove != null && taskIdToMove != undefined && taskIdToMove > 0) {
             response = await MoveTaskToNewGroup(taskIdToMove, { listId: 0, listName: groupName, isEnableShow: true, sortBy: 'My order' });
             if (!response.isSuccess) {
                 console.error("error while moving task to new group ", response);
+                setResponseError(response.message);
+                setDisable(false);
                 return;
             }
 
@@ -48,14 +53,17 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) =>
 
             if (!response.isSuccess) {
                 console.log("Error while adding or updating group", response);
+                setResponseError(response.message);
+                setDisable(false);
                 return;
             }
         }
 
         setGroupName('');
-        setVisibility(false);
+        response.isSuccess && setVisibility(false);
+        setDisable(false);
         await refreshGroupData();
-
+        setOpenGroupMenuPopup(false);
     }
 
     /*handle add list*/
@@ -71,25 +79,37 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) =>
     const handleClose = () => {
         setVisibility(false);
         setGroupName('');
+        setResponseError(null);
+        setOpenGroupMenuPopup(false)
     }
 
     const refreshGroupData = async () => {
-        let response = {};
-        response = await GetGroups();
-        if (response.data && response.data.length > 0) {
-            setTaskGroups(response.data);
+        const [groupRes, taskRes, starredRes] = await Promise.all([
+            GetGroups(),
+            GetGroupsTaskList(),
+            GetStarredTask()
+        ]);
+
+        if (!groupRes?.isSuccess) {
+            console.error("Group fetch failed:", groupRes?.message || "Unknown error", groupRes?.data);
+            alert(`Error! ${groupRes.message}`);
+        } else {
+            setTaskGroups(groupRes.data);
         }
 
-        response = await GetGroupsTaskList();
-        if (!response.isSuccess)
-            console.error("Failed or unexpected response:", response);
-        setAllGroupTaskList(response.data);
+        if (!taskRes?.isSuccess) {
+            console.error("Group tasks fetch failed:", taskRes?.message || "Unknown error", taskRes?.data);
+            alert(`Error! ${taskRes.message}`);
+        } else {
+            setAllGroupTaskList(taskRes.data);
+        }
 
-        response = await GetStarredTask();
-        if (!response.isSuccess)
-            console.error("Failed or unexpected response:", response.message, response.data);
-
-        setallStarredTasks(response.data);
+        if (!starredRes?.isSuccess) {
+            console.error("Starred tasks fetch failed:", starredRes?.message || "Unknown error", starredRes?.data);
+            alert(`Error! ${starredRes.message}`);
+        } else {
+            setallStarredTasks(starredRes.data);
+        }
     }
 
     return (
@@ -98,6 +118,7 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) =>
             <Modal.Header closeButton>
                 <Modal.Title>{groupId > 0 ? "Rename Group" : "Add Group"}</Modal.Title>
             </Modal.Header>
+            {responseError && <p className=" text-center mt-2 mb-0 text-danger">{responseError}</p>}
             <Modal.Body>
                 Name: <input type="text" autoFocus className="form-control" value={groupName} onChange={(e) => handleErrorAddGroup(e.target.value)} />
                 <br />
@@ -107,7 +128,7 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) =>
                 <Button variant="secondary" onClick={() => handleClose()}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={() => handleSubmit()} disabled={!groupName?.trim()}>
+                <Button variant="primary" onClick={() => handleSubmit()} disabled={!groupName?.trim() || disable}>
                     Submit
                 </Button>
             </Modal.Footer>
