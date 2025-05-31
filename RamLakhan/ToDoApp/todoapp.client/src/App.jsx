@@ -1,26 +1,18 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/App.css';
-import Dashboard from './Components/Dashboard/Dashboard'
-import Starred from './Components/StarTask/Starred';
+import './scss/style.scss'
+import './scss/examples.scss'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MyContextProvider } from './global/MyContext';
-import Layout from './global/Layout';
+import DefaultLayout from './Layout/DefaultLayout';
 
 function App() {
-
     return (
 
         <BrowserRouter>
-            <MyContextProvider>
-                <Routes>
-                    <Route path="/" element={ <Layout> <Dashboard /> </Layout>} />
-
-                    <Route path="/starred" element={ <Layout> <Starred /> </Layout>} />
-                </Routes>
-            </MyContextProvider>
+            <Routes>
+                <Route path="*" element={<DefaultLayout />} />
+            </Routes>
         </BrowserRouter>
-    );
-
+    )
 }
 
 export default App;

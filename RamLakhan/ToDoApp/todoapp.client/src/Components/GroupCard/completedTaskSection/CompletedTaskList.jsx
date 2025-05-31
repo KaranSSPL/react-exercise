@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import CompletedTask from './CompletedTask';
+import { useState } from "react";
+import { cilCaretRight, cilCaretBottom } from '@coreui/icons';
+import { CompletedTask } from "../../index";
+import { CListGroup } from '@coreui/react'
+import CIcon from '@coreui/icons-react';
 
 const CompletedTaskList = ({ groupId, completedTaskList, onComplete }) => {
-    const [openCompletedGroupId, setOpenCompletedGroupId] = useState(null);
-
+    const [showCompleted, setShowCompleted] = useState(false)
     return (
         <>
-            <div className="completed-task">
-                <button className="btn" onClick={() => setOpenCompletedGroupId(openCompletedGroupId === groupId ? null : groupId)}>
-                    {
-                        openCompletedGroupId === groupId ? <ChevronDown /> : <ChevronRight />
-                    }
-                    Completed </button>
-                {
-                    completedTaskList.map(completeTask => (
+            <div className="mt-3">
+                <div
+                    className="d-flex align-items-center cursor-pointer"
+                    onClick={() => setShowCompleted(!showCompleted)}
+                    style={{cursor: 'pointer' }}>
+                    <CIcon icon={showCompleted ? cilCaretBottom : cilCaretRight} className="me-2" />
+                    <strong> Completed ({completedTaskList.length})</strong>
+                </div>
 
-                        openCompletedGroupId === groupId &&
-                        <CompletedTask key={completeTask.taskId} groupId={groupId} task={completeTask} onComplete={onComplete} />
-
-                    ))
-                }
+                {showCompleted && (
+                    <CListGroup flush className="mt-2">
+                        {completedTaskList.map(completeTask => (
+                                <CompletedTask key={completeTask.taskId} groupId={groupId} task={completeTask} onComplete={onComplete} />
+                            ))}
+                    </CListGroup>
+                )}
             </div>
-
-           
         </>
     )
 }
-
 export default CompletedTaskList;

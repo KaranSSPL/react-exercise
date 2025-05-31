@@ -5,9 +5,9 @@ import Modal from 'react-bootstrap/Modal';
 import { GetTaskById, AddTask, UpdateTask } from '@/api/taskApi';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 
-const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, groups, isStarredTask }) => {
+const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, isStarredTask }) => {
 
-    const { RefreshTaskLists } = useTaskEvents();
+    const { RefreshTaskLists, taskGroups } = useTaskEvents();
 
     const [disable, setDisable] = useState(false);
     const [title, setTitle] = useState('');
@@ -134,7 +134,7 @@ const AddOrUpdateTask = ({ visible, setVisibility, taskId, setTaskId, groupId, g
                                 <Form.Label>Select Task Group</Form.Label>
                                 <Form.Select
                                     onChange={(e) => setSelectedGroupId(e.target.value)} aria-label="Default select example">
-                                    {groups.map((item) => (
+                                    {taskGroups.map((item) => (
                                         <option key={item.listId} value={item.listId}>{item.listName}</option>
                                     ))}
                                 </Form.Select>

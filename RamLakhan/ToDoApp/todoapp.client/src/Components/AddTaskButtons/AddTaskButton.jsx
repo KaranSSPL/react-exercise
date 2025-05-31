@@ -1,27 +1,24 @@
 import { useState } from 'react';
-import { CircleCheckBig } from 'lucide-react';
-import AddOrUpdateTask from '../AddorUpdateModel/AddOrUpdateTask';
-import { useTaskEvents } from '../../Hooks/TaskEvents' 
+import { AddOrUpdateTask } from '../index';
+import { cibSymantec } from '@coreui/icons'
+import CIcon from "@coreui/icons-react";
 
 const AddTaskButton = ({ groupId, isStarredTask }) => {
-    const { taskGroups } = useTaskEvents();
     const [visibleModel, setVisibleModel] = useState(false);
 
     return (
         <>
-            {groupId === 0 || groupId === undefined || groupId === null
-                ?
-
-                <button className="btn btn-primary global-create-btn" onClick={() => setVisibleModel(true)}>
-                    Create +
-                </button>
-
-                :
-                <button className="btn add-task-button" onClick={() => setVisibleModel(true)}><CircleCheckBig className="add-task-check" />{isStarredTask ? "Add a star task" : "Add a task"}</button>
-            }
+            <div
+                className="mb-3 d-flex align-items-center gap-2"
+                style={{ cursor: 'pointer', color: 'cornflowerblue' }}
+                onClick={() => setVisibleModel(true)}
+            >
+                <CIcon icon={cibSymantec} />
+                <span>{isStarredTask ? "Add a star task" : "Add a task"} </span>
+            </div>
 
             {visibleModel &&
-                <AddOrUpdateTask visible={visibleModel} setVisibility={setVisibleModel} taskId={0} groupId={groupId ?? 0} groups={taskGroups} isStarredTask={isStarredTask} />
+                <AddOrUpdateTask visible={visibleModel} setVisibility={setVisibleModel} taskId={0} groupId={groupId ?? 0} isStarredTask={isStarredTask} />
             }
         </>
     )

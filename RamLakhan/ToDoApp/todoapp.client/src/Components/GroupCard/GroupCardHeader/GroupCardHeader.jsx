@@ -1,29 +1,13 @@
-import { useEffect } from 'react';
-import GroupMenuPopup from '../../GroupCardMenus/GroupMenuPopup';
-import { EllipsisVertical } from 'lucide-react';
+import { CCardHeader } from '@coreui/react'
+import { GroupActions } from '../../index';
 
-const GroupCardHeader = ({ group, isStarredList, openGroupMenuPopup, setOpenGroupMenuPopup }) => {
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest('.task-group-menu') && !event.target.closest('.submenu') && !event.target.closest('.modal-dialog')) {
-                setOpenGroupMenuPopup(null);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+const GroupCardHeader = ({ group, isStarredList }) => {
 
     return (
-        <div className="group-card-header">
-            <h4>{group.groupName}</h4>
-            <div className="task-group-menu" tabIndex={0} role="button" aria-label="Open menu">
-                <EllipsisVertical onClick={() => setOpenGroupMenuPopup(openGroupMenuPopup === group.groupId ? null : group.groupId)} />
-                {openGroupMenuPopup === group.groupId && <GroupMenuPopup group={group} isStarredList={isStarredList} setOpenGroupMenuPopup={setOpenGroupMenuPopup} />}
-            </div>
-        </div>
+        <CCardHeader className="d-flex justify-content-between align-items-center">
+            <strong>{group.groupName}</strong>
+            <GroupActions group={group} isStarredList={isStarredList} />
+        </CCardHeader>
     )
 }
 export default GroupCardHeader;

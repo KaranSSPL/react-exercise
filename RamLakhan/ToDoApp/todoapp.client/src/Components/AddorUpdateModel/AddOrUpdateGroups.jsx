@@ -5,7 +5,7 @@ import { AddGroup, UpdateGroup, GetGroupById, GetGroups, GetGroupsTaskList, GetS
 import { MoveTaskToNewGroup } from '../../api/TaskApi';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 
-const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove, setOpenGroupMenuPopup }) => {
+const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove }) => {
 
     const { setTaskGroups, setAllGroupTaskList, setallStarredTasks } = useTaskEvents();
     const [disable, setDisable] = useState(false);
@@ -63,7 +63,6 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove, setO
         response.isSuccess && setVisibility(false);
         setDisable(false);
         await refreshGroupData();
-        setOpenGroupMenuPopup(false);
     }
 
     /*handle add list*/
@@ -80,7 +79,6 @@ const AddOrUpdateGroups = ({ visible, setVisibility, groupId, taskIdToMove, setO
         setVisibility(false);
         setGroupName('');
         setResponseError(null);
-        setOpenGroupMenuPopup(false)
     }
 
     const refreshGroupData = async () => {

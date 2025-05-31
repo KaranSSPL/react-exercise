@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTaskEvents } from '../../Hooks/TaskEvents';
 import { GetStarredTask } from '../../api/TaskGroupApi';
-import GroupCard from '../GroupCard/GroupCard';
+import { GroupCard } from '../index';
+import { useState } from 'react';
 
 const Starred = () => {
-    const { hideSidebar, allStarredTasks, setallStarredTasks } = useTaskEvents();
-    const [openGroupMenuPopup, setOpenGroupMenuPopup] = useState(null);
-    const [openTaskMenuPopup, setOpenTaskMenuPopup] = useState(null);
+    const { allStarredTasks, setallStarredTasks } = useTaskEvents();
     const [responseError, setResponseError] = useState(null);
-
     useEffect(() => {
         (async () => {
             const response = await GetStarredTask();
@@ -21,24 +19,17 @@ const Starred = () => {
         })();
     }, []);
 
-
     return (
-        <div className={`content ${hideSidebar ? "sidebar-hidden" : ""}`}>
-            <div className="task-scroll-container">
-                {responseError != null ? <div className="text-center text-danger"><h4>{responseError}</h4></div>
+        <div className="row g-4">
+            {
+                responseError != null ? <div className="text-center text-danger"><h4>{responseError}</h4></div>
                     :
-                    <div className="task-scroll m-auto">
-                    {allStarredTasks && <GroupCard
+                    allStarredTasks &&
+                    <GroupCard
                         key={allStarredTasks.groupId}
                         group={allStarredTasks}
                         isStarredList={true}
-                        openGroupMenuPopup={openGroupMenuPopup}
-                        setOpenGroupMenuPopup={setOpenGroupMenuPopup}
-                        openTaskMenuPopup={openTaskMenuPopup}
-                        setOpenTaskMenuPopup={setOpenTaskMenuPopup} />}
-                    </div>
-                }
-            </div>
+                    />}
         </div>
     )
 }
