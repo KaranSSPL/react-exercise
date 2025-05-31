@@ -2,16 +2,16 @@ import { createPortal } from 'react-dom'
 import AddReviewModal from './AddReviewModal'
 import { useEffect, useRef, useState, useMemo } from 'react';
 
-import { fetchMovieReviews } from '../api.jsx';
+import { fetchMediaReviews } from '../api.jsx';
 import ReviewCard from './ReviewCard.jsx';
 
-const ReviewSection = ({ id, styles }) => {
+const ReviewSection = ({ mediaType, id, styles }) => {
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [reviewLoading, setReviewLoading] = useState(true);
-    const [movieReviews, setMovieReviews] = useState([]);
+    const [mediaReviews, setMediaReviews] = useState([]);
     const addReviewButtonRef = useRef(null);
-    const [apiError, setApiError] = useState("");
+    const [error, setError] = useState("");
 
     const addReview = (e) => {
         e.preventDefault();
@@ -19,41 +19,39 @@ const ReviewSection = ({ id, styles }) => {
     };
 
     const renderedReviews = useMemo(() => {
-        if (!movieReviews || movieReviews.length === 0) return null;
-
         return (
             <div className={styles["detail-wrapper"]}>
-                {movieReviews.map((item) => (
+                {mediaReviews.map((item) => (
                     <ReviewCard key={item.id} item={item} styles={styles} />
                 ))}
             </div>
         )
-    }, [movieReviews, styles]);
+    }, [mediaReviews, styles]);
 
-    const fetchReviews = async (movieId) => {
+    const fetchReviews = async (mediaType, movieId) => {
         setReviewLoading(true);
 
-        const response = await fetchMovieReviews(movieId);
+        const response = await fetchMediaReviews(mediaType, movieId);
 
         if (response.code === "ERR_NETWORK") {
-            setMovieReviews([]);
-            setApiError(response.message);
+            setMediaReviews([]);
+            setError(response.message);
         } else if (response.status === 200 && response.data?.isSuccess && response.data.data) {
-            setMovieReviews(response.data.data);
+            setMediaReviews(response.data.data);
         } else {
-            setMovieReviews([]);
+            setMediaReviews([]);
         }
 
         setReviewLoading(false);
     };
 
     const handleAddReviewToList = (newReview) => {
-        setMovieReviews((prev) => [newReview, ...prev]);
+        setMediaReviews((prev) => [newReview, ...prev]);
     };
 
     useEffect(() => {
-        fetchReviews(id);
-    }, [id])
+        fetchReviews(mediaType, id);
+    }, [id, mediaType])
 
     return (
         <div className={styles["review-section"]}>
@@ -64,10 +62,14 @@ const ReviewSection = ({ id, styles }) => {
                 </button>
                 {isReviewModalOpen &&
                     createPortal(
-                        <AddReviewModal onClose={() => {
-                            setIsReviewModalOpen(false);
-                            addReviewButtonRef.current?.focus();
-                        }} id={id} onReviewSubmit={handleAddReviewToList} />,
+                        <AddReviewModal
+                            onClose={() => {
+                                setIsReviewModalOpen(false);
+                                addReviewButtonRef.current?.focus();
+                            }}
+                            id={id}
+                            mediaType={mediaType}
+                            onReviewSubmit={handleAddReviewToList} />,
                         document.getElementById("modal-root")
                     )}
             </div>
@@ -76,11 +78,11 @@ const ReviewSection = ({ id, styles }) => {
                 <div className={styles["review-loader-wrapper"]}>
                     <div className={styles["spinner-inline"]}></div>
                 </div>
-            ) : apiError ? (
+            ) : error ? (
                 <p className={styles["no-reviews"]}>
-                    {`Failed to load reviews: ${apiError}`}
+                    {`Failed to load reviews: ${error}`}
                 </p>
-            ) : movieReviews && movieReviews.length > 0 ? (
+            ) : mediaReviews && mediaReviews.length > 0 ? (
                 renderedReviews
             ) : (
                 <p className={styles["no-reviews"]}>

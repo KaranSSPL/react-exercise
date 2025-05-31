@@ -9,100 +9,158 @@ import NotFound from "../components/NotFound.jsx";
 import MovieListCard from "../components/MovieListCard.jsx";
 import FailedToFetchMovies from "../components/FailedToFetchMovies.jsx";
 
-import { fetchMoviesList, searchMoviesList } from "../api.jsx";
+import { fetchMediaList, fetchSortByListOfMedia, searchMediaList } from "../api.jsx";
 
 const MovieContainer = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const page = queryParams.get("page") || 1;
   const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  
+  const initialPage = Number(queryParams.get("page")) || 1;
+  const initialSearch = queryParams.get("search") || "";
+  const initialMediaType = queryParams.get("mediaType") || "movie";
+  const initialGenreId = queryParams.get("genreId");
+  const initialSortId = queryParams.get("sortId");
 
-  const [searchMovie, setSearchMovie] = useState("");
-  const [moviesList, setMoviesList] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [mediaType, setMediaType] = useState(initialMediaType);
+  const [mediaList, setMediaList] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
-  const [currentPageNumber, setCurrentPageNumber] = useState(Number(page));
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(true);
-  const [foundSearchResult, setFoundSearchResult] = useState(false);
-  const [fetchError, setFetchError] = useState("");
-
-  const fetchMovies = async (pageNumber = 1) => {
-    setIsLoading(true);
-    setFetchError("");
-
-    const response = await fetchMoviesList(pageNumber);
-    if (response?.status === 200) {
-      const result = response?.data?.results || [];
-      setMoviesList(result);
-      setTotalPage(response?.data?.total_pages || 0);
-      setFoundSearchResult(false);
-    } else {
-      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMoviesList([]);
-      setFoundSearchResult(false);
-      setFetchError(message)
-    }
-
-    setIsLoading(false);
-  };
-
-  const searchMovies = async (searchText, pageNumber = 1) => {
-    setIsLoading(true);
-    setFetchError("");
-    
-    const response = await searchMoviesList(searchText, pageNumber)
-    if (response?.status === 200) {
-      setTotalPage(response?.data?.total_pages || 0);
-
-      if (response?.data?.results <= 0) {
-        setFoundSearchResult(true);
-      } else {
-        setFoundSearchResult(false);
-        setMoviesList(response.data.results);
-      }
-    } else {
-      const message = response?.response?.data?.status_message || "Unexpected error occurred.";
-      setMoviesList([]);
-      setFoundSearchResult(false);
-      setFetchError(message);
-    }
-
-    setIsLoading(false);
-  };
+  const [noResults, setNoResults] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedGenreId, setSelectedGenreId] = useState(
+    initialGenreId ? Number(initialGenreId) : null
+  );
+  const [selectedSortId, setSelectedSortId] = useState(
+    initialSortId ? initialSortId : null
+  );
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      searchMovie.trim()
-        ? searchMovies(searchMovie, currentPageNumber)
-        : fetchMovies(currentPageNumber);
-    }, 500);
-    return () => {
-      clearTimeout(handler);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError("");
+      let response;
+
+      if (selectedSortId) {
+        response = await fetchSortByListOfMedia(mediaType, selectedSortId, currentPage);
+      } else if (searchTerm) {
+        response = await searchMediaList(mediaType, searchTerm, currentPage);
+      } else {
+        response = await fetchMediaList(mediaType, currentPage, selectedGenreId);
+      }
+
+      if (response?.status === 200) {
+        setMediaList(response.data.results || []);
+        setTotalPage(response.data.total_pages || 0);
+        setNoResults(!response.data.results.length);
+      } else {
+        const message = response?.response?.data?.status_message;
+        setError(message || "Failed to fetch data.")
+        setMediaList([]);
+        setNoResults(false);
+      }
+
+      setIsLoading(false);
     };
-  }, [searchMovie, currentPageNumber]);
+    const handler = setTimeout(() => {
+      fetchData();
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [mediaType, searchTerm, selectedGenreId, selectedSortId, currentPage]);
+
+  const buildQueryString = (params) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        searchParams.set(key, value);
+      }
+    });
+    return `?${searchParams.toString()}`;
+  };
 
   const handleSearch = (query) => {
-    setSearchMovie(query);
-    setCurrentPageNumber(1);
-    navigate(`?page=1`);
+    setSearchTerm(query);
+    setCurrentPage(1);
+
+    const params = {
+      page: 1,
+      search: query || undefined,
+      mediaType
+    };
+    navigate(buildQueryString(params));
   };
 
   const handlePageChange = (page) => {
-    setCurrentPageNumber(page);
-    navigate(`?page=${page}`);
+    setCurrentPage(page);
+    const params = {
+      page,
+      mediaType,
+      search: searchTerm || undefined,
+      genreId: selectedSortId ? undefined : (selectedGenreId !== null ? selectedGenreId : undefined),
+      sortId: selectedSortId || undefined,
+    };
+    navigate(buildQueryString(params));
   };
+
+  const handleMediaTypeChange = (type) => {
+    setMediaType(type);
+    setCurrentPage(1);
+    setSelectedGenreId(null);
+    const params = {
+      mediaType: type,
+      page: 1,
+      search: searchTerm || undefined,
+      sortId: selectedSortId || undefined
+    };
+    navigate(buildQueryString(params));
+  };
+
+  const handleGenreSelect = (genreId) => {
+    setSelectedGenreId(genreId);
+    setCurrentPage(1);
+    const params = {
+      mediaType,
+      page: 1,
+      genreId: genreId !== null ? genreId : undefined,
+      search: genreId === null && searchTerm ? searchTerm : undefined,
+    };
+    navigate(buildQueryString(params));
+  };
+
+  const handleSortSelect = (sortId) => {
+    setSelectedSortId(sortId);
+    setCurrentPage(1);
+    const params = {
+      mediaType,
+      page: 1,
+      sortId: sortId || undefined
+    };
+    navigate(buildQueryString(params));
+  }
 
   return (
     <>
-      <Header searchMovie={searchMovie} onSearch={handleSearch} />
+      <Header
+        searchedMedia={searchTerm}
+        onSearch={handleSearch}
+        mediaType={mediaType}
+        onMediaTypeChange={handleMediaTypeChange}
+        onGenreSelect={handleGenreSelect}
+        selectedGenreId={selectedGenreId}
+        onSortSelect={handleSortSelect}
+        selectedSortId={selectedSortId} />
       {isLoading ? (
         <Loader />
-      ) : foundSearchResult ? (
+      ) : noResults ? (
         <NotFound />
-      ) : fetchError ? (
+      ) : error ? (
         <>
-          <FailedToFetchMovies message={fetchError} />
+          <FailedToFetchMovies message={error} />
           <Pagination
-            currentPageNumber={currentPageNumber}
+            currentPage={currentPage}
             totalPage={totalPage}
             onPageChange={handlePageChange}
           />
@@ -110,12 +168,16 @@ const MovieContainer = () => {
       ) : (
         <>
           <div className="movie-grid">
-            {moviesList.map((movie) => (
-              <MovieListCard key={movie.id} movie={movie} currentPage={currentPageNumber} />
+            {mediaList.map((media) => (
+              <MovieListCard
+                key={media.id}
+                media={media}
+                currentPage={currentPage}
+                mediaType={mediaType} />
             ))}
           </div>
           <Pagination
-            currentPageNumber={currentPageNumber}
+            currentPage={currentPage}
             totalPage={totalPage}
             onPageChange={handlePageChange}
           />

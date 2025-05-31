@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Register Servie & Interface
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<ITvSeriesService, TvSeriesService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

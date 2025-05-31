@@ -24,10 +24,16 @@ header h1 {
     padding: 20px;
 }
 
-.search-bar {
+.media-type {
     display: flex;
+    margin-bottom: 30px;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar {
     max-width: 500px;
-    margin: 0 auto 30px;
 }
 
 .search-bar input {
@@ -46,6 +52,121 @@ header h1 {
     font-size: 16px;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
+}
+
+.search-bar button:disabled {
+    background-color: #5a3a3b;
+    cursor: default;
+}
+
+.movie-button,
+.tv-series-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #db595f;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.genre-button:disabled {
+    background-color: #5a3a3b;
+    cursor: default;
+}
+
+.active {
+    border: 3px solid white;
+}
+
+.genre-select-wrapper {
+    position: relative;
+    max-width: 300px;
+    margin: 1rem 0;
+    font-family: sans-serif;
+}
+
+.genre-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.genre-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.genre-select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #999;
+}
+
+.genre-error {
+    color: red;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.review-loader-wrapper {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.spinner-inline {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.sort-select-wrapper {
+    position: relative;
+    max-width: 300px;
+    margin: 1rem 0;
+    font-family: sans-serif;
+}
+
+.sort-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.sort-select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #999;
 }
 
 .movie-grid {

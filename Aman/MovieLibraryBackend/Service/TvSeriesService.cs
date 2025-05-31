@@ -9,24 +9,13 @@ using MovieLibraryApi.Persistence.Entities;
 
 namespace MovieLibraryApi.Service;
 
-public class MovieService(AppDbContext dbContext,
-	IMapper mapper) : IMovieService
+public class TvSeriesService(AppDbContext dbContext,
+	IMapper mapper) : ITvSeriesService
 {
-	public async Task<ResponseModel> SaveReviewAsync(int movieId, ReviewMovieDto request)
+	public async Task<ResponseModel> GetTvReviewAsync(int tvId)
 	{
-		var reviewMovie = mapper.Map<ReviewMovie>(request);
-		reviewMovie.MovieId = movieId;
-
-		await dbContext.ReviewMovie.AddAsync(reviewMovie);
-		var result = await dbContext.SaveChangesAsync();
-
-		return result > 0 ? ResponseModel.Success("Review saved successfully.", null) : ResponseModel.Fail("Review are not saved");
-	}
-
-	public async Task<ResponseModel> GetMovieReviewAsync(int movieId)
-	{
-		var reviews = await dbContext.ReviewMovie
-		.Where(x => x.MovieId == movieId)
+		var reviews = await dbContext.ReviewTvSeries
+		.Where(x => x.TvSeriesId == tvId)
 		.OrderByDescending(x => x.CreatedDate)
 		.ProjectTo<ReviewSummaryDto>(mapper.ConfigurationProvider)
 		.ToListAsync();
@@ -40,5 +29,16 @@ public class MovieService(AppDbContext dbContext,
 		return reviews.Count > 0
 			? ResponseModel.Success(string.Empty, reviews)
 			: ResponseModel.Fail("Reviews are empty");
+	}
+
+	public async Task<ResponseModel> SaveTvReviewAsync(int tvId, ReviewMovieDto request)
+	{
+		var reviewTvSeries = mapper.Map<ReviewTvSeries>(request);
+		reviewTvSeries.TvSeriesId = tvId;
+
+		await dbContext.ReviewTvSeries.AddAsync(reviewTvSeries);
+		var result = await dbContext.SaveChangesAsync();
+
+		return result > 0 ? ResponseModel.Success("Review saved successfully.", null) : ResponseModel.Fail("Review are not saved");
 	}
 }

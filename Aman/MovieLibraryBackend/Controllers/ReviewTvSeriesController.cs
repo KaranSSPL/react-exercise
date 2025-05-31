@@ -6,17 +6,17 @@ using MovieLibraryApi.Model.Dtos;
 namespace MovieLibraryApi.Controllers;
 
 [ApiController]
-[Route("api/movie")]
-public class ReviewMovieController(IMovieService movieService) : ControllerBase
+[Route("api/tv")]
+public class ReviewTvSeriesController(ITvSeriesService tvService) : ControllerBase
 {
 	[HttpGet]
-	[Route("{movieId}/reviews")]
-	public async Task<ActionResult<ResponseModel>> GetMovieReviewAsync(int movieId)
+	[Route("{tvId}/reviews")]
+	public async Task<ActionResult<ResponseModel>> GetTvReviewAsync(int tvId)
 	{
-		if (movieId <= 0)
+		if (tvId <= 0)
 			return BadRequest(ResponseModel.Fail("Movie id is invalid"));
 
-		var response = await movieService.GetMovieReviewAsync(movieId);
+		var response = await tvService.GetTvReviewAsync(tvId);
 
 		if (response.data == null || response.data is IEnumerable<ReviewSummaryDto> reviews && !reviews.Any())
 			return NoContent();
@@ -25,16 +25,16 @@ public class ReviewMovieController(IMovieService movieService) : ControllerBase
 	}
 
 	[HttpPost]
-	[Route("{movieId}/reviews")]
-	public async Task<ActionResult<ResponseModel>> SaveReviewAsync(int movieId, [FromBody] ReviewMovieDto request)
+	[Route("{tvId}/reviews")]
+	public async Task<ActionResult<ResponseModel>> SaveReviewAsync(int tvId, [FromBody] ReviewMovieDto request)
 	{
-		if (movieId <= 0)
+		if (tvId <= 0)
 			return BadRequest(ResponseModel.Fail("Movie Id is required"));
 
 		if (!ModelState.IsValid)
 			return BadRequest(ResponseModel.Fail("Invalid Input"));
 
-		var response = await movieService.SaveReviewAsync(movieId, request);
+		var response = await tvService.SaveTvReviewAsync(tvId, request);
 
 		return response.IsSuccess ? Ok(response) : BadRequest(response);
 	}
