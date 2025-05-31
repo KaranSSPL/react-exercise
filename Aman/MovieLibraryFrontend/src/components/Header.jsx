@@ -5,8 +5,7 @@ import SortMedia from './SortMedia';
 
 const Header = ({ searchTerm, onSearch,
     mediaType, onMediaTypeChange,
-    onGenreSelect, selectedGenreId,
-    onSortSelect, selectedSortId }) => {
+    selectedGenreId, selectedSortId }) => {
 
     const [input, setInput] = useState(searchTerm);
 
@@ -14,10 +13,12 @@ const Header = ({ searchTerm, onSearch,
         setInput(searchTerm);
     }, [searchTerm]);
 
-    const searchMovieHandler = (e) => {
+    const handleSearchSubmit = (e) => {
         e.preventDefault();
         onSearch(input);
     };
+
+    const isSearchDisabled = !!selectedGenreId || !!selectedSortId;
 
     return (
         <>
@@ -25,13 +26,13 @@ const Header = ({ searchTerm, onSearch,
                 <h1>🎬 Library</h1>
             </header>
             <div className="media-type">
-                <form className="search-bar" onSubmit={searchMovieHandler}>
+                <form className="search-bar" onSubmit={handleSearchSubmit}>
                     <input
                         type="text"
                         placeholder="Search..."
                         onChange={(e) => setInput(e.target.value)}
-                        disabled={!!selectedSortId || !!selectedGenreId} />
-                    <button type="submit" disabled={!!selectedSortId || !!selectedGenreId}>Search</button>
+                        disabled={isSearchDisabled} />
+                    <button type="submit" disabled={isSearchDisabled}>Search</button>
                 </form>
 
                 <button
@@ -46,15 +47,9 @@ const Header = ({ searchTerm, onSearch,
                     TV Series
                 </button>
 
-                <GenreDropdown
-                    mediaType={mediaType}
-                    onGenreSelect={onGenreSelect}
-                    selectedGenreId={selectedGenreId}
-                    disabled={!!selectedSortId} />
+                <GenreDropdown mediaType={mediaType} disabled={!!selectedSortId} />
 
-                <SortMedia onSortSelect={onSortSelect}
-                    selectedSortId={selectedSortId}
-                    disabled={!!selectedGenreId} />
+                <SortMedia disabled={!!selectedGenreId} />
             </div>
         </>
     )
