@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "../css/index.css";
@@ -70,16 +70,16 @@ const MovieContainer = () => {
     return `?${searchParams.toString()}`;
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = useCallback((query) => {
     const params = {
       page: 1,
       search: query || undefined,
       mediaType
     };
     navigate(buildQueryString(params));
-  };
+  }, [mediaType, navigate]);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = useCallback((page) => {
     const params = {
       page,
       mediaType,
@@ -88,9 +88,9 @@ const MovieContainer = () => {
       sortId: selectedSortId || undefined,
     };
     navigate(buildQueryString(params));
-  };
+  }, [mediaType, searchTerm, selectedGenreId, selectedSortId, navigate]);
 
-  const handleMediaTypeChange = (type) => {
+  const handleMediaTypeChange = useCallback((type) => {
     const params = {
       mediaType: type,
       page: 1,
@@ -98,7 +98,7 @@ const MovieContainer = () => {
       sortId: selectedSortId || undefined
     };
     navigate(buildQueryString(params));
-  };
+  }, [searchTerm, selectedSortId, navigate]);
 
   return (
     <>
