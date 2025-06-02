@@ -37,6 +37,18 @@ export const fetchMediaDetail = async (mediaType = "movie", movieId) => {
     }
 }
 
+export const fetchMediaTrailer = async (mediaType = "movie", movieId) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/videos?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}`,
+            config
+        );
+        return response;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const fetchMediaReviews = async (mediaType = "movie", movieId) => {
     try {
         const response = await axios.get(`${import.meta.env.VITE_APP_REVIEW_API_BASE_URL}/${mediaType}/${movieId}/reviews`);

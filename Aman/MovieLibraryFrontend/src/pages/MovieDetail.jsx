@@ -8,7 +8,7 @@ import Loader from "../components/Loader.jsx";
 import NotFound from "../components/NotFound.jsx";
 import ReviewSection from "../components/ReviewSection.jsx";
 
-import { fetchMediaDetail } from "../api.jsx";
+import { fetchMediaDetail, fetchMediaTrailer } from "../api.jsx";
 
 const MovieDetail = () => {
   const { mediaType, id } = useParams();
@@ -17,11 +17,13 @@ const MovieDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
   const [isMediaFound, setIsMediaFound] = useState(true);
+  const [trailerUrl, setTrailerUrl] = useState("");
   const shareButtonRef = useRef(null);
 
   useEffect(() => {
     fetchDetail(mediaType, id);
     setIsSharePopupOpen(false);
+    fetchTrailer(mediaType, id);
   }, [id, mediaType]);
 
   const fetchDetail = async (mediaType, movieId) => {
@@ -38,6 +40,25 @@ const MovieDetail = () => {
 
     setIsLoading(false);
   };
+
+  const fetchTrailer = async (mediaType, movieId) => {
+    const response = await fetchMediaTrailer(mediaType, movieId);
+    if (response.status === 200 && response.data) {
+      const videos = response.data.results || [];
+      const officialTrailer = videos.find(
+        (video) => video.name === "Official Trailer" && video.site === "YouTube"
+      );
+
+      if (officialTrailer) {
+        setTrailerUrl(`https://www.youtube.com/watch?v=${officialTrailer.key}`);
+        console.log("Official Trailer URL:", trailerUrl);
+      } else {
+        console.warn("Official Trailer not found");
+      }
+    } else {
+      console.error("Failed to fetch trailer");
+    }
+  }
 
   const handleShare = (e) => {
     e.preventDefault();
@@ -106,6 +127,9 @@ const MovieDetail = () => {
                 </Link>
                 <Link to={`/${mediaType}/${id}/similar`} className={`${styles["movie-link"]} ${styles["share-button"]}`}>
                   {`${mediaType === "movie" ? "Similar Movies" : "Similar Shows"}`}
+                </Link>
+                <Link to={trailerUrl} className={`${styles["movie-link"]} ${styles["share-button"]}`} target="_blank" rel="noopener noreferrer">
+                  Watch Trailer
                 </Link>
               </div>
             </div>
