@@ -1,5 +1,5 @@
 const MovieGalleryImage = ({ index, gallery, handleImageClick, isSelected, styles }) => {
-    const imageUrl = `${process.env.REACT_APP_IMAGE_URL}/w200${gallery.file_path}`;
+    const imageUrl = `${import.meta.env.VITE_APP_IMAGE_URL}/w200${gallery.file_path}`;
 
     return (
         <button onClick={handleImageClick}

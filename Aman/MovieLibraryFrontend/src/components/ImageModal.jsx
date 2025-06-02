@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 const ImageModal = ({ onClose, currentImageIndex, handleImageSlider, images, styles }) => {
-    const imageUrl = `${process.env.REACT_APP_IMAGE_URL}/w500${images[currentImageIndex].file_path}`;
+    const imageUrl = `${import.meta.env.VITE_APP_IMAGE_URL}/w500${images[currentImageIndex].file_path}`;
 
     useEffect(() => {
         const handleKeyDown = (e) => {

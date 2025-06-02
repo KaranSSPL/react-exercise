@@ -7,6 +7,7 @@ import ShareModal from "../components/ShareModal.jsx";
 import Loader from "../components/Loader.jsx";
 import NotFound from "../components/NotFound.jsx";
 import ReviewSection from "../components/ReviewSection.jsx";
+import SliderOfSimilarMovies from "../components/SliderOfSimilarMovies.jsx";
 
 import { fetchMediaDetail } from "../api.jsx";
 
@@ -52,7 +53,7 @@ const MovieDetail = () => {
       <div className={styles["movie-page-container"]}>
         <div className={styles["movie-banner"]}>
           <img
-            src={`${process.env.REACT_APP_IMAGE_URL}/w1280${mediaDetail?.backdrop_path}`}
+            src={`${import.meta.env.VITE_APP_IMAGE_URL}/w1280${mediaDetail?.backdrop_path}`}
             alt="Background Poster"
             className={styles["movie-banner-img"]}
           />
@@ -61,7 +62,7 @@ const MovieDetail = () => {
 
         <div className={styles.description}>
           <div className={styles["movie-content"]}>
-            <img src={`${process.env.REACT_APP_IMAGE_URL}/w300${mediaDetail?.poster_path}`} alt="Movie Poster" className={styles["movie-poster-detail-page"]} />
+            <img src={`${import.meta.env.VITE_APP_IMAGE_URL}/w300${mediaDetail?.poster_path}`} alt="Movie Poster" className={styles["movie-poster-detail-page"]} />
             <div className={styles["movie-info-detail-page"]}>
               <h2 className={styles["movie-title-detail-page"]}>
                 {mediaDetail?.original_title ?? mediaDetail?.original_name}
@@ -110,6 +111,7 @@ const MovieDetail = () => {
               </div>
             </div>
           </div>
+
           <ReviewSection mediaType={mediaType} id={id} styles={styles} />
         </div>
       </div>
