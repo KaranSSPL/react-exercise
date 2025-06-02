@@ -7,7 +7,6 @@ import ShareModal from "../components/ShareModal.jsx";
 import Loader from "../components/Loader.jsx";
 import NotFound from "../components/NotFound.jsx";
 import ReviewSection from "../components/ReviewSection.jsx";
-import SliderOfSimilarMovies from "../components/SliderOfSimilarMovies.jsx";
 
 import { fetchMediaDetail } from "../api.jsx";
 
