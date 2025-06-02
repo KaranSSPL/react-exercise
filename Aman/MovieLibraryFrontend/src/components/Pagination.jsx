@@ -1,11 +1,11 @@
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
     return (
         <div className="pagination">
-            <button onClick={() => onPageChange(1)} disabled={currentPage === 1}>First Page</button>
-            <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
-            <span style={{ margin: '0 10px' }}>Page {currentPage} of Total {totalPage}</span>
-            <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPage}>Next</button>
-            <button onClick={() => onPageChange(totalPage)} disabled={currentPage === totalPage}>Last Page</button>
+            <button onClick={() => onPageChange(1)} disabled={currentPage === 1}>&#10094;&#10094;</button>
+            <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>&#10094;</button>
+            <span>Page {currentPage} of Total {totalPage}</span>
+            <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPage}>&#10095;</button>
+            <button onClick={() => onPageChange(totalPage)} disabled={currentPage === totalPage}>&#10095;&#10095;</button>
         </div>
     )
 }

@@ -135,7 +135,10 @@ const MovieDetail = () => {
             </div>
           </div>
 
-          <ReviewSection mediaType={mediaType} id={id} styles={styles} />
+          <div style={{ padding: 32 }}>
+            <ReviewSection mediaType={mediaType} id={id} styles={styles} />
+          </div>
+
         </div>
       </div>
     </>
