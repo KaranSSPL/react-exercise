@@ -24,12 +24,13 @@ builder.Services.AddScoped<ITvSeriesService, TvSeriesService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Add CORS
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(corsPolicyName,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins(allowedOrigins!)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
