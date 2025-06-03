@@ -64,6 +64,18 @@ header h1 {
     cursor: not-allowed;
 }
 
+.media-type-things {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.media-type-buttons {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
 .movie-button,
 .tv-series-button {
     padding: 10px 20px;
@@ -87,7 +99,6 @@ header h1 {
 .genre-select-wrapper {
     position: relative;
     max-width: 300px;
-    margin: 1rem 0;
     font-family: sans-serif;
 }
 
@@ -146,7 +157,6 @@ header h1 {
 .sort-select-wrapper {
     position: relative;
     max-width: 300px;
-    margin: 1rem 0;
     font-family: sans-serif;
 }
 
@@ -244,7 +254,6 @@ header h1 {
     align-items: center;
     margin-top: 30px;
     gap: 15px;
-    flex-wrap: wrap;
 }
 
 .pagination button {
@@ -270,6 +279,14 @@ header h1 {
 .pagination span {
     font-size: 16px;
     color: #fff;
+    text-align: center;
+}
+
+.genre-sort-dropdowns{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
 }
 
 /* 💻 Laptops and Desktops (1025px and above) */
@@ -280,7 +297,20 @@ header h1 {
 }
 
 /* 🧾 Tablets / iPads (between 768px - 1024px) */
-@media (max-width: 1024px) and (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1024px) {
+    .media-type {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .search-bar input {
+        width: 250px;
+    }
+
+    .media-type-things {
+        gap: 1 rem;
+    }
+
     .movie-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -291,7 +321,19 @@ header h1 {
 }
 
 /* 📱 Mobile phones (up to 767px) */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
+    .media-type {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .media-type-things {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
     .movie-grid {
         grid-template-columns: repeat(2, 1fr);
     }

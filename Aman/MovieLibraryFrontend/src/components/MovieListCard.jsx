@@ -5,7 +5,7 @@ const MovieListCard = ({ media, currentPage, mediaType }) => {
     return (
         <Link to={`/${mediaType}/${media.id}?page=${page}`} className="movie-link" >
             <div className="movie-card">
-                <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${media.poster_path}`} className="movie-poster" alt="Movie Poster" />
+                <img src={`${import.meta.env.VITE_APP_IMAGE_URL}/w200${media.poster_path}`} className="movie-poster" alt="Movie Poster" />
                 <div className="movie-info">
                     <div className="movie-title">{media.title ?? media.name}</div>
                     <div className="movie-release-date">{media.release_date ?? media.first_air_date}</div>

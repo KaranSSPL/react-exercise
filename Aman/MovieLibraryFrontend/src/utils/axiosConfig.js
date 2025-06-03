@@ -1,5 +1,5 @@
 export const config = {
     headers: {
-        Authorization: process.env.REACT_APP_MOVIE_TOKEN
+        Authorization: import.meta.env.VITE_APP_MOVIE_TOKEN
     }
 };

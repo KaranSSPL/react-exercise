@@ -67,9 +67,9 @@ const SimilarMovies = () => {
                 {similarMovies && similarMovies.length > 0 ? (
                     <div className={styles.gallery} id="gallery">
                         {similarMovies.map((item) => (
-                            <Link to={`/movies/${item.id}?page=${currentPage || 1}`} className={styles["movie-link"]} key={item.id}>
+                            <Link to={`/movie/${item.id}?page=${currentPage || 1}`} className={styles["movie-link"]} key={item.id}>
                                 <div className={styles["movie-card"]}>
-                                    <img src={`${process.env.REACT_APP_IMAGE_URL}/w200${item.poster_path}`}
+                                    <img src={`${import.meta.env.VITE_APP_IMAGE_URL}/w200${item.poster_path}`}
                                         alt="Movie Poster" style={{ borderRadius: '0', height: '448px' }} />
                                     <div className={styles["movie-content"]}>
                                         <div className={styles["movie-title"]}>{item.title ?? item.name}</div>

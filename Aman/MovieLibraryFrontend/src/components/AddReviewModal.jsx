@@ -37,17 +37,6 @@ const AddReviewModal = ({ onClose, id, mediaType, onReviewSubmit }) => {
 
     setIsSubmitting(true);
 
-    const newErrors = {};
-    if (!formData.firstName) newErrors.firstName = "First Name is required.";
-    else if (!formData.lastName) newErrors.lastName = "Last Name is required.";
-    else if (!formData.comment) newErrors.comment = "Comment is required.";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsSubmitting(false);
-      return;
-    }
-
     const data = {
       firstName: formData.firstName,
       lastName: formData.lastName,

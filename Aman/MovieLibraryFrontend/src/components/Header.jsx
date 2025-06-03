@@ -35,21 +35,26 @@ const Header = ({ searchTerm, onSearch,
                     <button type="submit" disabled={isSearchDisabled}>Search</button>
                 </form>
 
-                <button
-                    className={`movie-button ${mediaType === "movie" ? "active" : ""}`}
-                    onClick={() => onMediaTypeChange("movie")}>
-                    Movies
-                </button>
+                <div className="media-type-things">
+                    <div className="media-type-buttons">
+                        <button
+                            className={`movie-button ${mediaType === "movie" ? "active" : ""}`}
+                            onClick={() => onMediaTypeChange("movie")}>
+                            Movies
+                        </button>
 
-                <button
-                    className={`tv-series-button ${mediaType === "tv" ? "active" : ""}`}
-                    onClick={() => onMediaTypeChange("tv")}>
-                    TV Series
-                </button>
+                        <button
+                            className={`tv-series-button ${mediaType === "tv" ? "active" : ""}`}
+                            onClick={() => onMediaTypeChange("tv")}>
+                            TV Series
+                        </button>
+                    </div>
+                    <div className="genre-sort-dropdowns">
+                        <GenreDropdown mediaType={mediaType} disabled={!!selectedSortId} />
 
-                <GenreDropdown mediaType={mediaType} disabled={!!selectedSortId} />
-
-                <SortMedia disabled={!!selectedGenreId} />
+                        <SortMedia disabled={!!selectedGenreId} />
+                    </div>
+                </div>
             </div>
         </>
     )
