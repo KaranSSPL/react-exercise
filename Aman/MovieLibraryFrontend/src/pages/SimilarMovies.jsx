@@ -7,6 +7,7 @@ import FailedToFetchMovies from "../components/FailedToFetchMovies";
 import Pagination from "../components/Pagination";
 
 import { fetchSimilarMediaList } from "../api";
+import { envVar } from "../utils/env-var";
 
 const SimilarMovies = () => {
     const { mediaType, id } = useParams();
@@ -69,7 +70,7 @@ const SimilarMovies = () => {
                         {similarMovies.map((item) => (
                             <Link to={`/movie/${item.id}?page=${currentPage || 1}`} className={styles["movie-link"]} key={item.id}>
                                 <div className={styles["movie-card"]}>
-                                    <img src={`${import.meta.env.VITE_APP_IMAGE_URL}/w200${item.poster_path}`}
+                                    <img src={`${envVar.tmdbApi.image.baseUrl}/w200${item.poster_path}`}
                                         alt="Movie Poster" style={{ borderRadius: '0', height: '448px' }} />
                                     <div className={styles["movie-content"]}>
                                         <div className={styles["movie-title"]}>{item.title ?? item.name}</div>

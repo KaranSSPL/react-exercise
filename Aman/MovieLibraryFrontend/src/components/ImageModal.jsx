@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import { envVar } from "../utils/env-var";
 
 const ImageModal = ({ onClose, currentImageIndex, handleImageSlider, images, styles }) => {
-    const imageUrl = `${import.meta.env.VITE_APP_IMAGE_URL}/w500${images[currentImageIndex].file_path}`;
+    const imageUrl = `${envVar.tmdbApi.image.baseUrl}/w500${images[currentImageIndex].file_path}`;
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -15,7 +16,7 @@ const ImageModal = ({ onClose, currentImageIndex, handleImageSlider, images, sty
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [onClose]);
-    
+
     return (
         <div className={styles.modal} id="modal">
             <button className={styles.close} onClick={onClose}>&times;</button>
