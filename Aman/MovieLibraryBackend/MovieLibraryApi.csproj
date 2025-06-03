@@ -1,13 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>false</InvariantGlobalization>
+
     <SpaRoot>..\MovieLibraryFrontend</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:56115</SpaProxyServerUrl>
+    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,9 +35,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MovieLibraryFrontend\todoapp.client.esproj">
+    <ProjectReference Include="..\MovieLibraryFrontend\MovieLibraryFrontend.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
+
+  <Target Name="BuildFrontend" BeforeTargets="Publish">
+  <Message Importance="high" Text="📦 Building Vite frontend before publishing..." />
+  
+  <!-- Install and build Vite -->
+  <Exec Command="npm install" WorkingDirectory="$(SpaRoot)" />
+  <Exec Command="npm run build" WorkingDirectory="$(SpaRoot)" />
+
+  <!-- Ensure wwwroot exists -->
+  <MakeDir Directories="$(ProjectDir)wwwroot" />
+
+  <!-- Copy new dist to wwwroot -->
+  <ItemGroup>
+    <DistFiles Include="$(SpaRoot)\dist\**\*" />
+  </ItemGroup>
+
+  <Copy SourceFiles="@(DistFiles)"
+        DestinationFolder="$(ProjectDir)wwwroot\%(RecursiveDir)"
+        SkipUnchangedFiles="true" />
+</Target>
+
 
 </Project>

@@ -51,9 +51,6 @@ const MovieDetail = () => {
 
       if (officialTrailer) {
         setTrailerUrl(`https://www.youtube.com/watch?v=${officialTrailer.key}`);
-        console.log("Official Trailer URL:", trailerUrl);
-      } else {
-        console.warn("Official Trailer not found");
       }
     } else {
       console.error("Failed to fetch trailer");
@@ -128,9 +125,10 @@ const MovieDetail = () => {
                 <Link to={`/${mediaType}/${id}/similar`} className={`${styles["movie-link"]} ${styles["share-button"]}`}>
                   {`${mediaType === "movie" ? "Similar Movies" : "Similar Shows"}`}
                 </Link>
-                <Link to={trailerUrl} className={`${styles["movie-link"]} ${styles["share-button"]}`} target="_blank" rel="noopener noreferrer">
-                  Watch Trailer
-                </Link>
+                {trailerUrl &&
+                  <Link to={trailerUrl} className={`${styles["movie-link"]} ${styles["share-button"]}`} target="_blank" rel="noopener noreferrer">
+                    Watch Trailer
+                  </Link>}
               </div>
             </div>
           </div>

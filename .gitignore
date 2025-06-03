@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /Aman/MovieLibraryFrontend/.env
 Aman/MovieLibraryFrontend/.env.development
 Aman/MovieLibraryFrontend/.env.production
+/Aman/MovieLibraryBackend/wwwroot

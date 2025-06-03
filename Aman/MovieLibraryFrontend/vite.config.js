@@ -4,6 +4,14 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "build", // CRA's default build output
+    outDir: 'dist',
+    emptyOutDir: true
   },
+  server: {
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': 'https://localhost:5156/api'
+    }
+  }
 });
