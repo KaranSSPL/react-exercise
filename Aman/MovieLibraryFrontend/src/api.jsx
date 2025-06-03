@@ -1,11 +1,12 @@
 import axios from "axios";
 import { config } from "./utils/axiosConfig";
+import { envVar } from "./utils/env-var";
 
 export const fetchMediaList = async (mediaType = "movie", page = 1, genreId = null) => {
     try {
         const genreParam = genreId ? `&with_genres=${genreId}` : "";
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/discover/${mediaType}?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}&page=${page}${genreParam}`,
+            `${envVar.tmdbApi.baseUrl}/3/discover/${mediaType}?language=${envVar.tmdbApi.language}&page=${page}${genreParam}`,
             config);
         return response;
     } catch (error) {
@@ -16,7 +17,7 @@ export const fetchMediaList = async (mediaType = "movie", page = 1, genreId = nu
 export const searchMediaList = async (mediaType = "movie", query, page) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/search/${mediaType}?query=${query}&language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            `${envVar.tmdbApi.baseUrl}/3/search/${mediaType}?query=${query}&language=${envVar.tmdbApi.language}&page=${page}`,
             config
         );
         return response;
@@ -28,7 +29,7 @@ export const searchMediaList = async (mediaType = "movie", query, page) => {
 export const fetchMediaDetail = async (mediaType = "movie", movieId) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}`,
+            `${envVar.tmdbApi.baseUrl}/3/${mediaType}/${movieId}?language=${envVar.tmdbApi.language}`,
             config
         );
         return response;
@@ -40,7 +41,7 @@ export const fetchMediaDetail = async (mediaType = "movie", movieId) => {
 export const fetchMediaTrailer = async (mediaType = "movie", movieId) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/videos?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}`,
+            `${envVar.tmdbApi.baseUrl}/3/${mediaType}/${movieId}/videos?language=${envVar.tmdbApi.language}`,
             config
         );
         return response;
@@ -51,7 +52,7 @@ export const fetchMediaTrailer = async (mediaType = "movie", movieId) => {
 
 export const fetchMediaReviews = async (mediaType = "movie", movieId) => {
     try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_REVIEW_API_BASE_URL}/${mediaType}/${movieId}/reviews`);
+        const response = await axios.get(`${envVar.reviewApi.baseUrl}/${mediaType}/${movieId}/reviews`);
         return response;
     } catch (error) {
         return error;
@@ -60,7 +61,7 @@ export const fetchMediaReviews = async (mediaType = "movie", movieId) => {
 
 export const fetchMediaImages = async (mediaType = "movie", movieId) => {
     try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/images`, config);
+        const response = await axios.get(`${envVar.tmdbApi.baseUrl}/3/${mediaType}/${movieId}/images`, config);
         return response;
     } catch (error) {
         return error;
@@ -69,7 +70,7 @@ export const fetchMediaImages = async (mediaType = "movie", movieId) => {
 
 export const submitMediaReview = async (mediaType = "movie", movieId, data) => {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_APP_REVIEW_API_BASE_URL}/${mediaType}/${movieId}/reviews`, data);
+        const response = await axios.post(`${envVar.reviewApi.baseUrl}/${mediaType}/${movieId}/reviews`, data);
         return response;
     } catch (error) {
         return error;
@@ -79,7 +80,7 @@ export const submitMediaReview = async (mediaType = "movie", movieId, data) => {
 export const fetchSimilarMediaList = async (mediaType = "movie", movieId, page) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${movieId}/similar?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            `${envVar.tmdbApi.baseUrl}/3/${mediaType}/${movieId}/similar?language=${envVar.tmdbApi.language}&page=${page}`,
             config
         );
         return response;
@@ -91,7 +92,7 @@ export const fetchSimilarMediaList = async (mediaType = "movie", movieId, page) 
 export const fetchGenreListOfMedia = async (mediaType = "movie") => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/genre/${mediaType}/list?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}`,
+            `${envVar.tmdbApi.baseUrl}/3/genre/${mediaType}/list?language=${envVar.tmdbApi.language}`,
             config
         );
         return response;
@@ -103,7 +104,7 @@ export const fetchGenreListOfMedia = async (mediaType = "movie") => {
 export const fetchSortByListOfMedia = async (mediaType, sortBy, page) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_APP_MOVIE_API_BASE_URL}/3/${mediaType}/${sortBy}?language=${import.meta.env.VITE_APP_MOVIE_API_LANGUAGE}&page=${page}`,
+            `${envVar.tmdbApi.baseUrl}/3/${mediaType}/${sortBy}?language=${envVar.tmdbApi.language}&page=${page}`,
             config
         );
         return response;
