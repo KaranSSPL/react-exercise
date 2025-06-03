@@ -1,64 +1,64 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>false</InvariantGlobalization>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>false</InvariantGlobalization>
 
-    <SpaRoot>..\MovieLibraryFrontend</SpaRoot>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
-  </PropertyGroup>
+		<SpaRoot>..\MovieLibraryFrontend</SpaRoot>
+		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-      <Version>8.*-*</Version>
-    </PackageReference>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NPoco" Version="5.7.1" />
-    <PackageReference Include="NPoco.SqlServer" Version="5.7.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+			<Version>8.*-*</Version>
+		</PackageReference>
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="NPoco" Version="5.7.1" />
+		<PackageReference Include="NPoco.SqlServer" Version="5.7.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="logs\" />
-    <Folder Include="Persistence\Migrations\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="logs\" />
+		<Folder Include="Persistence\Migrations\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MovieLibraryFrontend\MovieLibraryFrontend.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MovieLibraryFrontend\MovieLibraryFrontend.esproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+	</ItemGroup>
 
-  <Target Name="BuildFrontend" BeforeTargets="Publish">
-  <Message Importance="high" Text="📦 Building Vite frontend before publishing..." />
-  
-  <!-- Install and build Vite -->
-  <Exec Command="npm install" WorkingDirectory="$(SpaRoot)" />
-  <Exec Command="npm run build" WorkingDirectory="$(SpaRoot)" />
+	<Target Name="BuildFrontend" BeforeTargets="Publish">
+		<Message Importance="high" Text="📦 Building Vite frontend before publishing..." />
 
-  <!-- Ensure wwwroot exists -->
-  <MakeDir Directories="$(ProjectDir)wwwroot" />
+		<!-- Install and build Vite -->
+		<Exec Command="npm install" WorkingDirectory="$(SpaRoot)" />
+		<Exec Command="npm run build" WorkingDirectory="$(SpaRoot)" />
 
-  <!-- Copy new dist to wwwroot -->
-  <ItemGroup>
-    <DistFiles Include="$(SpaRoot)\dist\**\*" />
-  </ItemGroup>
+		<!-- Ensure wwwroot exists -->
+		<MakeDir Directories="$(ProjectDir)wwwroot" />
 
-  <Copy SourceFiles="@(DistFiles)"
-        DestinationFolder="$(ProjectDir)wwwroot\%(RecursiveDir)"
-        SkipUnchangedFiles="true" />
-</Target>
+		<!-- Copy new dist to wwwroot -->
+		<ItemGroup>
+			<DistFiles Include="$(SpaRoot)\dist\**\*" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(DistFiles)"
+			  DestinationFolder="$(ProjectDir)wwwroot\%(RecursiveDir)"
+			  SkipUnchangedFiles="true" />
+	</Target>
 
 
 </Project>
