@@ -15,10 +15,10 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
     const [filePreviews, setFilePreviews] = useState<Preview[]>([]);
     const [message, setMessage] = useState<string>("");
     const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [duplicateFile, setDuplicateFile] = useState<{
-        file: File | null;
+    const [duplicateFiles, setDuplicateFiles] = useState<{
+        files: File[];
         pending: boolean;
-    }>({ file: null, pending: false });
+    }>({ files: [], pending: false });
 
     const handleDropZoneClick = () => {
         const input = document.getElementById("fileInput");
@@ -28,12 +28,12 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
     const processFiles = (files: FileList | File[]) => {
         let pendingFiles = Array.from(files).length;
         const processedFiles: Preview[] = [];
+        const duplicates: File[] = [];
 
         Array.from(files).forEach((file) => {
             const isDuplicate = filePreviews.some(preview => preview.fileName === file.name);
             if (isDuplicate) {
-                setDuplicateFile({ file, pending: true });
-                setMessage(`File "${file.name}" already exists. Do you want to store it again?`);
+                duplicates.push(file);
                 pendingFiles--;
             } else {
                 processSingleFile(file, (newPreview) => {
@@ -46,6 +46,12 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
                 });
             }
         });
+
+        if (duplicates.length > 0) {
+            setDuplicateFiles({ files: duplicates, pending: true });
+            const fileNames = duplicates.map(f => `"${f.name}"`).join(", ");
+            setMessage(`File "${fileNames}" already exists. Do you want to store it again?`);
+        }
     }
 
     const processSingleFile = (file: File, onComplete?: (preview: Preview) => void) => {
@@ -103,17 +109,26 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
     };
 
     const handleDuplicateConfirm = () => {
-        if (duplicateFile.file) {
-            processSingleFile(duplicateFile.file, (newPreview) => {
-                const allFiles = [...filePreviews, newPreview];
-                onFileUpload?.(allFiles);
-            });
+        if (duplicateFiles.files.length > 0) {
+            let pendingFiles = duplicateFiles.files.length;
+            const processedFiles: Preview[] = [];
+
+            duplicateFiles.files.forEach((file) => {
+                processSingleFile(file, (newPreview) => {
+                    processedFiles.push(newPreview);
+                    pendingFiles--;
+                    if (pendingFiles === 0) {
+                        const allFiles = [...filePreviews, ...processedFiles];
+                        onFileUpload?.(allFiles);
+                    }
+                });
+            })
         }
-        setDuplicateFile({ file: null, pending: false });
+        setDuplicateFiles({ files: [], pending: false });
     };
 
     const handleDuplicateCancel = () => {
-        setDuplicateFile({ file: null, pending: false });
+        setDuplicateFiles({ files: [], pending: false });
         setMessage("");
     };
 
@@ -130,9 +145,9 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
             <div className="card-body">
                 <h5 className="card-title mb-4">File Upload Manager</h5>
                 {message && (
-                    <div className={`alert ${duplicateFile.pending ? 'alert-warning' : 'alert-success'}`}>
+                    <div className={`alert ${duplicateFiles.pending ? 'alert-warning' : 'alert-success'}`}>
                         {message}
-                        {duplicateFile.pending && (
+                        {duplicateFiles.pending && (
                             <div className="mt-2">
                                 <button
                                     className="btn btn-sm btn-success me-2"
