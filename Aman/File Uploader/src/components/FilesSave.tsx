@@ -50,7 +50,7 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
         if (duplicates.length > 0) {
             setDuplicateFiles({ files: duplicates, pending: true });
             const fileNames = duplicates.map(f => `"${f.name}"`).join(", ");
-            setMessage(`File "${fileNames}" already exists. Do you want to store it again?`);
+            setMessage(`File ${fileNames} already exists. Do you want to store it again?`);
         }
     }
 
@@ -151,14 +151,12 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
                             <div className="mt-2">
                                 <button
                                     className="btn btn-sm btn-success me-2"
-                                    onClick={handleDuplicateConfirm}
-                                >
+                                    onClick={handleDuplicateConfirm}>
                                     Yes
                                 </button>
                                 <button
                                     className="btn btn-sm btn-danger"
-                                    onClick={handleDuplicateCancel}
-                                >
+                                    onClick={handleDuplicateCancel}>
                                     No
                                 </button>
                             </div>

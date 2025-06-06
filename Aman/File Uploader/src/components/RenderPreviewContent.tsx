@@ -10,8 +10,7 @@ const RenderPreviewContent: React.FC<IRenderPreviewContent> = ({ item }) => {
             <img
                 src={item.data as string}
                 alt={item.fileName}
-                className="previewContent"
-            />
+                className="previewContent" />
         </div>
     ) : (
         <div className="filePreview">
