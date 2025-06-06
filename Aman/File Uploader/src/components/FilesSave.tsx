@@ -55,6 +55,25 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
     }
 
     const processSingleFile = (file: File, onComplete?: (preview: Preview) => void) => {
+        const fileType = [".jpg", ".jpeg", ".png", ".txt"];
+        if(!fileType.some(x => file.name.toLowerCase().includes(x))) {
+            setMessage(`File "${file.name}" is not allowed. Allowed types are: ${fileType.join(", ")}`);
+            setTimeout(() => {
+                setMessage("");
+            }, 3000);
+            return;
+        }
+
+        const fileSizeInMB = file.size / (1024 * 1024);
+        if (fileSizeInMB > 6) {
+            setMessage(`File "${file.name}" exceeds the maximum size of 6MB. Your file size is ${fileSizeInMB.toFixed(2)}MB.`);
+            setTimeout(() => {
+                setMessage("");
+            }, 3000);
+
+            return;
+        }
+
         const reader = new FileReader();
         const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
