@@ -368,4 +368,3 @@ FodyWeavers.xsd
 Aman/MovieLibraryFrontend/.env.development
 Aman/MovieLibraryFrontend/.env.production
 /Aman/MovieLibraryBackend/wwwroot
-/Aman/files-publish-component
