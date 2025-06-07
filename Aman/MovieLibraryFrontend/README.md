@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# Movie Library Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a React-based Movie Library application that allows users to browse, search, and explore movies and TV shows using data from [The Movie Database (TMDb) API](https://www.themoviedb.org/documentation/api). Users can view detailed information, images, trailers, and similar titles for each movie or TV show. Additionally, users can add and view reviews for movies and TV shows, with review data managed by custom .NET APIs.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Browse Movies & TV Shows:**  
+  View a paginated list of popular movies and TV shows fetched from TMDb.
 
-### `npm start`
+- **Search:**  
+  Search for movies or TV shows by title.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Genres:**  
+  - View genres for movies and TV shows, fetched from the TMDb API.
+  - Click on any genre to see a list of movies or TV shows belonging to that genre (using the TMDb `/discover` endpoint).
+  - **Note:** You cannot search for movies or TV shows by both genre and keyword at the same time, because the TMDb API does not support searching by genre in the `/search` endpoint. Genre-based filtering is only available via the `/discover` endpoint, which does not support keyword search.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Sort Options:**  
+  - Sort movies and TV shows by "Popular" or "Top Rated" using the TMDb `/movie/popular`, `/movie/top_rated`, `/tv/popular`, and `/tv/top_rated` endpoints.
+  - **Note:** Sorting by "Popular" or "Top Rated" cannot be combined with search or genre filtering, because the `/search` endpoint does not support sorting, and the `/discover` endpoint does not provide direct access to these sort types.
 
-### `npm test`
+- **Movie/TV Show Details:**  
+  View detailed information including title, release date, rating, genres, description, and poster/backdrop images.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Image Gallery:**  
+  Browse a gallery of images/posters for each movie or TV show.
 
-### `npm run build`
+- **Similar Titles:**  
+  Discover similar movies or TV shows based on the current selection.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Watch Trailers:**  
+  Watch official trailers directly via YouTube links.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **User Reviews:**  
+  - View user-submitted reviews for each movie or TV show.
+  - Add your own review (name and comment) for any title.
+  - Reviews are stored and retrieved from a custom .NET backend API.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Share Functionality:**  
+  Share movie or TV show details via social media or by copying a direct link.
 
-### `npm run eject`
+## API Limitations & UI Behavior
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Genre Filtering:**  
+  - To filter by genre, the app uses the `/discover/movie` and `/discover/tv` endpoints from TMDb.
+  - The `/search` endpoint does not support filtering by genre, and the `/discover` endpoint does not support searching by keyword.
+  - This means you can either filter by genre or search by keyword, but not both at the same time due to TMDb API limitations.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Sorting:**  
+  - Sorting by "Popular" or "Top Rated" is only available via the `/movie/popular`, `/movie/top_rated`, `/tv/popular`, and `/tv/top_rated` endpoints.
+  - The `/search` endpoint does not support sorting, and the `/discover` endpoint does not provide direct sorting for "Popular" or "Top Rated".
+  - Therefore, you cannot combine sorting with search or genre filtering.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **UI Behavior:**  
+  - When a genre is selected, the sort and search features are disabled.
+  - When a sort option is selected, the genre and search features are disabled.
+  - When searching, both genre and sort options are disabled.
+  - This ensures the UI only allows combinations supported by the TMDb API.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **Pagination:**  
+  - TMDb API supports pagination for listing movies and TV shows, but only for pages 1 to 500.
+  - If you request a page number greater than 500, TMDb returns a 400 status code with the following response:
+    ```json
+    {
+      "success": false,
+      "status_code": 22,
+      "status_message": "Invalid page: Pages start at 1 and max at 500. They are expected to be an integer."
+    }
+    ```
+  - When the page number exceeds 500, this message is shown in the UI to inform the user.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Note:** This project is not affiliated with or endorsed by TMDb.
