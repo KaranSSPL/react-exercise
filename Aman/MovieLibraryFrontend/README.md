@@ -71,4 +71,4 @@ This is a React-based Movie Library application that allows users to browse, sea
 
 ---
 
-**Note:** This project is not affiliated with or endorsed by TMDb.
+**Note:** This project uses the TMDb API but is not endorsed or certified by TMDb.
