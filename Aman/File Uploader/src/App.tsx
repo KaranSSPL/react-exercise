@@ -1,11 +1,8 @@
-import FilesSave from "./components/FilesSave"
+import FileUpload from 'file-uploader-plugin';
 
 const App = () => {
-  const callBackFunction = (files: { type: string; data: string | ArrayBuffer | null | undefined; fileName: string; }[]) => {
-    console.log("Files uploaded:", files);
-  }
   return (
-    <FilesSave onFileUpload={callBackFunction} />
+    <FileUpload />
   )
 }
 
