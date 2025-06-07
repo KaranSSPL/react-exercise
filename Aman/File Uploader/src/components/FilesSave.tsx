@@ -25,6 +25,47 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
         input?.click();
     };
 
+    const processSingleFile = async (file: File, onComplete?: (preview: Preview) => void) => {
+        const allowedExtensions = [".jpg", ".jpeg", ".png", ".txt", ".pdf"];
+        const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+        if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
+            setMessage(`File "${file.name}" is not allowed. Allowed types are: ${allowedExtensions.join(", ")}`);
+            const timer = setTimeout(() => setMessage(""), 4000);
+            return () => clearTimeout(timer);
+        }
+
+        const fileSizeInMB = file.size / (1024 * 1024);
+        if (fileSizeInMB > 6) {
+            setMessage(`File "${file.name}" exceeds the maximum size of 6MB. Your file size is ${fileSizeInMB.toFixed(2)}MB.`);
+            const timer = setTimeout(() => setMessage(""), 4000);
+            return () => clearTimeout(timer);
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (ev) => {
+            const fileType = file.type;
+            const preview = { type: fileType, data: ev.target?.result, fileName: file.name };
+
+            setFilePreviews(prev => {
+                const update = [...prev, preview];
+                localStorage.setItem("myData", JSON.stringify(update));
+                return update;
+            });
+            setMessage("File uploaded successfully!");
+            const timer = setTimeout(() => setMessage(""), 4000);
+            onComplete?.(preview);
+            return () => clearTimeout(timer);
+        };
+
+        if (file.type.startsWith("image/") || fileExtension === 'svg') {
+            reader.readAsDataURL(file);
+        } else {
+            reader.readAsText(file);
+        }
+    };
+
     const processFiles = (files: FileList | File[]) => {
         let pendingFiles = Array.from(files).length;
         const processedFiles: Preview[] = [];
@@ -52,50 +93,7 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
             const fileNames = duplicates.map(f => `"${f.name}"`).join(", ");
             setMessage(`File ${fileNames} already exists. Do you want to store it again?`);
         }
-    }
-
-    const processSingleFile = async (file: File, onComplete?: (preview: Preview) => void) => {
-        const allowedExtensions = [".jpg", ".jpeg", ".png", ".txt", ".pdf"];
-        const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-        if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
-            setMessage(`File "${file.name}" is not allowed. Allowed types are: ${allowedExtensions.join(", ")}`);
-            setTimeout(() => setMessage(""), 4000);
-            return;
-        }
-
-        const fileSizeInMB = file.size / (1024 * 1024);
-        if (fileSizeInMB > 6) {
-            setMessage(`File "${file.name}" exceeds the maximum size of 6MB. Your file size is ${fileSizeInMB.toFixed(2)}MB.`);
-            setTimeout(() => setMessage(""), 4000);
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = (ev) => {
-            const fileType = file.type;
-            const preview = { type: fileType, data: ev.target?.result, fileName: file.name };
-
-            setFilePreviews(prev => {
-                const update = [...prev, preview];
-                localStorage.setItem("myData", JSON.stringify(update));
-                return update;
-            });
-            setMessage("File uploaded successfully!");
-            setTimeout(() => {
-                setMessage("");
-            }, 4000);
-
-            onComplete?.(preview);
-        };
-
-        if (file.type.startsWith("image/") || fileExtension === 'svg') {
-            reader.readAsDataURL(file);
-        } else {
-            reader.readAsText(file);
-        }
-    }
+    };
 
     const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -150,10 +148,12 @@ const FilesSave: React.FC<IFilesSave> = ({ onFileUpload }) => {
     useEffect(() => {
         const storedData = localStorage.getItem('myData');
         if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            onFileUpload?.(parsedData);
             setFilePreviews(JSON.parse(storedData));
         }
         setMessage("");
-    }, [])
+    }, [onFileUpload])
 
     return (
         <div className="card shadow mx-auto" style={{ "maxWidth": "700px" }}>
