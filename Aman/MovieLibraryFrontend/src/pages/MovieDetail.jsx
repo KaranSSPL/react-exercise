@@ -83,7 +83,7 @@ const MovieDetail = () => {
                         <img src={`${envVar.tmdbApi.image.baseUrl}/w300${mediaDetail?.poster_path}`} alt="Movie Poster" className={styles["movie-poster-detail-page"]} />
                         <div className={styles["movie-info-detail-page"]}>
                             <h2 className={styles["movie-title-detail-page"]}>
-                                {mediaDetail?.original_title ?? mediaDetail?.original_name}
+                                {mediaDetail?.title ?? mediaDetail?.name}
                             </h2>
                             <p className={styles["movie-release"]}>
                                 Release: {mediaDetail?.release_date ?? mediaDetail?.first_air_date}
