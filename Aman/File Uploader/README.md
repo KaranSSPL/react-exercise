@@ -6,7 +6,6 @@ This project is a modern React + TypeScript application bootstrapped with Vite. 
 
 - Drag & drop file upload and file selector support
 - File type and size validation (supports `.jpg`, `.jpeg`, `.png`, `.txt`, `.pdf` up to 6MB)
-- Preview of uploaded files (images and text)
 - Duplicate file detection with overwrite confirmation
 - Persistent storage using `localStorage`
 - File deletion from preview and storage
