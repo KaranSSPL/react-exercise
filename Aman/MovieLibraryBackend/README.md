@@ -27,6 +27,50 @@ MovieLibraryApi is a .NET 8 Web API project designed to manage user reviews for 
 
 ## Project Structure
 
+```
+MovieLibraryBackend/
+│
+├── Controllers/
+│   ├── ReviewMovieController.cs
+│   └── ReviewTvSeriesController.cs
+│
+├── Interface/
+│   ├── IMovieService.cs
+│   └── ITvSeriesService.cs
+│
+├── Mapping/
+│   └── MappingProfile.cs
+│
+├── Middlewares/
+│   └── ExceptionMiddleware.cs
+│
+├── Models/
+│   ├── ReviewMovieDto.cs
+│   ├── ReviewTvSeriesDto.cs
+│   └── ResponseModel.cs
+│
+├── Persistence/
+│   ├── Context
+│   │   └── AppDbContext.cs
+│   ├── Entities
+│   │   ├── ReviewTvSeriesDto.cs
+│   │   └── ResponseModel.cs
+│   └── Migrations
+│       └── ... (EF Core migration files)
+│
+├── Services/
+│   ├── MovieService.cs
+│   └── TvSeriesService.cs
+│
+├── wwwroot/
+│   └── ... (Frontend build output)
+│
+├── MovieLibraryApi.csproj
+├── Program.cs
+├── appsettings.json
+└── README.md
+```
+
 - **Controllers:**  
   - `ReviewMovieController`: Handles movie review endpoints.
   - (Similar controller exists for TV show reviews.)
@@ -71,7 +115,7 @@ When you publish the .NET API project (using Visual Studio or the `dotnet publis
    - Set the **.NET CLR version** to **No Managed Code** (since ASP.NET Core runs in a separate process and does not use IIS's managed pipeline).
 
 3. **Create IIS Site:**  
-   - Point the site�s physical path to your published output folder.
+   - Point the site�s physical path to your published output folder.
    - Assign the site to the application pool you created.
 
 4. **Start the Site:**  
