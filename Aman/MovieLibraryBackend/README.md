@@ -86,14 +86,101 @@ MovieLibraryBackend/
   - `ReviewMovieDto`: DTO for review submission.
   - `ResponseModel`: Standard API response wrapper.
 
-## Database
+## Database Setup
 
-- **Tables:**  
-  - `ReviewMovie`: Stores movie reviews.
-  - `ReviewTvSeries`: Stores TV show reviews.
+### 1. Create the Database in MS SQL Server
 
-- **Migrations:**  
-  Database schema is managed via EF Core migrations.
+- Open SQL Server Management Studio (SSMS).
+- Connect to your SQL Server instance.
+- Run the following SQL to create a new database (replace `MovieLibraryDb` with your preferred name):
+
+    ```sql
+    CREATE DATABASE MovieLibraryDb;
+    ```
+
+### 2. Set the Connection String
+
+- Open `appsettings.json`.
+- Update the `DefaultConnection` string with your SQL Server details:
+
+    ```json
+    // appsettings.json
+    {
+      "ConnectionStrings": {
+        "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=MovieLibraryDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+      }
+      // ...other settings...
+    }
+    ```
+
+    - Replace `YOUR_SERVER_NAME` with your SQL Server instance name.
+    - If using SQL authentication, use:  
+      `Server=YOUR_SERVER_NAME;Database=MovieLibraryDb;User Id=YOUR_USER;Password=YOUR_PASSWORD;`
+
+### 3. Install Required Packages
+
+If you need to set up the project locally, install these NuGet packages (if not already present):
+
+- Microsoft.EntityFrameworkCore
+- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.Tools
+
+You can install them using the terminal:
+
+```sh
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+```
+
+### 4. Run EF Core Migrations
+
+To create the database tables automatically, run these commands in the project directory:
+
+```sh
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+- This will create the required tables in your database.
+
+---
+
+### If Deploying Directly to IIS (Without Running Migrations Locally)
+
+If you publish and deploy the output folder directly to IIS, you must manually create the database and tables.
+
+#### Table Schemas
+
+**ReviewMovie Table:**
+
+```sql
+CREATE TABLE ReviewMovie (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    MovieId INT NOT NULL,
+    FirstName NVARCHAR(100) NOT NULL,
+    LastName NVARCHAR(100) NOT NULL,
+    Comment NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL
+);
+```
+
+**ReviewTvSeries Table:**
+
+```sql
+CREATE TABLE ReviewTvSeries (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    TvSeriesId INT NOT NULL,
+    FirstName NVARCHAR(100) NOT NULL,
+    LastName NVARCHAR(100) NOT NULL,
+    Comment NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL
+);
+```
+
+- Make sure your connection string in `appsettings.json` points to this database.
+
+---
 
 ## Publishing & Deployment
 
