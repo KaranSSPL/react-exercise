@@ -4,9 +4,9 @@ interface ResultDisplayProps {
 
 const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
     return (
-        <div className="mt-4 text-center" id="result">
+        <h3 className="mt-4 text-center" id="result">
             {result}
-        </div>
+        </h3>
     )
 }
 

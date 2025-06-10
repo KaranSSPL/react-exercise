@@ -12,10 +12,10 @@ interface DropdownProps {
 
 const Dropdown: React.FC<DropdownProps> = ({ id, onChange, value, currencies }) => {
     return (
-        <select id={id} className="form-select" onChange={(e) => onChange(e.target.value)}>
+        <select id={id} className="form-select" onChange={(e) => onChange(e.target.value)} value={value}>
             <option value="">Select Currency</option>
             {currencies.map(({ code, name }) => (
-                <option key={code} value={code} selected={code === value}>
+                <option key={code} value={code}>
                     {code} - {name}
                 </option>
             ))}

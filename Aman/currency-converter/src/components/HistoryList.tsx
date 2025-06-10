@@ -5,7 +5,7 @@ interface HistoryListProps {
 const HistoryList: React.FC<HistoryListProps> = ({ history }) => {
     return (
         <div className="mt-4">
-            <h5>Conversion History</h5>
+            <h4>Conversion History</h4>
             <div>
                 {history.map((item, index) => (
                     <div key={index}>{item}</div>

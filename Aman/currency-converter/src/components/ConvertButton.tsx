@@ -7,7 +7,7 @@ const ConvertButton: React.FC<ConvertButtonProps> = ({ onClick, isLoading }) => 
     return (
         <div className="d-grid">
             <button
-                className="btn btn-primary"
+                className="btn btn-primary fs-5"
                 onClick={onClick}
                 disabled={isLoading}>
                 {isLoading ? (
