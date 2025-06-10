@@ -22,6 +22,9 @@ MovieLibraryApi is a .NET 8 Web API project designed to manage user reviews for 
 - **Swagger/OpenAPI:**  
   Built-in API documentation for easy testing and exploration.
 
+- **Integrated Frontend Build & Publish:**  
+  The solution contains both the API and frontend projects. The frontend project is automatically built and published into the `wwwroot` folder of the API project during the .NET publish process. This is handled by a custom MSBuild target in `MovieLibraryApi.csproj`, so you do **not** need to build or copy the frontend manually.
+
 ## Project Structure
 
 - **Controllers:**  
@@ -48,16 +51,31 @@ MovieLibraryApi is a .NET 8 Web API project designed to manage user reviews for 
 - **Migrations:**  
   Database schema is managed via EF Core migrations.
 
-## Getting Started
+## Publishing & Deployment
 
-1. **Configure Connection String:**  
-   Set your SQL Server connection string in `appsettings.json` under `DefaultConnection`.
+### Publishing the Application
 
-2. **Run Migrations:**  
-   Apply migrations to create the database schema.
+**No manual frontend build or copy is required.**  
+When you publish the .NET API project (using Visual Studio or the `dotnet publish` command), the frontend project is automatically built and its output is copied to the `wwwroot` folder. This is configured in the `MovieLibraryApi.csproj` file:
 
-3. **Start the API:**  
-   Run the project. Swagger UI will be available for testing endpoints.
+- The `BuildFrontend` MSBuild target runs before publish, building the frontend and copying its output.
+- The published output contains both the API and the frontend, ready for deployment.
+
+### Deploying to IIS
+
+1. **Publish Output:**  
+   Deploy the published output (including the `wwwroot` folder with frontend files) to your IIS server.
+
+2. **Create Application Pool:**  
+   - In IIS Manager, create a new Application Pool.
+   - Set the **.NET CLR version** to **No Managed Code** (since ASP.NET Core runs in a separate process and does not use IIS's managed pipeline).
+
+3. **Create IIS Site:**  
+   - Point the site’s physical path to your published output folder.
+   - Assign the site to the application pool you created.
+
+4. **Start the Site:**  
+   - Ensure the site is started and accessible.
 
 ## Example Endpoints
 
@@ -75,6 +93,7 @@ MovieLibraryApi is a .NET 8 Web API project designed to manage user reviews for 
 - Entity Framework Core
 - SQL Server
 - ASP.NET Core Web API
+- Vite (or other SPA frontend, as configured)
 
 ## License
 
