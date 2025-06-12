@@ -62,7 +62,7 @@ const App = () => {
         }
 
         const someAmount = amount / rates[fromCurrency];
-        const converted = (someAmount * rates[toCurrency]).toFixed(2);
+        const converted = (someAmount * rates[toCurrency]).toFixed(4);
         const conversionResult = `${amount} ${fromCurrency} = ${converted} ${toCurrency}`;
 
         setResult(conversionResult);
@@ -89,27 +89,24 @@ const App = () => {
     const start = new Date();
     start.setDate(end.getDate() - days);
 
-    const dateList: string[] = [];
-    const step = Math.max(1, Math.floor(days / 30));
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + step)) {
-      dateList.push(d.toISOString().split("T")[0]);
-    }
+    const formatDate = (d: Date) => d.toISOString().split("T")[0];
+    const startDate = formatDate(start);
+    const endDate = formatDate(end);
 
     try {
-      const response = await Promise.all(
-        dateList.map((date) =>
-          axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/historical/${date}.json?symbols=${fromCurrency},${toCurrency}`, config)
-        )
-      );
+      const response = await axios.get(`https://api.frankfurter.app/${startDate}..${endDate}?from=${fromCurrency}&to=${toCurrency}`);
 
-      const points: DataPoint[] = response.map((res, i) => {
-        const date = new Date(dateList[i]);
-        const baseRate = res.data.rates[fromCurrency];
-        const targetRate = res.data.rates[toCurrency];
-        const value = targetRate / baseRate;
-        return { x: date, y: parseFloat(value.toFixed(4)) };
+      const rates = response.data.rates;
+
+      const points: DataPoint[] = Object.entries(rates).map(([date, rateObj]) => {
+        const rate = (rateObj as Record<string, number>)[toCurrency];
+        return {
+          x: new Date(date),
+          y: parseFloat(rate.toFixed(4)),
+        };
       });
+
+      points.sort((a, b) => a.x.getTime() - b.x.getTime());
 
       setDataPoints(points);
     } catch (error) {
@@ -181,7 +178,7 @@ const App = () => {
       </div>
 
       <ConvertButton onClick={convertCurrency} isLoading={isLoading} />
-      
+
       {result &&
         <ResultDisplay result={result} />}
 
