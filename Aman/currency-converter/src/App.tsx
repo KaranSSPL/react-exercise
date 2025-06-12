@@ -5,6 +5,7 @@ import CurrencySelector from './components/CurrencySelector';
 import ConvertButton from './components/ConvertButton';
 import ResultDisplay from './components/ResultDisplay';
 import HistoryList from './components/HistoryList';
+import ExchangeGraphCanvas from './components/ExchangeGraphCanvas';
 
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from './redux/store';
@@ -14,6 +15,11 @@ import SwapIcon from './components/SwapIcon';
 type CountryCurrency = {
   code: string;
   name: string;
+}
+
+type DataPoint = {
+  x: Date;
+  y: number;
 }
 
 const config = {
@@ -29,6 +35,8 @@ const App = () => {
   const [currencies, setCurrencies] = useState<CountryCurrency[]>([]);
   const [result, setResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
+  const [isGraphLoading, setIsGraphLoading] = useState(true);
 
   const convertCurrency = async () => {
     setIsLoading(true);
@@ -59,6 +67,8 @@ const App = () => {
 
         setResult(conversionResult);
         dispatch(addToHistory(conversionResult));
+
+        await fetchHistoricalData();
       } else {
         setResult('Failed');
         setIsLoading(false);
@@ -69,6 +79,44 @@ const App = () => {
       setResult('Conversion failed. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchHistoricalData = async () => {
+    setIsGraphLoading(true);
+    const days = 30;
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - days);
+
+    const dateList: string[] = [];
+    const step = Math.max(1, Math.floor(days / 30));
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + step)) {
+      dateList.push(d.toISOString().split("T")[0]);
+    }
+
+    try {
+      const response = await Promise.all(
+        dateList.map((date) =>
+          axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/historical/${date}.json?symbols=${fromCurrency},${toCurrency}`, config)
+        )
+      );
+
+      const points: DataPoint[] = response.map((res, i) => {
+        const date = new Date(dateList[i]);
+        const baseRate = res.data.rates[fromCurrency];
+        const targetRate = res.data.rates[toCurrency];
+        const value = targetRate / baseRate;
+        return { x: date, y: parseFloat(value.toFixed(4)) };
+      });
+
+      setDataPoints(points);
+    } catch (error) {
+      console.error("Error fetching historical data:", error);
+      setDataPoints([]);
+    } finally {
+      setIsGraphLoading(false);
     }
   };
 
@@ -133,11 +181,20 @@ const App = () => {
       </div>
 
       <ConvertButton onClick={convertCurrency} isLoading={isLoading} />
-      <ResultDisplay result={result} />
+      
+      {result &&
+        <ResultDisplay result={result} />}
 
       {history.length > 0 && (
         <HistoryList history={history} />
       )}
+
+      {!isGraphLoading &&
+        <ExchangeGraphCanvas
+          dataPoints={dataPoints}
+          base={fromCurrency}
+          target={toCurrency}
+        />}
     </div>
   )
 }
