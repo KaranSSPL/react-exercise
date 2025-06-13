@@ -1,6 +1,80 @@
 # Movie Library Frontend
 
-This is a React-based Movie Library application that allows users to browse, search, and explore movies and TV shows using data from [The Movie Database (TMDb) API](https://www.themoviedb.org/documentation/api). Users can view detailed information, images, trailers, and similar titles for each movie or TV show. Additionally, users can add and view reviews for movies and TV shows, with review data managed by custom .NET APIs.
+This is a React-based Movie Library application that allows users to browse, search, and explore movies and TV shows using data from [The Movie Database (TMDb) API](https://www.themoviedb.org/documentation/api). Users can view detailed information, images, trailers, and similar titles for each movie or TV show. Additionally, users can add and view reviews for movies and TV shows, with review data managed by a custom .NET backend API.
+
+## Folder Structure
+
+```
+MovieLibraryFrontend/
+├── public/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   ├── App.js
+│   └── ...
+├── .env.production
+├── package.json
+└── README.md
+```
+
+## Environment Variables
+
+Environment variables are set in `.env.production` (or `.env` for development):
+
+```env
+VITE_APP_MOVIE_API_BASE_URL=https://api.themoviedb.org
+VITE_APP_MOVIE_API_LANGUAGE=en-US
+VITE_APP_MOVIE_TOKEN=<your_tmdb_token>
+VITE_APP_IMAGE_URL=https://image.tmdb.org/t/p
+VITE_APP_REVIEW_API_BASE_URL=<your_dotnet_project_url>
+```
+
+- `VITE_APP_MOVIE_API_BASE_URL`: TMDb API base URL.
+- `VITE_APP_MOVIE_API_LANGUAGE`: Language for TMDb API.
+- `VITE_APP_MOVIE_TOKEN`: Token for TMDb API.
+- `VITE_APP_IMAGE_URL`: Base URL for images.
+- `VITE_APP_REVIEW_API_BASE_URL`: Your backend API for reviews.
+
+## Running the Project
+
+### 1. Backend
+
+1. Go to the backend folder:
+   ```sh
+   cd ../MovieLibraryBackend
+   ```
+2. Start the backend:
+   ```sh
+   dotnet restore
+   dotnet run
+   ```
+
+### 2. Frontend
+
+1. Go to the frontend folder:
+   ```sh
+   cd ../MovieLibraryFrontend
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Set up your `.env.production` or `.env` file as shown above.
+4. Start the frontend:
+   ```sh
+   npm run dev
+   ```
+   (Default: http://localhost:5173)
+
+### 3. Running Together or Separately
+
+- **Together:** Start both backend and frontend as above. The frontend will use the backend for reviews.
+- **Frontend Only:** If you only want TMDb features (no reviews), you can run just the frontend. Review features will be disabled or show errors if the backend is not running.
+
+---
+
+**Note:** Replace `<your_tmdb_token>` with your actual TMDb API token.
 
 ## Features
 

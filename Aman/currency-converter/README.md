@@ -90,7 +90,16 @@ public/
 
 ## API
 
-- Uses [Frankfurter API](https://www.frankfurter.app/) or similar for real-time currency rates.
+- Uses [Open Exchange Rates API](https://openexchangerates.org/) for real-time currency rates.
+- **API Key Required:**  
+  You must create a `.env` file in the project root with your API credentials:
+
+  ```env
+  VITE_OXR_BASE_URL=https://openexchangerates.org/api
+  VITE_OXR_API_KEY=your_openexchangerates_api_key
+  ```
+
+  Replace `your_openexchangerates_api_key` with your actual API key from Open Exchange Rates.
 
 ## License
 
