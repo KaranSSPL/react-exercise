@@ -159,10 +159,17 @@ const CurrencyConverter = () => {
         dispatch(setToCurrency(fromCurrency));
     };
 
+    const changeAmount = (val: number) => {
+        if (val < 0) {
+            return dispatch(setAmount(0));
+        }
+        return dispatch(setAmount(val));
+    }
+
     return (
         <div className="converter">
             <h1 className="text-center mb-4">Currency Converter</h1>
-            <AmountInput amount={amount} setAmount={(val) => dispatch(setAmount(val))} />
+            <AmountInput amount={amount} setAmount={(val) => changeAmount(val)} />
 
             <div className="row mb-3 align-items-center">
                 <CurrencySelector
