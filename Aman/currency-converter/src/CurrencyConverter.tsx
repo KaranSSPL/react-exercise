@@ -12,6 +12,7 @@ import AmountInput from './components/AmountInput'
 
 import type { RootState } from './redux/store';
 import { setAmount, setFromCurrency, setToCurrency, addToHistory } from './redux/slices/currencySlice';
+import { config, rapidApiConfig } from './utils/config'
 
 type CountryCurrency = {
     code: string;
@@ -23,11 +24,18 @@ type DataPoint = {
     y: number;
 }
 
-const config = {
-    headers: {
-        Authorization: `Token ${import.meta.env.VITE_CURRENCY_API_KEY}`,
-    }
-};
+// const config = {
+//     headers: {
+//         Authorization: `Token ${import.meta.env.VITE_CURRENCY_API_KEY}`,
+//     }
+// };
+
+// const rapidApiConfig = {
+//     headers: {
+//         "x-rapidapi-host": "currency-conversion-and-exchange-rates.p.rapidapi.com",
+//         "x-rapidapi-key": import.meta.env.VITE_HISTORY_CURRENCY_API_KEY
+//     }
+// };
 
 const CurrencyConverter = () => {
     const dispatch = useDispatch();
@@ -98,17 +106,22 @@ const CurrencyConverter = () => {
         const endDate = formatDate(end);
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_History_CURRENCY_BASE_URL}/${startDate}..${endDate}?from=${fromCurrency}&to=${toCurrency}`);
+            const response = await axios.get(`${import.meta.env.VITE_HISTORY_CURRENCY_BASE_URL}/timeseries?start_date=${startDate}&end_date=${endDate}&base=${fromCurrency}&symbols=${toCurrency}`,
+                rapidApiConfig
+            );
 
             const rates = response.data.rates;
 
-            const points: DataPoint[] = Object.entries(rates).map(([date, rateObj]) => {
-                const rate = (rateObj as Record<string, number>)[toCurrency];
-                return {
-                    x: new Date(date),
-                    y: parseFloat(rate.toFixed(4)),
-                };
-            });
+            const points: DataPoint[] = Object.entries(rates)
+                .map(([date, rateObj]) => {
+                    const rate = (rateObj as Record<string, number>)[toCurrency];
+                    if (!rate) return null;
+                    return {
+                        x: new Date(date),
+                        y: parseFloat(rate.toFixed(4)),
+                    };
+                })
+                .filter((point): point is DataPoint => point !== null);
 
             points.sort((a, b) => a.x.getTime() - b.x.getTime());
 
