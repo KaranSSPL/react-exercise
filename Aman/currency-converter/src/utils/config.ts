@@ -11,4 +11,14 @@ const rapidApiConfig = {
     }
 };
 
+export type CountryCurrency = {
+    code: string;
+    name: string;
+}
+
+export type DataPoint = {
+    x: Date;
+    y: number;
+}
+
 export { config, rapidApiConfig }

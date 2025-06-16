@@ -12,17 +12,7 @@ import AmountInput from './components/AmountInput'
 
 import type { RootState } from './redux/store';
 import { setAmount, setFromCurrency, setToCurrency, addToHistory } from './redux/slices/currencySlice';
-import { config, rapidApiConfig } from './utils/config'
-
-type CountryCurrency = {
-    code: string;
-    name: string;
-}
-
-type DataPoint = {
-    x: Date;
-    y: number;
-}
+import { config, rapidApiConfig, type CountryCurrency, type DataPoint } from './utils/config'
 
 const CurrencyConverter = () => {
     const dispatch = useDispatch();
