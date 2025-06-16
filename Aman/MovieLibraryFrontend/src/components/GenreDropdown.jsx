@@ -62,7 +62,7 @@ const GenreDropdown = ({ mediaType, disabled }) => {
                     disabled={disabled}
                 >
                     <option value="">
-                        Reset
+                        Select Genre
                     </option>
                     {isLoading ? (
                         <option disabled>
