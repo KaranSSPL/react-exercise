@@ -193,7 +193,6 @@ const CurrencyConverter = () => {
             {history.length > 0 && (
                 <HistoryList history={history} />
             )}
-
             {(!isGraphLoading && dataPoints.length > 0) ?
                 <ExchangeGraphCanvas
                     dataPoints={dataPoints}
