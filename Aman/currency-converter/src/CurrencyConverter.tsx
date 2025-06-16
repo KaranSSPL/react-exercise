@@ -38,6 +38,7 @@ const CurrencyConverter = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
     const [isGraphLoading, setIsGraphLoading] = useState(true);
+    const [error, setError] = useState('');
 
     const convertCurrency = async () => {
         setIsLoading(true);
@@ -85,6 +86,8 @@ const CurrencyConverter = () => {
 
     const fetchHistoricalData = async () => {
         setIsGraphLoading(true);
+        setError('');
+
         const days = 30;
         const end = new Date();
         const start = new Date();
@@ -112,6 +115,11 @@ const CurrencyConverter = () => {
             setDataPoints(points);
         } catch (error) {
             console.error("Error fetching historical data:", error);
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
             setDataPoints([]);
         } finally {
             setIsGraphLoading(false);
@@ -164,7 +172,7 @@ const CurrencyConverter = () => {
             return dispatch(setAmount(0));
         }
         return dispatch(setAmount(val));
-    }
+    };
 
     return (
         <div className="converter">
@@ -194,12 +202,15 @@ const CurrencyConverter = () => {
                 <HistoryList history={history} />
             )}
 
-            {!isGraphLoading && dataPoints.length > 0 &&
+            {(!isGraphLoading && dataPoints.length > 0) ?
                 <ExchangeGraphCanvas
                     dataPoints={dataPoints}
                     base={fromCurrency}
-                    target={toCurrency}
-                />}
+                    target={toCurrency} />
+                : error &&
+                <div className="mt-4">
+                    <h4>Error fetching historical data: {error}</h4>
+                </div>}
         </div>
     )
 }
