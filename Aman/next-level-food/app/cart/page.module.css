@@ -1,0 +1,28 @@
+.cart-container {
+    background: #222;
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.cart-img {
+  width: 100px;
+  height: auto;
+  border-radius: 10px;
+  margin-right: 1rem;
+}
+
+.quantity-controls button {
+  background: orange;
+  border: none;
+  padding: 0.5rem;
+  margin: 0 0.25rem;
+  border-radius: 5px;
+}
