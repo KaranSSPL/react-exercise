@@ -1,9 +1,9 @@
 .cart-container {
-    background: #222;
-    color: white;
-    padding: 1rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f1f1f1;
+  background-color: #1e1e1e;
 }
 
 .cart-item {

@@ -25,7 +25,7 @@ const Header = () => {
                             <NavLink href="/community">Foodies Community</NavLink>
                         </li>
                         <li>
-                            <NavLink href="/cart">Cart</NavLink>
+                            <NavLink href="/cart">🛒 Cart</NavLink>
                         </li>
                     </ul>
                 </nav>
