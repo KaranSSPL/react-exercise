@@ -25,6 +25,13 @@
   color: white;
 }
 
+.loader {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    padding: 2rem;
+}
+
 .form {
   max-width: 50rem;
 }
@@ -37,39 +44,6 @@
   text-transform: uppercase;
   color: #b3aea5;
   font-weight: bold;
-}
-
-.form select {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #454952;
-  background-color: #1c2027;
-  font-size: 1.25rem;
-  font-family: 'Montserrat', sans-serif;
-  color: #ddd6cb;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ddd6cb' class='bi bi-caret-down-fill' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14l-4.796-5.481C2.014 5.337 2.519 4.5 3.252 4.5h9.496c.733 0 1.238.837.801 1.159l-4.796 5.481a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
-}
-
-.form select:focus {
-  outline: none;
-  border-color: #f99f2a;
-  background-color: #1f252d;
-}
-
-/* For multiple select */
-.form select[multiple] {
-  background-image: none;
-  height: auto;
-  min-height: 8rem;
-  overflow-y: auto;
 }
 
 .form input,

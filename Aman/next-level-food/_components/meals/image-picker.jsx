@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './image-picker.module.css'
 import Image from 'next/image';
 
-const ImagePicker = ({ label, name }) => {
+const ImagePicker = ({ label, name, existingImage }) => {
     const [pickedImage, setPickedImage] = useState();
     const imageInput = useRef();
 
@@ -30,15 +30,27 @@ const ImagePicker = ({ label, name }) => {
         fileReader.readAsDataURL(file);
     }
 
+    const imageToShow = pickedImage || existingImage;
+
     return (
         <div className={classes.picker}>
             <label htmlFor={name}>{label}</label>
             <div className={classes.controls}>
                 <div className={classes.preview}>
-                    {!pickedImage && <p>No image picked yet.</p>}
-                    {pickedImage && <Image src={pickedImage} alt="The image selected by the user." fill />}
+                    {!imageToShow && <p>No image picked yet.</p>}
+                    {imageToShow && (
+                        <Image
+                            src={imageToShow}
+                            alt="Selected restaurant image"
+                            fill
+                            style={{ objectFit: 'cover' }}
+                        />
+                    )}
                 </div>
-                <input className={classes.input} type="file" name={name} accept="image/png, image/jpeg" id={name} ref={imageInput} onChange={handleImageChange} required />
+                <input type="hidden" name="existingImage" value={imageToShow || ''} />
+
+                <input className={classes.input} type="file" name={name} accept="image/png, image/jpeg" id={name} ref={imageInput} onChange={handleImageChange} required={!existingImage} />
+
                 <button className={classes.button} type="button" onClick={handleButtonClick}>
                     Pick an Image
                 </button>

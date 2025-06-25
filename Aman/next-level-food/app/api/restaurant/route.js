@@ -1,5 +1,5 @@
 import sequelize from "@/config/database";
-import { Recipe, Restaurant } from "@/models";
+import { Restaurant } from "@/models";
 
 export const GetRestaurant = async () => {
     await sequelize.authenticate();
@@ -31,17 +31,6 @@ export const InsertRestaurant = async (restaurantData) => {
 export const GetRestaurantBySlug = async (resturantName) => {
     try {
         await sequelize.authenticate();
-        // name = name.toLowerCase().replaceAll("-", " ");
-        // console.log(name)
-        // const restaurant = await Restaurant.findOne({
-        //     where: { name },
-        //     include: {
-        //         model: Recipe,
-        //         as: 'recipes',
-        //         attributes: ['id', 'title', 'summary', 'image', 'price']
-        //     }
-        // });
-        // return restaurant;
 
         const [rows] = await sequelize.query(`
             SELECT
@@ -80,6 +69,49 @@ export const GetRestaurantBySlug = async (resturantName) => {
     }
 }
 
+export const GetRestaurantNameAndImage = async () => {
+    try {
+        await sequelize.authenticate();
+        const restaurants = await Restaurant.findAll({
+            attributes: ['id', 'name', 'image'],
+            raw: true
+        });
+        return Response.json(restaurants)
+    } catch (error) {
+        console.error(error);
+        return new Response("Failed to fetch name & image restaurants", { status: 500 });
+    }
+}
+
+export const UpdateRestaurant = async (restaurantData) => {
+    try {
+        await sequelize.authenticate();
+
+        const [affectedCount] = await Restaurant.update(
+            {
+                name: restaurantData.name,
+                email: restaurantData.email,
+                image: restaurantData.image,
+                description: restaurantData.description,
+                location: restaurantData.location,
+                rating: restaurantData.rating
+            },
+            {
+                where: { id: restaurantData.id }
+            });
+
+        if (affectedCount === 0) {
+            return new Response('Restaurant not found', { status: 404 });
+        }
+
+        return new Response(JSON.stringify({ success: true, updated: affectedCount }), {
+            status: 200
+        });
+    } catch (error) {
+        console.error(error);
+        return new Response('Failed to update Restaurant', { status: 500 });
+    }
+}
 
 // === API handler ===
 export const GET = async () => {

@@ -5,6 +5,7 @@ import logoImg from '@/assets/logo.png';
 import classes from './main-header.module.css';
 import MainHeaderBackground from "./main-header-background";
 import NavLink from "./nav-link";
+import SearchBar from "../search/search-bar";
 
 const Header = () => {
 
@@ -16,13 +17,15 @@ const Header = () => {
                     <Image src={logoImg} alt="A place with food on it" priority />
                 </Link>
 
+                <SearchBar />
+
                 <nav className={classes.nav}>
                     <ul>
                         <li>
-                            <NavLink href="/meals">Browse Meals</NavLink>
+                            <NavLink href="/meals">Meals</NavLink>
                         </li>
                         <li>
-                            <NavLink href="/community">Foodies Community</NavLink>
+                            <NavLink href="/restaurants">Restaurants</NavLink>
                         </li>
                         <li>
                             <NavLink href="/cart">🛒 Cart</NavLink>

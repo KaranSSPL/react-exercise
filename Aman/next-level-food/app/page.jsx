@@ -16,7 +16,7 @@ export default function Home() {
             <p>From street eats to gourmet treats – NextLevel Food brings it all to your plate.</p>
           </div>
           <div className={classes.cta}>
-            <Link href="/community">Join NextLevel</Link>
+            <Link href="/restaurants">Explore Restaurants</Link>
             <Link href="/meals">Explore Meals</Link>
           </div>
         </div>

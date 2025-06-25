@@ -1,27 +1,25 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import classes from './meal-item.module.css'
+import classes from './restaurant-item.module.css'
 import { Suspense } from 'react'
 import MealsLoadingPage from '@/app/restaurants/loading-out'
 
-const MealItem = ({ title, image, summary, restaurant }) => {
+const RestaurantItem = ({ name, image }) => {
     return (
         <article className={classes.meal}>
             <header>
                 <div className={classes.image}>
-                    <Image src={image} alt={title} fill />
+                    <Image src={image} alt={name} fill />
                 </div>
                 <div className={classes.headerText}>
-                    <h2>{title}</h2>
-                    <p>by {restaurant.name}</p>
+                    <h2>{name}</h2>
                 </div>
             </header>
             <div className={classes.content}>
-                <p className={classes.summary}>{summary}</p>
                 <div className={classes.actions}>
                     <Suspense fallback={<MealsLoadingPage />}>
-                        <Link href={`/restaurants/${restaurant.name.toLowerCase().replaceAll(" ", "-").replaceAll("'", "").replaceAll("&", "")}`}>View Restaurant</Link>
+                        <Link href={`/restaurants/${name.toLowerCase().replaceAll(" ", "-").replaceAll("'", "").replaceAll("&", "")}`}>View Restaurant</Link>
                     </Suspense>
                 </div>
             </div>
@@ -29,4 +27,4 @@ const MealItem = ({ title, image, summary, restaurant }) => {
     )
 }
 
-export default MealItem
+export default RestaurantItem

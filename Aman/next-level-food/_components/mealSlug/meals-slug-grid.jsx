@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import MealSlugItem from './meal-slug-item'
 import classes from './meals-slug-grid.module.css'
 

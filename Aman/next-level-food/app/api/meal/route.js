@@ -1,4 +1,4 @@
-import { Recipe, Restaurant } from "@/models";
+import { Recipe } from "@/models";
 import sequelize from "@/config/database";
 
 export const GetMeals = async () => {
@@ -55,5 +55,101 @@ export const InsertMeals = async (mealData) => {
     } catch (error) {
         console.error(error);
         return new Response('Failed to insert recipe', { status: 500 });
+    }
+}
+
+export const GetMealsByRestaurantName = async (resturantName) => {
+    try {
+        await sequelize.authenticate();
+        const [rows] = await sequelize.query(`
+            SELECT
+                re.id AS recipeId, re.title AS recipeTitle, re.image AS recipeImage, re.summary AS recipeSummary, re.price AS recipePrice
+            FROM recipe re
+            INNER JOIN restaurant r ON r.id = re.restaurant_id
+            WHERE LOWER(REPLACE(REPLACE(REPLACE(r.name, ' ', '-'), '''', ''), '&', '')) = ?
+            `, { replacements: [resturantName] });
+
+        if (rows.length === 0) return null;
+
+        const recipes = rows.map(row => ({
+            id: row.recipeId,
+            title: row.recipeTitle,
+            image: row.recipeImage,
+            summary: row.recipeSummary,
+            price: row.recipePrice
+        }));
+
+        return {
+            recipes
+        };
+
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error');
+    }
+}
+
+export const GetMealBySlug = async (mealName) => {
+    try {
+        await sequelize.authenticate();
+
+        const [rows] = await sequelize.query(`
+            SELECT
+                re.id AS recipeId, re.title AS recipeTitle, re.image AS recipeImage, re.summary AS recipeSummary, re.price AS recipePrice, re.restaurant_id, r.name
+            FROM recipe re
+            INNER JOIN Restaurant r ON r.id = re.restaurant_id
+             WHERE re.title = ?
+            `, { replacements: [mealName] });
+
+        if (rows.length === 0) return null;
+
+        const { name } = rows[0];
+
+        const recipes = rows.map(row => ({
+            id: row.recipeId,
+            title: row.recipeTitle,
+            image: row.recipeImage,
+            summary: row.recipeSummary,
+            price: row.recipePrice,
+            restaurant_id: row.restaurant_id
+        }));
+
+        return {
+            recipes,
+            name
+        };
+
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error');
+    }
+}
+
+export const UpdateMeals = async (mealData) => {
+    try {
+        await sequelize.authenticate();
+
+        const [affectedCount] = await Recipe.update(
+            {
+                title: mealData.name,
+                restaurant_id: mealData.restaurantId,
+                summary: mealData.description,
+                price: mealData.price,
+                image: mealData.image
+            },
+            {
+                where: { id: mealData.id }
+            });
+
+        if (affectedCount === 0) {
+            return new Response('Meal not found', { status: 404 });
+        }
+
+        return new Response(JSON.stringify({ success: true, updated: affectedCount }), {
+            status: 200
+        });
+    } catch (error) {
+        console.error(error);
+        return new Response('Failed to update meal', { status: 500 });
     }
 }

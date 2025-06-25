@@ -19,10 +19,6 @@ const Recipe = sequelize.define('Recipe', {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    instructions: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
     createdDate: {
         type: DataTypes.DATE,
         allowNull: false,

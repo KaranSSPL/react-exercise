@@ -6,7 +6,7 @@ const Error = () => {
             <h1>
                 An error occurred!
             </h1>
-            <p>Failed to create meal.</p>
+            <p>Failed to create restaurant.</p>
         </main>
     )
 }

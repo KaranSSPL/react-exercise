@@ -7,8 +7,8 @@ import MealsLoadingPage from '../loading-out';
 import MealsSlugGrid from '@/_components/mealSlug/meals-slug-grid';
 
 const Slug = async ({ params }) => {
-    const { mealSlug } = await params;
-    let restaurant = await GetRestaurantBySlug(mealSlug);
+    const { restaurantSlug } = await params;
+    let restaurant = await GetRestaurantBySlug(restaurantSlug);
 
     if (!restaurant) {
         notFound();
