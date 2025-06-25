@@ -39,6 +39,8 @@ const MealSlugItem = ({ id, image, title, summary, price, restaurantName, restau
         <>
             <Image src={image} alt={title} width={120} height={120} />
             <div className={classes.mealInfo}>
+                <p>{title}</p>
+                <br />
                 <p>{summary}</p>
                 <div className={classes.mealActions}>
                     <span>{price?.toFixed(2) || '—'}</span>

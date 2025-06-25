@@ -15,7 +15,7 @@ const AddMeal = () => {
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchRestaurant = async (slug) => {
+    const fetchMeals = async (slug) => {
         try {
             const res = await fetch(`/api/restaurant/${slug}`);
             if (!res.ok) throw new Error('Failed to fetch restaurant');
@@ -30,7 +30,7 @@ const AddMeal = () => {
 
     useEffect(() => {
         if (restaurantName) {
-            fetchRestaurant(restaurantName);
+            fetchMeals(restaurantName);
         }
     }, [restaurantName]);
 
@@ -50,7 +50,7 @@ const AddMeal = () => {
             </header>
             <main className={classes.main}>
                 {loading ? (
-                    <p className={classes.loader}>Loading restaurant details...</p>
+                    <p className={classes.loader}>Loading meal details...</p>
                 ) : (
                     <form className={classes.form} action={formAction}>
                         <input type="hidden" id="restaurantId" name="restaurantId" value={restaurant?.id || ''} />

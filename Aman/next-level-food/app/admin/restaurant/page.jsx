@@ -20,7 +20,7 @@ const RestaurantAdmin = async () => {
                 <h1>Restaurants</h1>
                 <div className={classes.buttonGroup}>
                     <Link
-                        href={`/restaurants/addRestaurant`}
+                        href={`/admin/add-restaurant`}
                         className={classes.addButton}
                     >
                         + Add New Restaurant

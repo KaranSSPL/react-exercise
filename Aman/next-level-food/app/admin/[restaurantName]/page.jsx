@@ -45,6 +45,8 @@ const Restaurant = async ({ params }) => {
                                 <li key={item.id} className={classes.mealCard}>
                                     <Image src={item.image} alt={item.title} width={120} height={120} />
                                     <div className={classes.mealInfo}>
+                                        <p>{item.title}</p>
+                                        <br />
                                         <p>{item.summary}</p>
                                         <div className={classes.mealActions}>
                                             <span>{item.price?.toFixed(2) || '—'}</span>
