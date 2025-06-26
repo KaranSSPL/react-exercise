@@ -3,11 +3,13 @@
 import ImagePicker from '@/_components/meals/image-picker'
 import classes from './page.module.css'
 import { addRestaurant } from '@/lib/actions'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import PhotonAutocomplete from '@/_components/add-restaurant/photonAutocomplete';
 
 const AddRestaurant = () => {
     const [state, formAction] = React.useActionState(addRestaurant, { message: null });
+    const [selectedLocation, setSelectedLocation] = useState(null);
 
     const router = useRouter();
     const { restaurantName } = useParams();
@@ -38,10 +40,17 @@ const AddRestaurant = () => {
                             <input type="email" id="email" name="email" required />
                         </p>
                     </div>
-                    <p>
-                        <label htmlFor="location">Location</label>
-                        <input type="text" id="location" name="location" required />
-                    </p>
+                    <div>
+                            <label htmlFor="location">Location</label>
+                            <PhotonAutocomplete onSelect={(location) => setSelectedLocation(location)} />
+                            {selectedLocation && (
+                                <>
+                                    <input type="hidden" name="location" value={selectedLocation.label} />
+                                    <input type="hidden" name="lat" value={selectedLocation.coordinates[1]} />
+                                    <input type="hidden" name="lng" value={selectedLocation.coordinates[0]} />
+                                </>
+                            )}
+                    </div>
                     <p>
                         <label htmlFor="description">Description</label>
                         <textarea name="description" id="description" rows="5" required></textarea>
