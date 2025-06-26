@@ -47,7 +47,7 @@ const RestaurantAdmin = async () => {
                             />
                             <h3>{restaurant.name}</h3>
                             <div className={classes.actions}>
-                                <Link href={`/admin/${slug}/edit`} className={classes.button}>
+                                <Link href={`/admin/${slug}`} className={classes.button}>
                                     Edit Details
                                 </Link>
                                 <Link href={`/admin/${slug}/meals`} className={classes.buttonSecondary}>

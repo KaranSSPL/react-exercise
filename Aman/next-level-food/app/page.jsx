@@ -25,7 +25,7 @@ export default function Home() {
         <section className={classes.section}>
           <h2>How it works</h2>
           <p>
-            <b>NextLevel Food brings everything foodies love into one place.</b> <b>Share</b> your favorite recipes or food photos. <b>Order</b> meals from nearby chefs and food creators. <b>Join</b> a vibrant community of food lovers, home cooks, and culinary explorers.
+            <b>NextLevel Food brings everything foodies love into one place.</b> <b>Order</b> meals from nearby restaurants.
           </p>
         </section>
 
