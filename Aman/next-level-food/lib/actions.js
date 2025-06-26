@@ -123,6 +123,8 @@ export const addMeal = async (prevState, formData) => {
         const result = await InsertMeals(meal);
         if (result.status === 201) {
             return { message: "Meal saved successfully!" }
+        } else if (result.status === 409) {
+            return { message: "Meal already exists!" }
         } else {
             return { message: "Failed to save meal." }
         }

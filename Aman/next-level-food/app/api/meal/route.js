@@ -43,6 +43,17 @@ export const InsertMeals = async (mealData) => {
     try {
         await sequelize.authenticate();
 
+        const existingRecipe = await Recipe.findOne({
+            where: {
+                title: mealData.name,
+                restaurant_id: mealData.restaurantId
+            }
+        });
+
+        if (existingRecipe) {
+            return new Response('Meal already exists', { status: 409 });
+        }
+
         const newRecipe = await Recipe.create({
             title: mealData.name,
             restaurant_id: mealData.restaurantId,
@@ -54,7 +65,7 @@ export const InsertMeals = async (mealData) => {
         return new Response(JSON.stringify(newRecipe), { status: 201 });
     } catch (error) {
         console.error(error);
-        return new Response('Failed to insert recipe', { status: 500 });
+        return new Response('Failed to insert meal', { status: 500 });
     }
 }
 

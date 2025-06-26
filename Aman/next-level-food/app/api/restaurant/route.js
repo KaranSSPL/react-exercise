@@ -12,6 +12,16 @@ export const InsertRestaurant = async (restaurantData) => {
 
         await Restaurant.sync();
 
+        const existingRestaurant = await Restaurant.findOne({
+            where: {
+                name: restaurantData.name
+            }
+        });
+
+        if (existingRestaurant) {
+            return new Response('Meal already exists', { status: 409 });
+        }
+
         const newRestaurant = await Restaurant.create({
             name: restaurantData.name,
             email: restaurantData.email,
