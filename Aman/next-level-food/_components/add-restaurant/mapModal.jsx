@@ -3,6 +3,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef, useState } from 'react';
+import classes from './mapModal.module.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -21,12 +22,17 @@ const MapModal = ({ onClose, onSave }) => {
 
     useEffect(() => {
         if (mapRef.current) return;
+        const defaultCoords = { lat: 26.9267, lng: 75.8096 };
 
-        mapRef.current = L.map(mapContainerRef.current).setView([51.505, -0.09], 13);
+        mapRef.current = L.map(mapContainerRef.current).setView([defaultCoords.lat, defaultCoords.lng], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(mapRef.current);
+
+        markerRef.current = L.marker([defaultCoords.lat, defaultCoords.lng]).addTo(mapRef.current);
+
+        setSelectedCoords(defaultCoords);
 
         mapRef.current.on('click', (e) => {
             const { lat, lng } = e.latlng;
@@ -51,21 +57,20 @@ const MapModal = ({ onClose, onSave }) => {
     };
 
     return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-            background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
-        }}>
-            <div style={{ width: '80%', height: '80%', background: '#fff', padding: '1rem', position: 'relative' }}>
-                <button onClick={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>✖</button>
-                <div ref={mapContainerRef} style={{ width: '100%', height: '70%' }} />
+        <div className={classes["map-overlay"]}
+    onClick={onClose}>
+            <div className={classes["map-section"]}
+                onClick={(e) => e.stopPropagation()}>
+                <div className={classes.map} ref={mapContainerRef} />
                 <input
+                    className={classes["location-label"]}
                     type="text"
                     placeholder="Enter location label"
                     value={locationLabel}
                     onChange={(e) => setLocationLabel(e.target.value)}
-                    style={{ width: '100%', marginTop: '1rem' }}
+                    required
                 />
-                <button onClick={handleSave} style={{ marginTop: '0.5rem', width: '100%' }}>Save Location</button>
+                <button onClick={handleSave} className={classes["location-save"]}>Save Location</button>
             </div>
         </div>
     )

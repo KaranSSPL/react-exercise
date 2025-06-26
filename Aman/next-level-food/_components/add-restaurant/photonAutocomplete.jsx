@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SuggestionList from "./suggestionList";
 import dynamic from 'next/dynamic';
+import classes from './photonAutocomplete.module.css'
 
 const MapModal = dynamic(() => import('./mapModal'), { ssr: false });
 
@@ -23,7 +24,7 @@ const PhotonAutocomplete = ({ onSelect }) => {
             }
 
             try {
-                const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(inputValue)}&limit=5`, { signal: controller.signal });
+                const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(inputValue)}&limit=4`, { signal: controller.signal });
 
                 const data = await res.json();
 
@@ -71,7 +72,7 @@ const PhotonAutocomplete = ({ onSelect }) => {
     };
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div className={classes["location-field"]}>
             <input
                 type="text"
                 value={inputValue}
@@ -82,9 +83,9 @@ const PhotonAutocomplete = ({ onSelect }) => {
                 required
                 autoComplete="off"
             />
-            {suggestions.length > 0 && (
-                <SuggestionList suggestions={suggestions} onSelect={handleSelect} onMapSelect={handleMapConfirm} />
-            )}
+
+            <SuggestionList suggestions={suggestions} onSelect={handleSelect} onMapSelect={handleMapConfirm} showFallback={inputValue.length >= 3 && suggestions.length === 0} />
+            
             {showMap && (
                 <MapModal
                     onClose={() => setShowMap(false)}
