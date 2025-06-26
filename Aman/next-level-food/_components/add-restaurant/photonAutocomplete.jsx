@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SuggestionList from "./suggestionList";
 import dynamic from 'next/dynamic';
 import classes from './photonAutocomplete.module.css'
@@ -8,11 +8,19 @@ import classes from './photonAutocomplete.module.css'
 const MapModal = dynamic(() => import('./mapModal'), { ssr: false });
 
 
-const PhotonAutocomplete = ({ onSelect }) => {
+const PhotonAutocomplete = ({ onSelect, defaultValue }) => {
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [shouldFetch, setShouldFetch] = useState(true);
     const [showMap, setShowMap] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
+
+    useEffect(() => {
+        if (defaultValue) {
+            setInputValue(defaultValue);
+        }
+    }, [defaultValue]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -53,11 +61,13 @@ const PhotonAutocomplete = ({ onSelect }) => {
         onSelect(suggestion);
         setShouldFetch(false);
         setSuggestions([]);
+        setShowSuggestions(false);
     }
 
     const handleChange = (e) => {
         setInputValue(e.target.value);
         setShouldFetch(true);
+        setShowSuggestions(true);
     };
 
     const handleMapConfirm = () => {
@@ -69,6 +79,7 @@ const PhotonAutocomplete = ({ onSelect }) => {
         onSelect(location);
         setShouldFetch(false);
         setSuggestions([]);
+        setShowSuggestions(false);
     };
 
     return (
@@ -84,8 +95,15 @@ const PhotonAutocomplete = ({ onSelect }) => {
                 autoComplete="off"
             />
 
-            <SuggestionList suggestions={suggestions} onSelect={handleSelect} onMapSelect={handleMapConfirm} showFallback={inputValue.length >= 3 && suggestions.length === 0} />
-            
+            {showSuggestions && (
+                <SuggestionList
+                    suggestions={suggestions}
+                    onSelect={handleSelect}
+                    onMapSelect={handleMapConfirm}
+                    showFallback={inputValue.length >= 3 && suggestions.length === 0}
+                />
+            )}
+
             {showMap && (
                 <MapModal
                     onClose={() => setShowMap(false)}
