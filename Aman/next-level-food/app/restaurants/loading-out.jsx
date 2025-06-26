@@ -2,7 +2,7 @@ import classes from './loading-out.module.css'
 
 const MealsLoadingPage = () => {
     return (
-        <p className={classes.loading}>Fetching meals...</p>
+        <p className={classes.loading}>Fetching...</p>
     )
 }
 
