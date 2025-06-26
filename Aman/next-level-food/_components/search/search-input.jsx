@@ -64,7 +64,7 @@ const SearchInput = ({ initialQuery }) => {
                 onChange={(e) => setQuery(e.target.value)}
             />
 
-            {dropdownOpen && (meals.length || restaurants.length) > 0 && (
+            {dropdownOpen && (
                 <div className={classes.dropdown}>
                     <div className={classes.section}>
                         <h4>Meals</h4>
