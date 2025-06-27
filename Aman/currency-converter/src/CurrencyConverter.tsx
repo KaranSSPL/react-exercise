@@ -12,7 +12,7 @@ import AmountInput from './components/AmountInput'
 
 import type { RootState } from './redux/store';
 import { setAmount, setFromCurrency, setToCurrency, addToHistory } from './redux/slices/currencySlice';
-import { config, rapidApiConfig, type CountryCurrency, type DataPoint } from './utils/config'
+import { rapidApiConfig, type CountryCurrency, type DataPoint } from './utils/config'
 
 const CurrencyConverter = () => {
     const dispatch = useDispatch();
@@ -38,18 +38,12 @@ const CurrencyConverter = () => {
         }
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/latest.json?symbols=${fromCurrency}%2C${toCurrency}`, config);
+            const response = await axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/convert?from=${fromCurrency}&to=${toCurrency}&amount=${amount}`,
+                rapidApiConfig);
 
             if (response.status === 200) {
-                const rates = response.data.rates;
-                if (!rates[fromCurrency] || !rates[toCurrency]) {
-                    setResult('Currency not supported.');
-                    setIsLoading(false);
-                    return;
-                }
-
-                const someAmount = amount / rates[fromCurrency];
-                const converted = (someAmount * rates[toCurrency]).toFixed(4);
+                const rates = response.data.result;
+                const converted = rates.toFixed(4);
                 const conversionResult = `${amount} ${fromCurrency} = ${converted} ${toCurrency}`;
 
                 setResult(conversionResult);
@@ -83,7 +77,7 @@ const CurrencyConverter = () => {
         const endDate = formatDate(end);
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_HISTORY_CURRENCY_BASE_URL}/timeseries?start_date=${startDate}&end_date=${endDate}&base=${fromCurrency}&symbols=${toCurrency}`,
+            const response = await axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/timeseries?start_date=${startDate}&end_date=${endDate}&base=${fromCurrency}&symbols=${toCurrency}`,
                 rapidApiConfig
             );
 
@@ -119,10 +113,10 @@ const CurrencyConverter = () => {
     useEffect(() => {
         async function fetchCountryCurrencies() {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/currencies.json`, config);
+                const response = await axios.get(`${import.meta.env.VITE_CURRENCY_BASE_URL}/symbols`, rapidApiConfig);
 
                 if (response.status === 200) {
-                    const data = response.data;
+                    const data = response.data.symbols;
 
                     if (!data || typeof data != 'object') {
                         setCurrencies([]);
